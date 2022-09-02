@@ -47,7 +47,6 @@ class CascadeViews {
         }
     }
     static const size_t NUM_FRUSTUM_CORNERS = 8;
-    glm::mat4 viewMatrix;
 public:
     float endClipZ[NUM_CASCADES];
     void setDirection(const glm::vec3& direction){
@@ -73,7 +72,7 @@ public:
 
             Box box;
             initBox(box);
-            getProjection(box, corner_in_view, CamInv, viewMatrix);
+            getProjection(box, corner_in_view, CamInv, view[i].Transform().Matrix());
            
             //view[i].setProjection(Box(box.right,box.left,box.bottom,box.top,box.far,box.near));
             view[i].setProjection(box);
