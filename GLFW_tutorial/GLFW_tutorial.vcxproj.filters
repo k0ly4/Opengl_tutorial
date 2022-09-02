@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\ModelLoading">
+      <UniqueIdentifier>{7ee5f103-964b-407a-931d-3bcdd5f2b303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\stb">
+      <UniqueIdentifier>{230b57f0-9f2e-4407-bce3-69f72b2ab7ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Shaders">
+      <UniqueIdentifier>{ada21b59-5f0f-4d98-aa91-98149c146729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Camera">
+      <UniqueIdentifier>{3e3664ef-670f-42aa-abb1-ffdba3f1f0c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Objects">
+      <UniqueIdentifier>{a285a3aa-dc26-4241-8d02-779eb7abd9d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Render">
+      <UniqueIdentifier>{43be3d1d-40e6-47db-a766-3c474f8a3d7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\LightSystem">
+      <UniqueIdentifier>{3dd2cd06-4620-457f-9bc4-21ca22bebd85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\LightSystem\Shadow">
+      <UniqueIdentifier>{18de3448-5321-47d5-acf4-94077133d61d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\LightSystem\Light">
+      <UniqueIdentifier>{5dc0d36c-3bd8-4df0-b3ea-dab8bf0c10e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Файлы ресурсов\stb</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Texture.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource_manager.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Файлы ресурсов\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="Abstraction.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="LibInit.hpp">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Исходные файлы\ModelLoading</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Исходные файлы\ModelLoading</Filter>
+    </ClInclude>
+    <ClInclude Include="b_Mesh.h">
+      <Filter>Исходные файлы\ModelLoading</Filter>
+    </ClInclude>
+    <ClInclude Include="CascadedShadow.h">
+      <Filter>Исходные файлы\LightSystem\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Исходные файлы\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Исходные файлы\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Type_Object.h">
+      <Filter>Исходные файлы\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Shapes.h">
+      <Filter>Исходные файлы\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Исходные файлы\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Исходные файлы\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives.h">
+      <Filter>Исходные файлы\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Исходные файлы\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffer.h">
+      <Filter>Исходные файлы\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderWindow.h">
+      <Filter>Исходные файлы\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="DIrectionLight.h">
+      <Filter>Исходные файлы\LightSystem\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>Исходные файлы\LightSystem\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Исходные файлы\LightSystem\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowFrameBuffer.h">
+      <Filter>Исходные файлы\LightSystem\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Исходные файлы\LightSystem\Shadow</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

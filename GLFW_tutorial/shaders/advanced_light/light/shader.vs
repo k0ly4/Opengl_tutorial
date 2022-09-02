@@ -1,0 +1,14 @@
+#version 330 core
+
+layout (location = 0) in vec3 in_pos;
+layout (location = 1) in vec2 a_tex_coord;
+
+out vec2 texCoord;
+
+
+void main()
+{
+   
+   texCoord = a_tex_coord;
+   gl_Position =vec4(in_pos, 1.f);
+}
