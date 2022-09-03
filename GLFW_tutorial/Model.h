@@ -223,7 +223,7 @@ public:
     }
     void draw(View* view, const Shader& shader) {
         shader.use();
-        Transformable3D::uniform(shader);
+        uniformTransform(shader);
         view->use(shader);
         for (size_t i = 0; i < meshes.size(); i++)
             meshes[i].draw(shader);
@@ -287,7 +287,7 @@ public:
     }
     void draw(View* view, const Shader& shader) {
         shader.use();
-        Transformable3D::uniform(shader);
+        uniformTransform(shader);
         shader.uniform("boneMode", boneMode);
         shader.uniform("gDisplayBoneIndex", boneIndex);
         shader.uniform("bones",bones.getMatrix());

@@ -22,11 +22,14 @@ public:
 	inline void setView(View& view) {
 		this->view = &view;
 	}
-	inline void drawDepth(Drawable& object) {
-		object.draw(view, glShader::get(glShader::shadow_depth));
-	}
 	inline void draw(Drawable& object) {
 		object.draw(view, glShader::get(object.id_obj));
+	}
+	inline void draw(Drawable& object, glShader::Object index_shader) {
+		object.draw(view, glShader::get(index_shader));
+	}
+	inline void draw(Drawable& object, const Shader& shader) {
+		object.draw(view, shader);
 	}
 };
 

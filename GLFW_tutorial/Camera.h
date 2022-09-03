@@ -13,12 +13,9 @@ struct Basis {
         return glm::lookAt(position, position + front, GAME::WORLD_UP);
     }
 };
-struct Perspective{
-    float near;
-    float far;
-    float ratio;
-    float fov;
-};
+
+
+
 class View {
 protected:
     class Projection {  
@@ -63,7 +60,7 @@ protected:
         }
         void set(const Box& box) {
             data.ortho = box;  
-            set(box.ortho());
+            set(box.getMatrix());
         }
         void set(float ratio_screen, float angle_fov, float _near, float _far) {
             data.persp.near = _near;
@@ -72,6 +69,10 @@ protected:
             data.persp.ratio = ratio_screen;
             data.persp.fov = angle_fov;
             set(glm::perspective(glm::radians(angle_fov), ratio_screen, _near, _far));
+        }
+        void set(const Perspective& proj) {
+            data.persp = proj;
+            set(proj.getMatrix());
         }
     };
     class MatrixView {
@@ -172,10 +173,20 @@ public:
     inline void setProjection(const FloatRect& rect,float near,float far) {
         proj.set(rect, near, far);
     }
-   
-    
+    void setProjection(const glm::mat4& _proj) {
+        proj.matrix = _proj;
+        proj.need_up_inverse = 1;
+    }
+    void setMatrixView(const glm::mat4& matrix) {
+        view.need_up_matrix = 0;
+        view.need_up_inverse = 1;
+        view.matrix = matrix;
+    }
     inline void setProjection(float ratio_screen, float angle_fov = 45.f, float near = 0.1f, float far = 150.f) { 
         proj.set(ratio_screen, angle_fov, near, far);
+    }
+    inline void setProjection(const Perspective& persp) {
+        proj.set(persp);
     }
     inline void setProjection(const Box& box) {
         proj.set(box);

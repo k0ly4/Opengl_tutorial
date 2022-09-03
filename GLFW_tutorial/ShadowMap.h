@@ -36,8 +36,9 @@ public:
         void render(RenderClass* render)
         {
             GlRender::bind(map);
-            glClear(GL_DEPTH_BUFFER_BIT); 
-            render->drawScene_shadow(map);    
+            glClear(GL_DEPTH_BUFFER_BIT);
+            
+            render->drawScene_shadow(map, glShader::shadow_depth);
         }
 };
 

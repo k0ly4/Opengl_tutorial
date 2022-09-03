@@ -3,164 +3,161 @@
 #define CASCADE_SHADOW_H
 #include "ShadowFrameBuffer.h"
 
-#define NUM_CASCADES 3
+#define NUM_CASCADES 5
+
 class CascadeViews {
-    void getViewCorners(size_t i, float tanFovHorizontal, float tanFovVertical, glm::vec4* corner) {
-        float xn = m_cascadeEnd[i] * tanFovHorizontal;
-        float xf = m_cascadeEnd[i + 1] * tanFovHorizontal;
-        float yn = m_cascadeEnd[i] * tanFovVertical;
-        float yf = m_cascadeEnd[i + 1] * tanFovVertical;
-
-        // Ѕлижн€€ плоскость
-        corner[0] = glm::vec4(xn, yn, m_cascadeEnd[i], 1.0);
-        corner[1] = glm::vec4(-xn, yn, m_cascadeEnd[i], 1.0);
-        corner[2] = glm::vec4(xn, -yn, m_cascadeEnd[i], 1.0);
-        corner[3] = glm::vec4(-xn, -yn, m_cascadeEnd[i], 1.0);
-        // ƒальн€€ плоскость
-        corner[4] = glm::vec4(xf, yf, m_cascadeEnd[i + 1], 1.0);
-        corner[5] = glm::vec4(-xf, yf, m_cascadeEnd[i + 1], 1.0);
-        corner[6] = glm::vec4(xf, -yf, m_cascadeEnd[i + 1], 1.0);
-        corner[7] = glm::vec4(-xf, -yf, m_cascadeEnd[i + 1], 1.0);
+    std::vector<float> cascade_ends;
+    void computeEnds(float near,float far) {
+        cascade_ends[0] = near;
+        cascade_ends[1] = far / 50.0f;
+        cascade_ends[2] = far/25.f;
+        cascade_ends[3] = far/12.f;
+        cascade_ends[4] = far / 7.f;
+        cascade_ends[5] = far/2.f;
     }
-    void initBox(Box& box) {
-        box.left = std::numeric_limits<float>::max();
-        box.right = std::numeric_limits<float>::min();
-        box.bottom = std::numeric_limits<float>::max();
-        box.top = std::numeric_limits<float>::min();
-        box.near = std::numeric_limits<float>::max();
-        box.far = std::numeric_limits<float>::min();
+public:    
+    CascadeViews() {
+        cascade_ends.resize(NUM_CASCADES+1);
+        computeEnds(GAME::PROJECTION.near,GAME::PROJECTION.far);
     }
-    void getProjection(Box& box, glm::vec4* viewCorner, const glm::mat4& from_view_space, const glm::mat4& to_light_space) {
-
-        for (size_t j = 0; j < NUM_FRUSTUM_CORNERS; j++) {
-            // ѕреобразуем координаты усеченоой пирамиды из пространства камеры в мировое пространство
-            glm::vec4 vW = from_view_space * viewCorner[j];
-            // » ещЄ раз из мирового в пространство света
-            glm::vec4 lightCorner = to_light_space * vW;
-
-            box.left = std::min(box.left, lightCorner.x);
-            box.right = std::max(box.right, lightCorner.x);
-            box.bottom = std::min(box.bottom, lightCorner.y);
-            box.top = std::max(box.top, lightCorner.y);
-            box.near = std::min(box.near, lightCorner.z);
-            box.far = std::max(box.far, lightCorner.z);
-        }
-    }
-    static const size_t NUM_FRUSTUM_CORNERS = 8;
-public:
-    float endClipZ[NUM_CASCADES];
-    void setDirection(const glm::vec3& direction){
+    void compute(View& view_player,const glm::vec3& lightDir) {
         for (size_t i = 0; i < NUM_CASCADES;i++) {
-            view[i].setPosition(glm::vec3(0.f));
-            view[i].Transform().look(-direction);
+            const auto proj = glm::perspective(
+                glm::radians(view_player.getProjection().Setup().persp.fov), view_player.getProjection().Setup().persp.ratio, cascade_ends[i],
+                cascade_ends[i+1]);
+
+            std::vector<glm::vec4>corners = getFrustumCornersWorldSpace(proj, view_player.Transform().Matrix());
+            glm::vec3 center = glm::vec3(0, 0, 0);
+            for (const auto& v : corners)
+            {
+                center += glm::vec3(v);
+            }
+            center /= corners.size();
+
+            view[i].setMatrixView(glm::lookAt(
+                center + lightDir,
+                center,
+                GAME::WORLD_UP
+            ));
+
+            float minX = std::numeric_limits<float>::max();
+            float maxX = std::numeric_limits<float>::min();
+            float minY = std::numeric_limits<float>::max();
+            float maxY = std::numeric_limits<float>::min();
+            float minZ = std::numeric_limits<float>::max();
+            float maxZ = std::numeric_limits<float>::min();
+            for (const auto& v : corners)
+            {
+                const auto trf = view[i].Transform().Matrix() * v;
+                minX = std::min(minX, trf.x);
+                maxX = std::max(maxX, trf.x);
+                minY = std::min(minY, trf.y);
+                maxY = std::max(maxY, trf.y);
+                minZ = std::min(minZ, trf.z);
+                maxZ = std::max(maxZ, trf.z);
+            }
+            // Tune this parameter according to the scene
+            constexpr float zMult = 10.0f;
+            if (minZ < 0)
+            {
+                minZ *= zMult;
+            }
+            else
+            {
+                minZ /= zMult;
+            }
+            if (maxZ < 0)
+            {
+                maxZ /= zMult;
+            }
+            else
+            {
+                maxZ *= zMult;
+            }
+
+            view[i].setProjection(glm::ortho(minX, maxX, minY, maxY, minZ, maxZ));    
         }
+    } 
+    void uniform(const Shader& shader,const std::string& name) {
+        for(size_t i =0;i<NUM_CASCADES;i++){
+        shader.uniform(name + ".spaceMatrix[" + std::to_string(i) + "]", view[i].getVP());
+        shader.uniform(name + ".cascadePlaneDistances[" + std::to_string(i) + "]", cascade_ends[i+1]);
+        }   
+       // shader.uniform(name + ".cascadePlaneDistances[" + std::to_string(NUM_CASCADES) + "]", cascade_ends[NUM_CASCADES + 1]);
     }
-    void calcViewsMatrix(View& view_player) {
-        // ѕолучаем обратные преобразовани€
-        glm::mat4 cam = glm::lookAt(view_player.getPosition(), view_player.getPosition()+view_player.Transform().Basis().front, GAME::WORLD_UP);
-        //glm::mat4 CamInv = view_player.Transform().Inverse();// glm::inverse(cam);
-        glm::mat4 CamInv =  glm::inverse(cam);
-        // ѕолучаем преобразовани€ света
-        float ar = 1.f / view_player.getProjection().Setup().persp.ratio;
-        float tanFovHorizontal = tanf(glm::radians(view_player.getProjection().Setup().persp.fov / 2.0f));
-        float tanFovVertical = tanf(glm::radians((view_player.getProjection().Setup().persp.fov * ar) / 2.0f));
-
-        for (size_t i = 0; i < NUM_CASCADES; i++) {
-
-            glm::vec4 corner_in_view[NUM_FRUSTUM_CORNERS];
-            getViewCorners(i, tanFovHorizontal, tanFovVertical, corner_in_view);
-
-            Box box;
-            initBox(box);
-            getProjection(box, corner_in_view, CamInv, view[i].Transform().Matrix());
-           
-            //view[i].setProjection(Box(box.right,box.left,box.bottom,box.top,box.far,box.near));
-            view[i].setProjection(box);
-            std::cout << "Box:" << box<<'\n';
-            glm::vec4 vView(0.0f, 0.0f, m_cascadeEnd[i + 1], 1.0f);
-            glm::vec4 vClip = view_player.getProjection().Matrix() *vView;
-            endClipZ[i] = vClip.z;
-        }
-    }
-    void setCascadeEnds(const float *ends) {
-        for (size_t i = 0; i < NUM_CASCADES; i++)
-            m_cascadeEnd[i] = ends[i];
-    }
-    View3D& operator[](size_t index) {
+    View3D& operator [](size_t index) {
         return view[index];
     }
 private:
-    float m_cascadeEnd[NUM_CASCADES + 1];
+    std::vector<glm::vec4> getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
+    {
+        const auto inv = glm::inverse(proj * view);
+
+        std::vector<glm::vec4> frustumCorners;
+        for (unsigned int x = 0; x < 2; ++x)
+        {
+            for (unsigned int y = 0; y < 2; ++y)
+            {
+                for (unsigned int z = 0; z < 2; ++z)
+                {
+                    const glm::vec4 pt =
+                        inv * glm::vec4(
+                            2.0f * x - 1.0f,
+                            2.0f * y - 1.0f,
+                            2.0f * z - 1.0f,
+                            1.0f);
+                    frustumCorners.push_back(pt / pt.w);
+                }
+            }
+        }
+
+        return frustumCorners;
+    }
     View3D view[NUM_CASCADES];
 };
 class CascadeShadow  {
     RenderCascadedDepth fbo;
+  
     CascadeViews views;
     struct DirLight {
         glm::vec3 direction;
     }light;
 public:
     CascadeShadow() {
-        fbo.create(NUM_CASCADES, 1024, 1024);    
+        fbo.create(NUM_CASCADES, GAME::RENDER_SIZE);    
     }
-    Texture2D getTexture(size_t i) {
-        return fbo.getTexture(i);
+    g_ArrayTexture2D getTexture() {
+        return fbo.getTexture();
     }
     void create(View& view_player,const glm::vec3& direction) {
         light.direction = direction;
-
-        float casc_ends[NUM_CASCADES + 1] = 
-        { view_player.Projection().Setup().persp.near , 25.0f, 90.0f,view_player.Projection().Setup().persp.far };
-        views.setCascadeEnds(casc_ends);
-        views.setDirection(direction);
       }
     void setDirection(const glm::vec3& direction) {
-        light.direction = direction;
-        views.setDirection(direction);
+        light.direction = direction; 
     }
     const View& getView(View& view_player, size_t index_view) {
-        views.calcViewsMatrix(view_player);
+        views.compute(view_player, light.direction);
         return views[index_view];
     }
-    void bind(size_t begin,const Shader& shader,const std::string& name) {       
-        for (size_t i = 0; i < NUM_CASCADES; i++) {
-            shader.uniform(name + ".cascadeEndClipSpace[" + std::to_string(i) + "]", views.endClipZ[i]);
-            shader.uniform(name + ".spaceMatrix["+std::to_string(i)+"]", views[i].getVP());
-            fbo.getTexture(i).use(begin + i);
-        }
-        
+    void uniform(const Shader& shader, const std::string& name, size_t begin) {
+        fbo.getTexture().use(begin);
+        views.uniform(shader, name);
     }
-    void bind(size_t begin,size_t index, const Shader& shader, const std::string& name) {   
+    void uniform(const Shader& shader, size_t begin,size_t index, const std::string& name) {   
             shader.uniform(name + ".spaceMatrix", views[index].getVP());
-            fbo.getTexture(index).use(begin);
+            fbo.getTexture().use(begin);
     }  
-    void ShadowMapPass( View&view_player, void (*render_scene) (RenderTarget& target))
+    void render(View& view_player, RenderClass*render)
     {
-        views.calcViewsMatrix(view_player);
-        //  амера помещаетс€ на позицию источника света и не мен€ет на протежении этого этапа
-   //     p.SetCamera(Vector3f(0.0f, 0.0f, 0.0f), m_dirLight.Direction, Vector3f(0.0f, 1.0f, 0.0f));
-
-        for (size_t i = 0; i < NUM_CASCADES; i++) {
+            views.compute(view_player, light.direction);
+            fbo.setView(views[0]);
             // ѕрив€зываем и очищаем текущий каскад
-            fbo.bind_for_writing(i);
+            fbo.bind();
             glClear(GL_DEPTH_BUFFER_BIT);
-            fbo.setView(views[i]);
-            render_scene(fbo);
-        }
-    }
-    void ShadowMapPass(View& view_player, RenderClass*render)
-    {
-        views.calcViewsMatrix(view_player);
-        //  амера помещаетс€ на позицию источника света и не мен€ет на протежении этого этапа
-   //     p.SetCamera(Vector3f(0.0f, 0.0f, 0.0f), m_dirLight.Direction, Vector3f(0.0f, 1.0f, 0.0f));
-
-        for (size_t i = 0; i < NUM_CASCADES; i++) {
-            // ѕрив€зываем и очищаем текущий каскад
-            fbo.bind_for_writing(i);
-            glClear(GL_DEPTH_BUFFER_BIT);
-            fbo.setView(views[i]);
-            render->drawScene_shadow(fbo);
-        }
+            glShader::get(glShader::cascades_shadow_depth).use();
+            for (size_t i = 0; i < NUM_CASCADES; i++)
+                glShader::get(glShader::cascades_shadow_depth).uniform("lightSpaceMatrices[" + std::to_string(i) + "]", views[i].getVP());
+            render->drawScene_shadow(fbo, glShader::cascades_shadow_depth);
     }
 };
 #endif

@@ -40,6 +40,12 @@
     <Filter Include="Исходные файлы\LightSystem\Light">
       <UniqueIdentifier>{5dc0d36c-3bd8-4df0-b3ea-dab8bf0c10e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Abstraction">
+      <UniqueIdentifier>{fd09a54e-fa8c-4740-8ebc-e10c08a0bdf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine">
+      <UniqueIdentifier>{183a6157-5ff1-4120-be43-e28fd87ddd92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -61,12 +67,6 @@
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Файлы ресурсов\stb</Filter>
-    </ClInclude>
-    <ClInclude Include="Abstraction.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="LibInit.hpp">
-      <Filter>Исходные файлы</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Исходные файлы\ModelLoading</Filter>
@@ -130,6 +130,15 @@
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Исходные файлы\LightSystem\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="LibInit.hpp">
+      <Filter>Исходные файлы\Abstraction</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Исходные файлы\Abstraction</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Исходные файлы\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

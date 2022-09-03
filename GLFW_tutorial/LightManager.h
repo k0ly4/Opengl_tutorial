@@ -3,13 +3,14 @@
 #include "DIrectionLight.h"
 #include"PointLight.h"
 class LightSystem :public Drawable {
-    void render(const Shader& shader, FrameBuffer& gBuffer,Camera& camera,size_t index) {
+    void render(const Shader& shader, FrameBuffer& gBuffer,Camera& camera) {
         shader.use();
         gBuffer.getTexture(0).use(0);
         gBuffer.getTexture(1).use(1);
         gBuffer.getTexture(2).use(2);
         shader.uniform("viewPos", camera.getPosition());
         shader.uniform("ambientFactor", ambient);
+        shader.uniform("gWVP", camera.getVP());
         d_light.uniform("d_light", shader);
         for (size_t i = 0; i < p_light.size(); i++)
             p_light[i].uniform("p_light[" + std::to_string(i) + "]", shader);
@@ -38,8 +39,8 @@ public:
     void setAmbientFactor(float ambient) {
         this->ambient = ambient;
     }
-    void draw(FrameBuffer& gBuffer, Camera& camera,size_t index) {
-        render(glShader::get(glShader::gb_light), gBuffer, camera, index);
+    void draw(FrameBuffer& gBuffer, Camera& camera) {
+        render(glShader::get(glShader::gb_light), gBuffer, camera);
     }
     void draw(View* view, const Shader& shader) {
         billboard_lamp.draw(view, shader);

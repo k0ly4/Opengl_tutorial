@@ -119,6 +119,9 @@ public:
         }
     }
     // Полезные uniform-функции
+    bool have(const std::string& name) {
+       return glGetUniformLocation(ID, name.c_str())!=-1;
+    }
     void uniform(const std::string& name, int value) const
     {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
@@ -208,17 +211,9 @@ class glShader {
         shader.uniform("gAlbedoSpec", 2);
         //shadow-maps
         shader.uniform("d_light.shadow_map[0]", 3);
-        shader.uniform("d_light.shadow_map[1]", 4);
+        /*shader.uniform("d_light.shadow_map[1]", 4);
         shader.uniform("d_light.shadow_map[2]", 5);
-    }
-    static void setGBufferOrigin(Shader& shader) {
-        shader.use();
-        shader.uniform("gPosition", 0);
-        shader.uniform("gNormal", 1);
-        shader.uniform("gAlbedoSpec", 2);
-        //shadow-maps
-        shader.uniform("d_light.shadow_map", 3);
-
+        shader.uniform("d_light.shadow_map[3]", 6);*/
     }
     template<typename type_value>
     struct Uniform {
@@ -247,7 +242,7 @@ public:
         m_texture, m_texture_instance, m_texture_normal, m_texture_normal_instance, m_light_texture, 
         gb_texturable, gb_texture_animation,gb_color_uniform, gb_color_uniform_animation, gb_light,
         frame_exposure,
-        shadow_depth,red,
+        shadow_depth,cascades_shadow_depth,red,red_array,
         shader_size
     };
     static inline const Shader& get(Object index) {
@@ -280,7 +275,6 @@ public:
 
         shader[m_uniform_color].loadDirectory("shaders\\3d\\color\\uniform\\");
 
-        //shader[m_layout_color].loadDirectory("shaders\\3d\\color\\layout\\");
         setup(m_layout_color, "shaders\\3d\\color\\layout\\", 0, Uniform<int>("", 0));
 
         shader[m_texture].load("shaders\\3d\\texture\\standart\\shader.vert","shaders\\3d\\texture\\standart\\shader.frag");
@@ -324,13 +318,16 @@ public:
         //frame
         setup(frame_exposure, "shaders\\framebuffer\\exposure\\", 0, Uniform<int>("image", 0));
         setup(red, "shaders\\framebuffer\\gbuffer\\shadow\\red\\", 0, Uniform<int>("image", 0));
+        setup(red_array, "shaders\\framebuffer\\gbuffer\\shadow\\red\\array_texture\\", 0, Uniform<int>("image", 0));
 
 
-        shader[gb_light].loadDirectory("shaders\\framebuffer\\gbuffer\\light\\");
+        shader[gb_light].loadDirectory("shaders\\framebuffer\\gbuffer\\light\\cascade_shadow\\");
         setGBuffer(shader[gb_light]);
 
 
         shader[shadow_depth].loadDirectory("shaders\\framebuffer\\gbuffer\\shadow\\depth\\");
+
+        shader[cascades_shadow_depth].loadDirectory("shaders\\framebuffer\\gbuffer\\shadow\\depth\\cascades\\",1);
     }
     static void free() {
         for (auto i : shader) 

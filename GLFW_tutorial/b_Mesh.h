@@ -500,7 +500,7 @@ public:
         shader.use();
         view->use(shader);
         uniform(shader);
-        Transformable3D::uniform(shader);
+        uniformTransform(shader);
         VAO.draw();
     }
 };

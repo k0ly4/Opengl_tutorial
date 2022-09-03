@@ -1,8 +1,12 @@
-#pragma once
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+//nvidia descriptor
+//extern "C" {
+//    _declspec(dllexport) int NvOptimusEnablement = 0x00000001;
+//}
+//
 void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -30,6 +34,7 @@ class LibInit {
             return 0;
         }
         // glad: загрузка всех указателей на OpenGL-функции
+       
         return 1;
     }
     GLFWwindow* window;

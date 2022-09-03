@@ -1,22 +1,14 @@
-#ifndef ABSTRACTION_H
-#define ABSTRACTION_H
+#ifndef MAHT_h
+#define MAHT_h
 
 #include"LibInit.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <map>
+
 #define PI 3.1415926535f
 typedef unsigned char byte;
-class GAME{
-    GAME() {}
-    ~GAME() {}
-public:
-       static const glm::vec3 WORLD_UP;
-       static const glm::ivec2 RENDER_SIZE;
-};
-const glm::vec3 GAME::WORLD_UP = glm::vec3(0.f, 1.f, 0.f);
-const glm::ivec2 GAME::RENDER_SIZE = glm::ivec2(800, 600);
 
 struct Color
 {
@@ -59,7 +51,6 @@ const Color Color::GREEN(0.f, 1.f, 0.f);
 const Color Color::YELLOW(1.f, 1.f, 0.f);
 const Color Color::PURPLE(1.f, 0.f, 1.f);
 const Color Color::CYAN(0.f, 1.f, 1.f);
-
 bool operator ==(const Color& left, const Color& right) {
     return ((left.r == right.r) &&
         (left.b == right.b) &&
@@ -69,6 +60,7 @@ bool operator ==(const Color& left, const Color& right) {
 bool operator !=(const Color& left, const Color& right) {
     return !(left == right);
 }
+
 struct FloatRect {
     float x, y, w, h;
     FloatRect() :x(0.f), y(0.f), w(0.f), h(0.f) {}
@@ -97,15 +89,36 @@ struct Box {
     Box(float minX, float maxX, float minY, float maxY, float minZ, float maxZ) :
         left(minX), right(maxX), bottom(minY), top(maxY), near(minZ), far(maxZ) {}
     Box() {}
-    glm::mat4 ortho()const  {
+    glm::mat4 getMatrix()const  {
         return glm::ortho(left, right, bottom, top, near, far);
     }
 };
 std::ostream& operator<< (std::ostream& out, const Box& box) {
     return out << "left:" << box.left << ", right:" << box.right << ", bottom:" << box.bottom << ", top:" << box.top << ", near:" << box.near << ", far:" << box.far;
 }
+struct Perspective {
+    float near;
+    float far;
+    float ratio;
+    float fov;
+    Perspective() {}
+    Perspective(float _ratio,float _fov,float _near,float _far):ratio(_ratio),fov(_fov),near(_near),far(_far) {}
+    glm::mat4 getMatrix()const {
+        return glm::perspective(glm::radians(fov), ratio, near, far);
+    }
+};
+
+
 std::ostream& operator<< (std::ostream& out, const glm::vec3& vec) {
     return out <<"x:"<<vec.x<<", y:"<<vec.y<<", z:"<<vec.z;
+}
+std::ostream& operator<< (std::ostream& out, const glm::mat4& mat) {
+    for (size_t i = 0; i < 4; i++) {
+        out << '\n';
+        for (size_t j = 0; j < 4; j++)
+            out << mat[i][j] << ' ';
+    }
+    return out;
 }
 bool operator ==(const IntRect& left, const IntRect& right) {
     return ((left.x == right.x) &&
@@ -117,17 +130,21 @@ bool operator !=(const IntRect& left, const IntRect& right) {
     return !(left == right);
 }
 
-struct vec3 :public glm::vec3 {
+struct Vector3f :public glm::vec3 {
 };
-struct vec2 :public glm::vec2 {
+struct Vector2f :public glm::vec2 {
 };
-struct vec4 :public glm::vec4 {
+struct Vector4f :public glm::vec4 {
 };
-struct mat4:public glm::mat4{
+struct Matrix4f :public glm::mat4{
 };
-struct mat3 :public glm::mat3 {
+struct Matrix3f :public glm::mat3 {
 };
+void print(const glm::mat4& mat) {
+    for (size_t i = 0; i < 4; i++)
+        printf("    %f %f %f %f\n", mat[0][i], mat[1][i], mat[2][i], mat[3][i]);
 
+}
 glm::vec3 getNormal(const glm::mat3& triangle) {
     return glm::cross(triangle[1] - triangle[2], triangle[0] - triangle[1]);
 }
@@ -143,4 +160,17 @@ public:
         return last_time;
     }
 };
+class GAME {
+    GAME() {}
+    ~GAME() {}
+public:
+    static const glm::vec3 WORLD_UP;
+    static const glm::ivec2 RENDER_SIZE;
+    static const Perspective PROJECTION;
+};
+const glm::vec3 GAME::WORLD_UP = glm::vec3(0.f, 1.f, 0.f);
+const glm::ivec2 GAME::RENDER_SIZE = glm::ivec2(800, 600);
+const Perspective GAME::PROJECTION = Perspective((float)GAME::RENDER_SIZE.x / (float)GAME::RENDER_SIZE.y,55.f, 0.1f, 500.0f);
+
+
 #endif

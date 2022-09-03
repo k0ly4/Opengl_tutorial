@@ -3,7 +3,7 @@
 #include "Framebuffer.h"
 class RenderClass {
 public:
-    virtual void drawScene_shadow(RenderTarget& target) = 0;
+    virtual void drawScene_shadow(RenderTarget& target, glShader::Object shader) = 0;
 };
 class  RenderTextureDepth :public GeneralRender, public RenderTarget {
     GeneralTexture texture;
@@ -42,36 +42,40 @@ public:
     }
 };
 class  RenderCascadedDepth :public GeneralRender, public RenderTarget {
-    std::vector<GeneralTexture> textures;
+    GeneralTexture texture;
 public:
     RenderCascadedDepth() {
         glGenFramebuffers(1, &id);
     }
-    bool create(size_t cascadeLevels,const glm::ivec2& Size)
+    bool create(int cascadeLevels,const glm::ivec2& Size)
     {
         size = Size;
-        textures.resize(cascadeLevels);
-        for (size_t i = 0; i < cascadeLevels; i++) {
-            textures[i].gen();
-            glTexture::bind2D(textures[i]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, size.x, size.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-            //old
-           /* glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-            float color_border[] = { 1.f,1.f,1.f,1.f };
-            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color_border);*/
+       
+            texture.gen();
+            glTexture::bind2DArray(texture.getID());
+        
+            glTexImage3D(
+                GL_TEXTURE_2D_ARRAY,
+                0,
+                GL_DEPTH_COMPONENT32F,
+                Size.x,
+                Size.y,
+                cascadeLevels,
+                0,
+                GL_DEPTH_COMPONENT,
+                GL_FLOAT,
+                nullptr);
 
-            //new
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        }
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+            constexpr float bordercolor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+            glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, bordercolor);
+      
         GlRender::bind(*this);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textures[0].getID(), 0);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture.getID(), 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -81,15 +85,14 @@ public:
         GlRender::unbind();
         return 1;
     }
-    void bind_for_writing(size_t level){
+    void bind() {
         GlRender::bind(*this);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textures[level].getID(), 0);
     }
     void create(size_t cascadeLevels, int width, int height) {
         create(cascadeLevels,glm::ivec2(width, height));
     }
-    Texture2D getTexture(size_t level) {
-        return Texture2D(textures[level], size);
+    g_ArrayTexture2D getTexture() {
+        return g_ArrayTexture2D(texture);
     }
 };
 

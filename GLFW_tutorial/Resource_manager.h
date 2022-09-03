@@ -4,7 +4,7 @@
 #include <string>
 #include <list>
 #include"stb_image.h"
-#include "Abstraction.h"
+#include "Math.h"
 
 class GeneralTexture {
 protected:
@@ -19,6 +19,8 @@ protected:
 		}
 	};
 	friend class Texture2D;
+	friend class g_Texture2D;
+	friend class g_ArrayTexture2D;
 	std::shared_ptr<g_texture> texture;
 public:
 	void gen() {
@@ -29,8 +31,10 @@ public:
 	}
 };
 class glTexture {
-	static unsigned int last2d;
+	static unsigned int last;
+	/*static unsigned int last2d;
 	static unsigned int lastCube;
+	static unsigned int last2dArray;*/
 	static GLenum active_unit;
 	glTexture() {}
 	~glTexture() {}
@@ -42,9 +46,9 @@ public:
 		}
 	}
 	static inline void bind2D(unsigned int texture) {
-		if (texture != last2d) {
-			last2d = texture;
-			glBindTexture(GL_TEXTURE_2D, last2d);
+		if (texture != last) {
+			last = texture;
+			glBindTexture(GL_TEXTURE_2D, last);
 		}
 	}
 	static inline void bind2D(GeneralTexture& texture) {
@@ -54,18 +58,26 @@ public:
 		active(text_unit);
 		bind2D(texture.getID());
 	}
+	static inline void bind2DArray(unsigned int texture) {
+		if (texture != last) {
+			last = texture;
+			glBindTexture(GL_TEXTURE_2D_ARRAY, last);
+		}
+	}
 	static inline void bindCubeMap(unsigned int texture) {
-		if (texture != lastCube) {
-			lastCube = texture;
-			glBindTexture(GL_TEXTURE_CUBE_MAP, lastCube);
+		if (texture != last) {
+			last = texture;
+			glBindTexture(GL_TEXTURE_CUBE_MAP, last);
 		}
 	}
 	static inline void bindCubeMap(GeneralTexture& texture) {
 		bindCubeMap(texture.getID());
 	}
 };
-unsigned int glTexture::last2d = 0;
-unsigned int glTexture::lastCube = 0;
+unsigned int glTexture::last = 0;
+//unsigned int glTexture::last2d = 0;
+//unsigned int glTexture::last2dArray = 0;
+//unsigned int glTexture::lastCube = 0;
 GLenum glTexture::active_unit = 0;
 
 class GlImage:public GLFWimage {

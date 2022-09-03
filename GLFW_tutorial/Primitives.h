@@ -8,47 +8,48 @@ class Primitive {
     ~Primitive() {}
     static void cube_data(VertexBufferObject& vbo) {
         float vertices[] = {
-         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+            // back face
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+            // front face
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+            // left face
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+            // right face
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
+             // bottom face
+             -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+              1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+              1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+              1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+             -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+             -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+             // top face
+             -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+              1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+              1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
+              1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+             -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+             -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
         };
         vbo.data(sizeof(vertices), vertices);
     }
@@ -72,70 +73,86 @@ class Primitive {
         vbo.data(sizeof(vertices), vertices);
     }
     static void plane_data(VertexBufferObject& vbo) {
-        float vertices[] = {
-            // координаты        // текстурные координаты (y-координаты поменялись местами, потому что текстура перевернута вверх ногами)
-            -0.5f,  -0.5f,  0.0f,  0.0f,  0.0f,
-            0.5f, -0.5f,  0.0f, 1.0f,  0.0f,
-            -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
-            0.5f,  0.5f,  0.0f,  1.0f,  1.0f
+        //float vertices[] = {
+        //    // координаты        // текстурные координаты (y-координаты поменялись местами, потому что текстура перевернута вверх ногами)
+        //    -0.5f,  -0.5f,0.0f,  0.0f,  0.0f,
+        //    0.5f, -0.5f,  0.0f, 1.0f,  0.0f,
+        //    -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
+        //    0.5f,  0.5f,  0.0f,  1.0f,  1.0f
+        //};
+        float planeVertices[] = {
+            // positions            // normals         // texcoords
+            -0.5f,  -0.5f,0.0f, 0.f,1.f,0.f,       0.0f,  0.0f,
+            0.5f, -0.5f,  0.0f, 0.f,1.f,0.f,      1.0f,  0.0f,
+            -0.5f, 0.5f,  0.0f, 0.f,1.f,0.f,       0.0f,  1.0f,
+            0.5f,  0.5f,  0.0f, 0.f,1.f,0.f,       1.0f,  1.0f
         };
-        vbo.data(sizeof(vertices), vertices);
+        vbo.data(sizeof(planeVertices), planeVertices);
     }
 public:
     enum VBO_OBJECT :size_t
     {
         cube, quad, quad2d, plane, vbo_size
     };
+    
     class Cube :public Drawable, public Transformable3D {
-        static DrawBuffer VAO;
+        Texture2D* texture = 0;
+        glm::vec3 color = glm::vec3(1.f);
         friend class Primitive;
-        Texture2D* texture;
         static void init() {
             VAO.data_draw = DataDraw(DataDraw::DrawArrays, GL_TRIANGLES, 36);
             vbo[cube].begin();
             VAO.begin();
-            VAO.attrib(0, 3, 5 * sizeof(float), 0);
-            VAO.attrib(1, 2, 5 * sizeof(float), 3 * sizeof(float));
+            VAO.attrib(0, 3, 8 * sizeof(float), 0);
+            VAO.attrib(1, 2, 8 * sizeof(float), 6 * sizeof(float));
         }
     public:
+        static DrawBuffer VAO;
         Cube() {
-            id_obj = glShader::m_texture;
+            id_obj = glShader::gb_color_uniform;
+        }
+        void setColor(const glm::vec3& _color) {
+            color = _color;
+            texture = 0;
+            id_obj = glShader::gb_color_uniform;
         }
         void setTexture(Texture2D& texture) {
+            id_obj = glShader::gb_texturable;
             this->texture = &texture;
         }
         void draw(View* view, const Shader& shader) {
-            texture->use(0);
             shader.use();
             view->use(shader);
-            Transformable3D::uniform(shader);
+            if (texture)  texture->use(0);
+            else shader.uniform("color", color);
+            uniformTransform(shader);
             VAO.draw();
         }
+    };
+    class gbCube :public gbMateriable, public Transformable3D {
+            friend class Primitive;
+            static void init() {
+                VAO.data_draw = DataDraw(DataDraw::DrawArrays, GL_TRIANGLES, 36);
+                vbo[cube].begin();
+                VAO.begin();
+                VAO.attrib(0, 3, 8 * sizeof(float), 0);
+                VAO.attrib(1, 3, 8 * sizeof(float), 3 * sizeof(float)); 
+                VAO.attrib(2, 2, 8 * sizeof(float), 6 * sizeof(float));
+            }
+        public:
+            static DrawBuffer VAO;
+            gbCube() {
+                id_obj = glShader::gb_color_uniform;
+            }
+            void draw(View* view, const Shader& shader) {
+                shader.use();
+                view->use(shader);
+                uniformMaterial(shader);
+                uniformTransform(shader);
+                VAO.draw();
+            }
     };
 
-    class SolidCube :public Drawable, public Transformable3D {
-        friend class Primitive;
-        static void init() {
-            VAO.data_draw = DataDraw(DataDraw::DrawArrays, GL_TRIANGLES, 36);
-            vbo[cube].begin();
-            VAO.begin();
-            VAO.attrib(0, 3, 5 * sizeof(float), 0);
-        }
-        static DrawBuffer VAO;
-        glm::vec3 color;
-    public:
-        SolidCube() { id_obj = glShader::m_uniform_color; }
-        void setColor(const glm::vec3& color) {
-            this->color = color;
-        }
-        void draw(View* view, const Shader& shader) {
-            shader.use();
-            view->use(shader);
-            shader.uniform("color", color);
-            Transformable3D::uniform(shader);
-            VAO.draw();
-        }
-    };
     class Quad2D :public Drawable {
         static DrawBuffer VAO;
         Texture2D* texture;
@@ -201,8 +218,8 @@ public:
             VAO.data_draw = DataDraw(DataDraw::DrawArrays, GL_TRIANGLE_STRIP, 4);
             vbo[plane].begin();
             VAO.begin();
-            VAO.attrib(0, 3, 5 * sizeof(float), 0);
-            VAO.attrib(1, 2, 5 * sizeof(float), 3 * sizeof(float));
+            VAO.attrib(0, 3, 8 * sizeof(float), 0);
+            VAO.attrib(1, 2, 8 * sizeof(float), 6 * sizeof(float));
 
         }
     public:
@@ -216,8 +233,31 @@ public:
         void draw(View* view, const Shader& shader) {
             shader.use();
             view->use(shader);
-            Transformable3D::uniform(shader);
+            uniformTransform(shader);
             texture->use(0);
+            VAO.draw();
+        }
+    };
+    class gbPlane :public gbMateriable, public Transformable3D {
+        friend class Primitive;
+        static void init() {
+            VAO.data_draw = DataDraw(DataDraw::DrawArrays, GL_TRIANGLE_STRIP, 4);
+            vbo[plane].begin();
+            VAO.begin();
+            VAO.attrib(0, 3, 8 * sizeof(float), 0);
+            VAO.attrib(1, 3, 8 * sizeof(float), 3 * sizeof(float));
+            VAO.attrib(2, 2, 8 * sizeof(float), 6 * sizeof(float));
+        }
+    public:
+        static DrawBuffer VAO;
+        gbPlane() {
+            id_obj = glShader::gb_color_uniform;
+        }
+        void draw(View* view, const Shader& shader) {
+            shader.use();
+            view->use(shader);
+            uniformMaterial(shader);
+            uniformTransform(shader);
             VAO.draw();
         }
     };
@@ -234,9 +274,18 @@ public:
             texture.use(0);
             Quad::VAO.draw();
         }
+        void Red(const Shader& shader, const g_ArrayTexture2D& texture,int level) {
+            shader.use();
+            texture.use(0);
+            shader.uniform("level", level);
+            Quad::VAO.draw();
+        }
     public:
         void displayRed(const Texture2D& texture) {
             Red(glShader::get(glShader::red), texture);
+        }
+        void displayRed(const g_ArrayTexture2D& texture,int level) {
+            Red(glShader::get(glShader::red_array), texture,level);
         }
         void setExposure(float exp) {
             exposure = exp;
@@ -462,8 +511,9 @@ public:
 
 
         Plane::init();
+        gbPlane::init();
         Cube::init();
-        SolidCube::init();
+        gbCube::init();
         Quad::init();
         Skybox::init();
     }
@@ -474,9 +524,11 @@ public:
 };
 std::vector<VertexBufferObject> Primitive::vbo;
 DrawBuffer Primitive::Cube::VAO;
-DrawBuffer Primitive::SolidCube::VAO;
+
+DrawBuffer Primitive::gbCube::VAO;
 DrawBuffer Primitive::Quad::VAO;
 DrawBuffer Primitive::Plane::VAO;
+DrawBuffer Primitive::gbPlane::VAO;
 DrawBuffer Primitive::Skybox::VAO;
 VertexBufferObject Primitive::Skybox::VBO;
 #endif

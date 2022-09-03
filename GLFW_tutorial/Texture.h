@@ -69,8 +69,18 @@ public:
         glTexture::bindCubeMap(getID());
     }
 };
-
-class Texture2D:public GeneralTexture{
+class g_Texture2D :public GeneralTexture {
+public:
+    inline void use(size_t text_unit)const {
+        glTexture::active(GL_TEXTURE0 + text_unit);
+        glTexture::bind2D(getID());
+    }
+    g_Texture2D(const GeneralTexture& Texture) {
+        texture = Texture.texture;
+    }
+    g_Texture2D() {}
+};
+class Texture2D:public g_Texture2D {
     void setParameteri() {
         glTexture::bind2D(getID());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Wrap_S);
@@ -99,10 +109,6 @@ public:
         size(glm::uvec2(width,height)) 
     { texture = Texture.texture; }
 
-    inline void use(size_t text_unit)const {
-        glTexture::active(GL_TEXTURE0 + text_unit);
-        glTexture::bind2D(getID());
-    }
     bool loadFromFile(const std::string& path_to_image,bool flip_vertically, bool generateMipmap =true, bool gamma = false) {
         stbi_set_flip_vertically_on_load(flip_vertically);
         if (FileManager::loadTexture(path_to_image,this,&size,gamma)) {
@@ -157,6 +163,18 @@ public:
     void filter(GLint t_filter) {
         filter(t_filter, t_filter);
     }
+};
+class g_ArrayTexture2D :public GeneralTexture {
+public:
+    inline void use(size_t text_unit)const {
+        glTexture::active(GL_TEXTURE0 + text_unit);
+        glTexture::bind2DArray(getID());
+    }
+    g_ArrayTexture2D(const GeneralTexture& Texture) {
+        texture = Texture.texture;
+    }
+    g_ArrayTexture2D() {}
+
 };
 class TextureCubeDepth {
     unsigned int map;

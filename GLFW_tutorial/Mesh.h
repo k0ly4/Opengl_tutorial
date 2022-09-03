@@ -41,11 +41,7 @@ glm::mat3 to_mat3(const aiMatrix3x3& mat) {
     aiMatrix3x3_to_mat3(mat, result);
     return result;
 }
-void print(const glm::mat4& mat) {
-    for (size_t i = 0; i < 4; i++)
-        printf("    %f %f %f %f\n", mat[0][i], mat[1][i], mat[2][i], mat[3][i]);
 
-}
 void print(const aiMatrix4x4& mat) {
     printf("    %f %f %f %f\n", mat.a1, mat.a2, mat.a3, mat.a4);
     printf("    %f %f %f %f\n", mat.b1, mat.b2, mat.b3, mat.b4);
@@ -268,7 +264,7 @@ public:
         shader.use();
         view->use(shader);
         uniform(shader);
-        Transformable3D::uniform(shader);
+        uniformTransform(shader);
         VAO.draw();
     }
 }; 

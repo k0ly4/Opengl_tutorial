@@ -1,7 +1,7 @@
 #ifndef TYPE_OBJECT_H
 #define TYPE_OBJECT_H
 #include "Shader.h"
-
+#include "Texture.h"
 
 class Transformable2D {
 protected:
@@ -91,7 +91,7 @@ class Transformable3D {
 	}
 	Transform3D transform;
 protected:
-	inline void uniform(const Shader& shader) {
+	inline void uniformTransform(const Shader& shader) {
 		shader.uniform("model", getModel());
 	}
 	const glm::mat4& getModel() {
@@ -150,7 +150,30 @@ public:
 	glShader::Object id_obj;
 	virtual void draw(View* view, const Shader& shader) = 0;
 };
-
+class gbMateriable:public Drawable {
+protected:
+	float specular = 0.1f;
+	glm::vec3 base_color = glm::vec3(1.f);
+	Texture2D* diffuse = 0;
+	void uniformMaterial(const Shader& shader) {
+		shader.uniform("specularMaterial", specular);
+		if (diffuse) diffuse->use(0);
+		else shader.uniform("color", base_color);
+	}
+public:
+	void setSpecular(float _specular) {
+		specular = _specular;
+	}
+	void setColor(const glm::vec3& _color) {
+		base_color = _color;
+		diffuse = 0;
+		id_obj = glShader::gb_color_uniform;
+	}
+	void setTexture(Texture2D& texture) {
+		id_obj = glShader::gb_texturable;
+		this->diffuse = &texture;
+	}
+};
 //Instance chapter
 //Èםעונפויס הכÿ instance
 class Instancable :public Drawable, public Transformable3D {

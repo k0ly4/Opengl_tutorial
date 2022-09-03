@@ -237,7 +237,7 @@ public:
         shader.use();
         view->use(shader);
         texture->use(0);
-        Transformable3D::uniform(shader);
+        uniformTransform(shader);
         shader.uniform("specularMaterial", 0.01f);
         VAO.begin();
         glDrawElements(GL_TRIANGLES, mapIntCnt, GL_UNSIGNED_INT, 0);
@@ -315,7 +315,7 @@ public:
     void draw( View* view, const Shader& shader) {
         shader.use();
         view->use(shader);
-        Transformable3D::uniform(shader);
+        uniformTransform(shader);
         uniform(shader);
         VAO.draw();
     }
