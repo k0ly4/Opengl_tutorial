@@ -184,7 +184,7 @@ public:
 
 	bool create(glm::uvec2 Size, const std::string& title) {
 		if (window) glfwDestroyWindow(window);
-		window = GL_LIB.getContext();
+		window = glfw_lib.getContext();
 		if (window == NULL)
 		{
 			std::cout << "(!)Failed to create GLFW window" << std::endl;

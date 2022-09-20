@@ -1,18 +1,11 @@
+#include "GLFW.h"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
-//nvidia descriptor
-//extern "C" {
-//    _declspec(dllexport) int NvOptimusEnablement = 0x00000001;
-//}
-//
 void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
-class LibInit {
-    bool INIT_LIB() {
+
+bool GLFW::initialize() {
         std::cout << "initLib\n";
         if (!glfwInit())
         {
@@ -27,21 +20,16 @@ class LibInit {
         //Контекст и дебаг
         glfwMakeContextCurrent(window);
         glfwSetErrorCallback(error_callback);
-        
+
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             std::cout << "Failed to initialize GLAD" << std::endl;
             return 0;
         }
         // glad: загрузка всех указателей на OpenGL-функции
-       
+
         return 1;
     }
-    GLFWwindow* window;
-public:
-    GLFWwindow* getContext() {
+GLFWwindow* GLFW::getContext() {
         return window;
     }
-    LibInit() { INIT_LIB(); }
-}GL_LIB;
-
