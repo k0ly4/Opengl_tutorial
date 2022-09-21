@@ -4,7 +4,6 @@
 #include "GLobal.h"
 #include <map>
 
-GLFW glfw_lib;
 
 #include "Color.h"
 #include "Rects.h"

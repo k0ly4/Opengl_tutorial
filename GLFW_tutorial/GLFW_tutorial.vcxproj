@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -151,6 +152,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Perspective.cpp" />
     <ClCompile Include="Rects.cpp" />
+    <ClCompile Include="ResourceTypes.cpp" />
+    <ClCompile Include="Resource_manager.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Vectors.cpp" />
   </ItemGroup>
@@ -161,6 +166,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GLM.h" />
     <ClInclude Include="GLobal.h" />
+    <ClInclude Include="GLobalVar.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="b_Mesh.h" />
@@ -178,8 +184,10 @@
     <ClInclude Include="Rects.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="RenderWindow.h" />
+    <ClInclude Include="ResourceTypes.h" />
     <ClInclude Include="Resource_manager.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShadowFrameBuffer.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Shapes.h" />

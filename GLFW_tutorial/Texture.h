@@ -5,7 +5,7 @@
 #include "Resource_manager.h"
 #include <list>
 
-
+GLFW glfw_lib;
 class TextureCubeMap :public GeneralTexture {    
     // Конфигурация текстуры
     unsigned int Wrap_S; // режим наложения по оси S

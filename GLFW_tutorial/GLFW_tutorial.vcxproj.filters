@@ -46,9 +46,6 @@
     <Filter Include="Исходные файлы\Resources">
       <UniqueIdentifier>{c4db790e-69c4-44d7-99b4-b785a8e76fe8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Resources\Shaders">
-      <UniqueIdentifier>{ada21b59-5f0f-4d98-aa91-98149c146729}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\Resources\ModelLoading">
       <UniqueIdentifier>{7ee5f103-964b-407a-931d-3bcdd5f2b303}</UniqueIdentifier>
     </Filter>
@@ -93,6 +90,21 @@
     <ClCompile Include="Clock.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceTypes.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource_manager.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -109,9 +121,6 @@
     </ClInclude>
     <ClInclude Include="CascadedShadow.h">
       <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Исходные файлы\Resources\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Исходные файлы\Scene\Camera</Filter>
@@ -158,9 +167,6 @@
     <ClInclude Include="Buffer.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>Исходные файлы\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
@@ -199,6 +205,21 @@
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Исходные файлы\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceTypes.h">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GLobalVar.h">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 #include "Math.h"
-
+#include <vector>
 class GeneralBuffer {
 protected:
     friend class GlBuffer;
@@ -28,47 +28,14 @@ class GlBuffer {
     GlBuffer() {}
     ~GlBuffer() {}
 public:
-    static inline void resize(GeneralBuffer& buffer,size_t new_size,GLenum mode = GL_STATIC_DRAW) {
-        bindVBO(** temp.ID);
-        glBufferData(GL_ARRAY_BUFFER, buffer.cur_size, NULL, GL_STATIC_DRAW);
-        copy(buffer, temp);
-        bindVBO(**buffer.ID);
-        glBufferData(GL_ARRAY_BUFFER, new_size, NULL, mode);
-        copy(temp, buffer);
-    }
-    static inline void copy(GeneralBuffer& read, GeneralBuffer& write) {
-        glBindBuffer(GL_COPY_READ_BUFFER, **read.ID);
-        glBindBuffer(GL_COPY_WRITE_BUFFER, **write.ID);
-        glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, read.cur_size);
-    }
-    static inline void copy(GeneralBuffer& read, int readOffset, GeneralBuffer& write, int writeOffset,size_t size) {
-        glBindBuffer(GL_COPY_READ_BUFFER, **read.ID);
-        glBindBuffer(GL_COPY_WRITE_BUFFER, **write.ID);
-        glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, readOffset, writeOffset, size);
-    }
-    static inline void bindVBO (unsigned int vbo) {
-        if (last_vbo != vbo) {
-            last_vbo = vbo;
-            glBindBuffer(GL_ARRAY_BUFFER, last_vbo);
-        }
-    }
-    static inline void bindEBO(unsigned int ebo) {
-        if (last_ebo != ebo) {
-            last_ebo = ebo;
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        }
-    }
-    static inline void bindVAO(unsigned int vao) {
-        if (last_vao != vao) {
-            last_vao = vao;
-            glBindVertexArray(last_vao);
-        }
-    }
+    static  void resize(GeneralBuffer& buffer, size_t new_size, GLenum mode = GL_STATIC_DRAW);
+    static void copy(GeneralBuffer& read, GeneralBuffer& write);
+    static void copy(GeneralBuffer& read, int readOffset, GeneralBuffer& write, int writeOffset, size_t size);
+    static  void bindVBO(unsigned int vbo);
+    static  void bindEBO(unsigned int ebo);
+    static  void bindVAO(unsigned int vao);
 };
-unsigned int GlBuffer::last_vao = 0;
-unsigned int GlBuffer::last_vbo = 0;
-unsigned int GlBuffer::last_ebo = 0;
-GeneralBuffer GlBuffer::temp;
+
 class DataDraw { 
 public:
     struct Data {
@@ -85,24 +52,10 @@ public:
         DrawArrays, DrawElements, DrawArraysInstanced, DrawElementsInstanced, DrawSize
     }cur_type;
    
-    DataDraw(){
-        data = Data(0, 0, GL_TRIANGLES);
-        cur_type = DrawArrays;
-    }
-    DataDraw(DrawType mode_draw,GLenum mode_primitive, size_t count_vertex) {
-        data = Data(1, count_vertex, mode_primitive);
-        cur_type = mode_draw;
-    }
-    DataDraw(DrawType mode_draw,GLenum mode_primitive, size_t count_vertex,size_t count_object) {
-        data = Data(count_object, count_vertex, mode_primitive);
-        cur_type = mode_draw;
-    }
-    DataDraw(const DataDraw& data_object, size_t count_object) {
-        data = Data(count_object, data_object.data.count_vertex, data_object.data.mode_primitive);
-        if (data_object.cur_type == DrawArrays) cur_type = DrawArraysInstanced;
-        else if (data_object.cur_type == DrawElements) cur_type = DrawElementsInstanced;
-        else cur_type = data_object.cur_type;
-    } 
+    DataDraw();
+    DataDraw(DrawType mode_draw, GLenum mode_primitive, size_t count_vertex);
+    DataDraw(DrawType mode_draw, GLenum mode_primitive, size_t count_vertex, size_t count_object);
+    DataDraw(const DataDraw& data_object, size_t count_object);
     inline void draw() {
         type[cur_type]->draw(data);
     }
@@ -132,12 +85,6 @@ private:
     };
     static std::unique_ptr<Draw> type[DrawSize];
 };
-std::unique_ptr<DataDraw::Draw> DataDraw::type[DataDraw::DrawSize] = {
-    std::make_unique< DataDraw::drawArrays>(),
-    std::make_unique< DataDraw::drawElements>(),
-    std::make_unique< DataDraw::drawArraysInstanced>(),
-    std::make_unique< DataDraw::drawElementsInstanced>()
-};
 
 class GBO:public GeneralBuffer {
 protected:
@@ -164,37 +111,28 @@ public:
     inline size_t size()const { return cur_size; }
     //data function
 
-   void data(size_t Size, const void* data) {
-        if (cur_size < Size) {
-            cur_size = Size;
-            glBufferData(target, Size, data, mode);
-        }
-        else glBufferSubData(target, 0, Size, data);
+    void data(size_t Size, const void* data);
+    void data(size_t offset, size_t Size, const void* data);
+    //[]
+    template<typename vector_type_data>
+    void data(const std::vector<vector_type_data>& Data) {
+        data(sizeof(vector_type_data) * Data.size(), Data.data());
     }
-   void data(size_t offset, size_t Size, const void* data) {
-    if (cur_size < offset + Size) std::cout << "Error::Buffer full\n";
-    else glBufferSubData(target, offset, Size, data);
-}
-   //[]
-   template<typename vector_type_data>
-   inline void data(const std::vector<vector_type_data>& Data) {
-       data(sizeof(vector_type_data) * Data.size(), Data.data());
-   }
-   template<typename vector_type_data>
-   inline void data(size_t offset, const std::vector<vector_type_data>& Data) {
-       data(offset, sizeof(vector_type_data) * Data.size(), Data.data());
-   }
+    template<typename vector_type_data>
+    void data(size_t offset, const std::vector<vector_type_data>& Data) {
+        data(offset, sizeof(vector_type_data) * Data.size(), Data.data());
+    }
     //[][]
     template<typename vector_type_data>
     void data(const std::vector<std::vector<vector_type_data>>& Data) {
-       size_t step = sizeof(vector_type_data) * Data[0].size();
-       if (cur_size < Data.size() * step)  create(Data.size() * step);
-       for (size_t i = 0; i < Data.size(); i++) data(step * i, step, Data[i].data());
-   }
-    template<typename vector_type_data>
-    inline void data(size_t offset,const std::vector<std::vector<vector_type_data>>& Data) {
         size_t step = sizeof(vector_type_data) * Data[0].size();
-        for (size_t i = 0; i < Data.size(); i++) data(step*i+ offset, step, Data[i].data());
+        if (cur_size < Data.size() * step)  create(Data.size() * step);
+        for (size_t i = 0; i < Data.size(); i++) data(step * i, step, Data[i].data());
+    }
+    template<typename vector_type_data>
+    void data(size_t offset, const std::vector<std::vector<vector_type_data>>& Data) {
+        size_t step = sizeof(vector_type_data) * Data[0].size();
+        for (size_t i = 0; i < Data.size(); i++) data(step * i + offset, step, Data[i].data());
     }
     //[][][]
     template<typename vector_type_data>
@@ -204,8 +142,8 @@ public:
         for (size_t i = 0; i < Data.size(); i++) data(step * i, Data[i]);
     }
     template<typename vector_type_data>
-    inline void data(size_t offset, const std::vector<std::vector<std::vector<vector_type_data>>>& Data) {
-        size_t step = sizeof(vector_type_data) * Data[0].size()*Data[0][0].size();
+    void data(size_t offset, const std::vector<std::vector<std::vector<vector_type_data>>>& Data) {
+        size_t step = sizeof(vector_type_data) * Data[0].size() * Data[0][0].size();
         for (size_t i = 0; i < Data.size(); i++) data(step * i + offset, Data[i]);
     }
 
@@ -273,25 +211,10 @@ public:
     inline void begin() {
         GlBuffer::bindVAO(**ID);
     }
-    inline void attrib(size_t attribute, size_t size, size_t step, size_t offset) {
-        size_attribute++;
-        glEnableVertexAttribArray(attribute);
-        glVertexAttribPointer(attribute, size, GL_FLOAT, GL_FALSE, step, (void*)(offset));
-    }
-    inline void attribI(size_t attribute, size_t size, size_t step, size_t offset) {
-        size_attribute++;
-        glEnableVertexAttribArray(attribute);
-        glVertexAttribIPointer(attribute, size, GL_INT, step, (void*)(offset));
-    }
-    inline void attribInstanceVBOMat4(size_t attribute) {
-        for (size_t i = 0; i < 4; i++) 
-            attribInstance(attribute + i, 4, sizeof(glm::mat4), i * sizeof(glm::vec4));
-    }
-    void attribInstance(size_t attribute, size_t size, size_t step, size_t offset) {
-        glEnableVertexAttribArray(attribute);
-        glVertexAttribPointer(attribute, size, GL_FLOAT, GL_FALSE, step, (void*)(offset));
-        glVertexAttribDivisor(attribute, 1);
-    }
+     void attrib(size_t attribute, size_t size, size_t step, size_t offset);
+     void attribI(size_t attribute, size_t size, size_t step, size_t offset);
+     void attribInstanceVBOMat4(size_t attribute);
+    void attribInstance(size_t attribute, size_t size, size_t step, size_t offset);
     static inline void end() {
         GlBuffer::bindVAO(0);
     }
@@ -313,4 +236,6 @@ public:
         data_draw.draw();
     }
 };
+
+
 #endif
