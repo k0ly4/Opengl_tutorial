@@ -16,6 +16,7 @@ struct Box {
     glm::mat4 getMatrix()const;
 };
 std::ostream& operator<< (std::ostream& out, const Box& box);
+
 struct Perspective {
     float near;
     float far;
@@ -24,5 +25,14 @@ struct Perspective {
     Perspective() {}
     Perspective(float _ratio, float _fov, float _near, float _far);
     glm::mat4 getMatrix()const;
+};
+
+union ProjData
+{
+    Box ortho;
+    Perspective persp;
+    ProjData() {
+        std::memset(this, 0, sizeof(ProjData));
+    }
 };
 #endif 

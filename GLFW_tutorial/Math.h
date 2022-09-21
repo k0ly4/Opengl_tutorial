@@ -11,5 +11,6 @@
 #include "Vectors.h"
 #include "Clock.h"
 #include "Game.h"
+#include "Transform.h"
 
 #endif

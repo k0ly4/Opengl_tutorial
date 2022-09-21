@@ -226,7 +226,7 @@ public:
                     camera.cur_pos_mouse = Mouse::getPosition();
                 }
                 else if (event.key == GLFW_MOUSE_BUTTON_MIDDLE) {
-                    light.global().setDirection(-camera.Transform().Basis().front);
+                    light.global().setDirection(-camera.getBasis().front);
                 }
             }
             else if (event.action == Event::MOUSE_SCROLL) {

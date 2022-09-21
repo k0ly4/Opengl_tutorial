@@ -361,8 +361,8 @@ public:
 
         void draw(View* view, const Shader& shader) {
             shader.use();
-            shader.uniform("projection", view->getProjection().Matrix());
-            shader.uniform("camera", glm::mat4(glm::mat3(view->getMatrixView().Matrix())));
+            shader.uniform("projection", view->getProjection().get());
+            shader.uniform("camera", glm::mat4(glm::mat3(view->getView().get())));
             texture.use(0);
             glDepthFunc(GL_LEQUAL);
             VAO.draw();
@@ -374,8 +374,10 @@ public:
         DrawBuffer VAO;
         VertexBufferObject VBO;
         Texture2D* texture;
+        const View3D* eye =0;
         std::vector< glm::vec3>position;
         glm::vec2 size;
+        
     public:
         Billboard() :size(1.f) {
             id_obj = glShader::billboard;
@@ -399,15 +401,23 @@ public:
         void setSize(const glm::vec2& size) {
             this->size = size;
         }
+        void setEye(const View3D* eye_) {
+            eye = eye_;
+        }
         void setTexture(Texture2D& texture) { this->texture = &texture; }
         void draw(View* view, const Shader& shader) {
-            shader.use();
-            shader.uniform("VP", view->getVP());
-            shader.uniform("right", view->getMatrixView().Basis().right);
-            shader.uniform("up", view->getMatrixView().Basis().up);
-            shader.uniform("size", size);
-            texture->use(0);
-            VAO.draw();
+            if (eye) {
+                shader.use();
+                shader.uniform("VP", view->getVP());
+                shader.uniform("right", eye->getBasis().right);
+                shader.uniform("up", eye->getBasis().up);
+                shader.uniform("size", size);
+                texture->use(0);
+                VAO.draw();
+            }
+            else {
+                printf("(!)Billbord::eye don't set\n");
+            }
         }
     };
     class Convex :public Drawable {

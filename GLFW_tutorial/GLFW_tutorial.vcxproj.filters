@@ -49,9 +49,6 @@
     <Filter Include="Исходные файлы\Resources\ModelLoading">
       <UniqueIdentifier>{7ee5f103-964b-407a-931d-3bcdd5f2b303}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Scene\Camera">
-      <UniqueIdentifier>{3e3664ef-670f-42aa-abb1-ffdba3f1f0c6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\Math">
       <UniqueIdentifier>{7859c5d1-f50d-4145-b897-3fbba08e16ec}</UniqueIdentifier>
     </Filter>
@@ -105,6 +102,24 @@
     <ClCompile Include="Buffer.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformable.cpp">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawable.cpp">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Instancable.cpp">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -121,9 +136,6 @@
     </ClInclude>
     <ClInclude Include="CascadedShadow.h">
       <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Исходные файлы\Scene\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Type_Object.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
@@ -220,6 +232,21 @@
     </ClInclude>
     <ClInclude Include="Terrain.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformable.h">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawable.h">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Instancable.h">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Исходные файлы\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

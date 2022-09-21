@@ -20,13 +20,13 @@ public:
         cascade_ends.resize(NUM_CASCADES+1);
         computeEnds(GAME::PROJECTION.near,GAME::PROJECTION.far);
     }
-    void compute(View& view_player,const glm::vec3& lightDir) {
+    void compute(View3D& view_player,const glm::vec3& lightDir) {
         for (size_t i = 0; i < NUM_CASCADES;i++) {
             const auto proj = glm::perspective(
-                glm::radians(view_player.getProjection().Setup().persp.fov), view_player.getProjection().Setup().persp.ratio, cascade_ends[i],
+                glm::radians(view_player.getProjectionData().persp.fov), view_player.getProjectionData().persp.ratio, cascade_ends[i],
                 cascade_ends[i+1]);
 
-            std::vector<glm::vec4>corners = getFrustumCornersWorldSpace(proj, view_player.Transform().Matrix());
+            std::vector<glm::vec4>corners = getFrustumCornersWorldSpace(proj, view_player.getView().get());
             glm::vec3 center = glm::vec3(0, 0, 0);
             for (const auto& v : corners)
             {
@@ -34,7 +34,7 @@ public:
             }
             center /= corners.size();
 
-            view[i].setMatrixView(glm::lookAt(
+            view[i].setView(glm::lookAt(
                 center + lightDir,
                 center,
                 GAME::WORLD_UP
@@ -48,7 +48,7 @@ public:
             float maxZ = std::numeric_limits<float>::min();
             for (const auto& v : corners)
             {
-                const auto trf = view[i].Transform().Matrix() * v;
+                const auto trf = view[i].getView().get() * v;
                 minX = std::min(minX, trf.x);
                 maxX = std::max(maxX, trf.x);
                 minY = std::min(minY, trf.y);
@@ -74,8 +74,7 @@ public:
             {
                 maxZ *= zMult;
             }
-
-            view[i].setProjection(glm::ortho(minX, maxX, minY, maxY, minZ, maxZ));    
+            view[i].setProjection(glm::ortho(minX, maxX, minY, maxY, minZ, maxZ));
         }
     } 
     void uniform(const Shader& shader,const std::string& name) {
@@ -85,7 +84,7 @@ public:
         }   
        // shader.uniform(name + ".cascadePlaneDistances[" + std::to_string(NUM_CASCADES) + "]", cascade_ends[NUM_CASCADES + 1]);
     }
-    View3D& operator [](size_t index) {
+    ViewMatrix& operator [](size_t index) {
         return view[index];
     }
 private:
@@ -113,7 +112,7 @@ private:
 
         return frustumCorners;
     }
-    View3D view[NUM_CASCADES];
+    ViewMatrix view[NUM_CASCADES];
 };
 class CascadeShadow  {
     RenderCascadedDepth fbo;
@@ -135,7 +134,7 @@ public:
     void setDirection(const glm::vec3& direction) {
         light.direction = direction; 
     }
-    const View& getView(View& view_player, size_t index_view) {
+    const View& getView(View3D& view_player, size_t index_view) {
         views.compute(view_player, light.direction);
         return views[index_view];
     }
@@ -147,7 +146,7 @@ public:
             shader.uniform(name + ".spaceMatrix", views[index].getVP());
             fbo.getTexture().use(begin);
     }  
-    void render(View& view_player, RenderClass*render)
+    void render(View3D& view_player, RenderClass*render)
     {
             views.compute(view_player, light.direction);
             fbo.setView(views[0]);

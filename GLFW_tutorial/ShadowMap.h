@@ -3,21 +3,20 @@
 #include"ShadowFrameBuffer.h"
 class ShadowMap {
 	RenderTextureDepth map;
-	View3D view;
+	ViewMatrix view;
 public:
 	void create(const glm::ivec2& size) {
         map.create(size);
         map.setView(view);
     }
 	void orientProjection(const Box& box) {
-		view.setProjection(box);
+		view.setProjection(box.getMatrix());
 	}
-    void orient(const View& _view) {
-        view.orient(_view);
+    void orient(const ViewMatrix& _view) {
+        view = _view;
     }
 	void orientView(const glm::vec3& position,const glm::vec3& direction) {
-		view.setPosition(position);
-		view.Transform().look(direction);
+        view.setView(glm::lookAt(position, position - direction, GAME::WORLD_UP));
 	}
     Texture2D getTexture() {
         return map.getTexture();
