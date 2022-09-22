@@ -96,9 +96,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>Исходные файлы\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="Buffer.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
@@ -119,6 +116,39 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="EventEntites.h">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextRender.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextWindow.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderEntity.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Clipboard.cpp">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Cursor.cpp">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderWindow.cpp">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,9 +181,6 @@
     </ClInclude>
     <ClInclude Include="Primitives.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
     <ClInclude Include="Framebuffer.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
@@ -227,9 +254,6 @@
     <ClInclude Include="GLobalVar.h">
       <Filter>Исходные файлы\Math</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Исходные файлы\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Terrain.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
@@ -247,6 +271,36 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Исходные файлы\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextRender.h">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextWindow.h">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderEntity.h">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Clipboard.h">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Cursor.h">
+      <Filter>Исходные файлы\Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

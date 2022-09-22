@@ -7,7 +7,7 @@
 #include<map>
 #include<random>
 #include"Render.h"
-GLFW glfw_lib;
+
 
 class FrameBuffer :public GeneralRender {
     unsigned int depth;

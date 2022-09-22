@@ -1,22 +1,31 @@
 #include "GLFW.h"
+struct PreSetupContext {
 
+    int width = 200;
+    int height = 200;
+    std::string name = "Window";
+    GLFWmonitor* monitor = NULL;
+    GLFWwindow* share = NULL;
+
+};
 void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
 
-bool GLFW::initialize() {
-        std::cout << "initLib\n";
+bool GLFW::Context::initialize() {
         if (!glfwInit())
         {
             std::cout << "(!)Failed to Initialization GLFW lib" << std::endl;
             return 0;
         }
+
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         //  glfwWindowHint(GLFW_SAMPLES, 4);
-        window = glfwCreateWindow(200, 200, "Window", NULL, NULL);
+        PreSetupContext setup;
+        window = glfwCreateWindow(setup.width, setup.height, setup.name.c_str(), setup.monitor, setup.share);
         //Контекст и дебаг
         glfwMakeContextCurrent(window);
         glfwSetErrorCallback(error_callback);
@@ -30,6 +39,8 @@ bool GLFW::initialize() {
 
         return 1;
     }
-GLFWwindow* GLFW::getContext() {
+GLFWwindow* GLFW::Context::get() {
         return window;
     }
+
+GLFW::Context GLFW::lib;

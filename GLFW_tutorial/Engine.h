@@ -10,6 +10,7 @@
 #include"Sprite.h"
 #include "Terrain.h"
 #include"LightManager.h"
+RenderWindow window;
 struct TempVar {
     size_t cur_animation = 0;
     bool need_shadow_update = 0;
@@ -48,6 +49,7 @@ class Engine :public RenderClass {
         GlRender::setClearColor(Color::ColorU(150, 199, 196));
 
     }
+  
     Event event;
     Texture2D filin;
     Camera camera;
@@ -95,7 +97,7 @@ public:
         s.plane.setColor(glm::vec3(0.9f));
         
 
-        light.add(P_Light(glm::vec3(1.f), glm::vec3(25.f, 10.f, 25.f), glm::vec2(0.032f, 0.09f)));
+        light.add(P_Light(glm::vec3(1.f), glm::vec3(25.f, 10.f, 25.f), glm::vec2(0.032f, 0.09f)),&camera);
         light.global() = D_Light(glm::vec3(0.9f), glm::vec3(1.f, 1.f, 0.f), camera.getPosition());
         light.global().createMap(1024, 1024, camera);
         light.setAmbientFactor(0.05f);
@@ -168,31 +170,31 @@ public:
     void update(float time, Clock& clock) {
         while (window.pollEvent(event))
         {
-            if (event.action == Event::KEY_PRESSED) {
-                if (event.key == GLFW_KEY_ESCAPE) window.close();
-                else if (event.key == GLFW_KEY_LEFT_CONTROL) {
+            if (event.type == Event::KeyPressed) {
+                if (event.key.code == GLFW_KEY_ESCAPE) window.close();
+                else if (event.key.code == GLFW_KEY_LEFT_CONTROL) {
                     t.rawMotionCursor = !t.rawMotionCursor;
                     Mouse::setRawMotion(t.rawMotionCursor);
                 }
-                else if (event.key == GLFW_KEY_LEFT_SHIFT) {
+                else if (event.key.code == GLFW_KEY_LEFT_SHIFT) {
                     t.checkCollision = !t.checkCollision;
                 }
-                else if (event.key == GLFW_KEY_R) {
+                else if (event.key.code == GLFW_KEY_R) {
                     grass_in.create(terrain, 5000);
                 }
-                else if (event.key == GLFW_KEY_F) {
+                else if (event.key.code == GLFW_KEY_F) {
                     t.shadow_view = !t.shadow_view;
                 }
-                else if (event.key == GLFW_KEY_T) {
+                else if (event.key.code == GLFW_KEY_T) {
 
                     light.shadow_demonstration = ~(light.shadow_demonstration);
                 }
-                else if (event.key == GLFW_KEY_N) {
+                else if (event.key.code == GLFW_KEY_N) {
                     t.shadow_level++;
                     if (t.shadow_level >= NUM_CASCADES)t.shadow_level = NUM_CASCADES-1;
                     printf("Shadow_Level:%d\n", t.shadow_level);
                 }
-                else if (event.key == GLFW_KEY_M) {
+                else if (event.key.code == GLFW_KEY_M) {
                     t.shadow_level--;
                     if (t.shadow_level < 0)t.shadow_level = 0;
                     printf("Shadow_Level:%d\n", t.shadow_level);
@@ -221,15 +223,15 @@ public:
                     }
                 }*/
             }
-            else if (event.action == Event::MOUSE_BUTTON_PRESSED) {
-                if (event.key == GLFW_MOUSE_BUTTON_RIGHT) {
+            else if (event.type == Event::MouseButtonPressed) {
+                if (event.mouseButton.button == Mouse::Right) {
                     camera.cur_pos_mouse = Mouse::getPosition();
                 }
-                else if (event.key == GLFW_MOUSE_BUTTON_MIDDLE) {
+                else if (event.mouseButton.button == Mouse::Middle) {
                     light.global().setDirection(-camera.getBasis().front);
                 }
             }
-            else if (event.action == Event::MOUSE_SCROLL) {
+            else if (event.type == Event::MouseScrolled) {
                 if (brush.getMode() == Brush::UP) {
                     brush.setColor(glm::vec3(1.f, 0.f, 0.f));
                     brush.setMode(Brush::DOWN);
@@ -239,14 +241,14 @@ public:
                     brush.setMode(Brush::UP);
                 }
             }
-            else if (event.action == Event::WINDOW_RESIZE) {
+            else if (event.type == Event::WindowResized) {
                 gBuffer.create(window.getSize());
                 frame.create(window.getSize());
             }
 
         }
-        if (Mouse::isAction(GLFW_MOUSE_BUTTON_RIGHT, Key::press)) {
-            Cursor::setMode(GLFW_CURSOR_DISABLED);
+        if (Mouse::isAction(Mouse::Right, Key::Press)) {
+            Cursor::setMode(Cursor::Disabled);
             camera.mouse_move(Mouse::getPosition());
         }
         move_camera(time);
@@ -270,10 +272,10 @@ public:
         light.draw(gBuffer, camera);
         gBuffer.implementDepth(frame);
 
-        if (!Mouse::isAction(GLFW_MOUSE_BUTTON_RIGHT, Key::press)) {
-            Cursor::setMode(GLFW_CURSOR_NORMAL);
+        if (!Mouse::isAction(Mouse::Right, Key::Press)) {
+            Cursor::setMode(Cursor::Normal);
             brush.upPosition(camera);
-            if (Mouse::isAction(GLFW_MOUSE_BUTTON_LEFT, Key::press)) {
+            if (Mouse::isAction(Mouse::Left, Key::Press)) {
                 const float strength = 5.f;
                 grass_in.upArray(brush.paint(time * strength));
             }

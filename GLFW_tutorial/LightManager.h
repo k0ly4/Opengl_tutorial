@@ -29,9 +29,10 @@ public:
         billboard_lamp.setTexture(texture_lamp);
         billboard_lamp.setSize(glm::vec2(1.f));
     }
-    void add(const P_Light& point_light) {
+    void add(const P_Light& point_light,const View3D* view) {
         p_light.push_back(point_light);
         billboard_lamp.setPosition(point_light.position, p_light.size() - 1);
+        billboard_lamp.setEye(view);
     }
     D_Light& global() {
         return d_light;

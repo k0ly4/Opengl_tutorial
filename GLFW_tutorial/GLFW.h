@@ -8,15 +8,32 @@
 //    _declspec(dllexport) int NvOptimusEnablement = 0x00000001;
 //}
 //
+
 class GLFW {
    
 public:
-    GLFWwindow* getContext();
-    GLFW() { initialize(); }
-private:
-    bool initialize();
-    GLFWwindow* window;
-};
 
+    class Context {
+
+    public:
+
+        GLFWwindow* get();
+        Context() { initialize(); }
+
+    private:
+
+        bool initialize();
+        GLFWwindow* window;
+
+    };
+
+ static GLFWwindow* getContext() {
+        return lib.get();
+    }
+
+private:
+    
+    static Context lib;
+};
 
 #endif
