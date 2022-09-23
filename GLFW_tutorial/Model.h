@@ -17,11 +17,11 @@ class b_MeshArray {
 protected:
     NodeAnim node;
     Skeleton bones;
-    Primitive::Convex skellet;
+   Convex skellet;
     ManagerAnimation animation;
     glm::mat4 inverse_global;
     glm::vec3 color_skellet = glm::vec3(0.f, 1.f, 0.f);
-    void boneNode(NodeAnim& _node, Primitive::Convex::Vertex*parent_vertex,size_t& global_index) {    
+    void boneNode(NodeAnim& _node, Convex::Vertex*parent_vertex,size_t& global_index) {    
         if (_node.HasBone()) { 
             skellet[global_index] = { parent_vertex->pos, color_skellet };
             global_index++;
@@ -65,7 +65,7 @@ public:
     inline b_Mesh& operator[](size_t index) {
         return meshes[index];
     }
-    Primitive::Convex& getSkellet() {
+    Convex& getSkellet() {
         skellet.resize(bones.getMatrix().size()*2);
        size_t global_index =0;
         boneNode(node,&skellet[0], global_index);

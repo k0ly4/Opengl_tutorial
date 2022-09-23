@@ -144,7 +144,7 @@ public:
 		mAlt = 	GLFW_MOD_ALT,
 		mSuper = GLFW_MOD_SUPER,
 		mCapsLock = GLFW_MOD_CAPS_LOCK,
-		m_NumLock = GLFW_MOD_NUM_LOCK,
+		mNumLock = GLFW_MOD_NUM_LOCK,
 	};
 
 	static bool isAction(int button, int action) {

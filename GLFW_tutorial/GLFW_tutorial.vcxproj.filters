@@ -52,6 +52,12 @@
     <Filter Include="Исходные файлы\Math">
       <UniqueIdentifier>{7859c5d1-f50d-4145-b897-3fbba08e16ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\System">
+      <UniqueIdentifier>{48274daa-4fc3-41a5-ad7b-d2db9851e293}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\Primitives">
+      <UniqueIdentifier>{9e3c50c0-d270-43d6-b44e-48f76bc20d01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -117,23 +123,11 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Render.cpp">
-      <Filter>Исходные файлы\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Event.cpp">
       <Filter>Исходные файлы\Input</Filter>
     </ClCompile>
     <ClCompile Include="EventEntites.h">
       <Filter>Исходные файлы\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="ContextRender.cpp">
-      <Filter>Исходные файлы\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="ContextWindow.cpp">
-      <Filter>Исходные файлы\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderEntity.cpp">
-      <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Keyboard.cpp">
       <Filter>Исходные файлы\Input</Filter>
@@ -149,6 +143,42 @@
     </ClCompile>
     <ClCompile Include="RenderWindow.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextRender.cpp">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextWindow.cpp">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Framebuffer.cpp">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cpp">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderEntity.cpp">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextTexture.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>Исходные файлы\System</Filter>
+    </ClCompile>
+    <ClCompile Include="PrimitiveEntity.cpp">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Quad.cpp">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter.cpp">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,12 +208,6 @@
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Primitives.h">
-      <Filter>Исходные файлы\Scene\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Framebuffer.h">
-      <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
     <ClInclude Include="RenderWindow.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
@@ -251,9 +275,6 @@
     <ClInclude Include="ResourceTypes.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="GLobalVar.h">
-      <Filter>Исходные файлы\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Terrain.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
@@ -272,20 +293,8 @@
     <ClInclude Include="Camera.h">
       <Filter>Исходные файлы\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>Исходные файлы\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Исходные файлы\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="ContextRender.h">
-      <Filter>Исходные файлы\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="ContextWindow.h">
-      <Filter>Исходные файлы\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderEntity.h">
-      <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Keyboard.h">
       <Filter>Исходные файлы\Input</Filter>
@@ -301,6 +310,54 @@
     </ClInclude>
     <ClInclude Include="Cursor.h">
       <Filter>Исходные файлы\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextRender.h">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextWindow.h">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffer.h">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderEntity.h">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextTexture.h">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>Исходные файлы\System</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimitiveEntity.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Quad.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="DeclaredObjects.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Billboard.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Convex.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -33,21 +33,15 @@ protected:
 private:
 
 };
-class glTexture {
+struct TextureDataFormat
+{
+	GLint
+		internal_format,
+		format,
+		filter;
 
-public:
-	static void active(size_t text_unit);
-	static void bind2D(unsigned int texture);
-	static void bind2D(GeneralTexture& texture);
-	static void bind2D(GeneralTexture& texture, size_t text_unit);
-	static void bind2DArray(unsigned int texture);
-	static void bindCubeMap(unsigned int texture);
-	static void bindCubeMap(GeneralTexture& texture);
-private:
-	static unsigned int last;
-	static GLenum active_unit;
-	glTexture() {}
-	~glTexture() {}
+	TextureDataFormat(GLint  text_internalformat, GLint  text_format, GLint text_filter) :
+		internal_format(text_internalformat), format(text_format), filter(text_filter) {}
 };
 
 class GlImage :public GLFWimage {

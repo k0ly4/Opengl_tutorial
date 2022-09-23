@@ -18,7 +18,7 @@ class Sprite :public Drawable, public Transformable {
  static void initRenderData()
     {
      if (VAO_init == 0) {
-         Primitive::get(Primitive::quad2d).begin();
+         sBuffer::quad2D.getVBO().begin();
          VAO.begin();
          VAO.attrib(0, 4, 4 * sizeof(float), 0);
          VAO_init = 1;

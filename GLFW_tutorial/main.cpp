@@ -7,7 +7,6 @@ int main()
     
     srand(time(0));
     glShader::init();
-    Primitive::init();
     Engine* engine = new Engine;
     Clock clock;
     while (window.isOpen())

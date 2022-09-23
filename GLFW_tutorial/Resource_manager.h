@@ -6,8 +6,7 @@
 #include"stb_image.h"
 #include <fstream>
 #include <sstream>
-#include "ResourceTypes.h"
-
+#include "ContextTexture.h"
 class FileManager {
 
 public:

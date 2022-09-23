@@ -56,7 +56,7 @@ public:
     DataDraw(DrawType mode_draw, GLenum mode_primitive, size_t count_vertex);
     DataDraw(DrawType mode_draw, GLenum mode_primitive, size_t count_vertex, size_t count_object);
     DataDraw(const DataDraw& data_object, size_t count_object);
-    inline void draw() {
+    inline void draw()const {
         type[cur_type]->draw(data);
     }
 private:
@@ -180,7 +180,7 @@ public:
     VertexBufferObject() {
         target = GL_ARRAY_BUFFER;
     }
-    void begin() {
+    void begin()const {
         GlBuffer::bindVBO(**ID);
     }
     static inline void end() {
@@ -208,7 +208,7 @@ public:
     ArrayBufferObject() {
         ID = std::make_unique<g_buffer>();
     }
-    inline void begin() {
+    inline void begin()const {
         GlBuffer::bindVAO(**ID);
     }
      void attrib(size_t attribute, size_t size, size_t step, size_t offset);
@@ -231,7 +231,7 @@ public:
     inline void setCountVertexDraw(size_t new_size) {
         data_draw.data.count_vertex = new_size;
     }
-    inline void draw() {
+    inline void draw()const {
         begin();
         data_draw.draw();
     }

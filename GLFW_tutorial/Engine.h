@@ -3,7 +3,7 @@
 #include"Camera.h"
 #include "Mesh.h"
 #include"Text.h"
-#include "Primitives.h"
+#include "DeclaredObjects.h"
 #include "Shapes.h"
 #include "RenderWindow.h"
 #include<list>
@@ -24,8 +24,8 @@ struct TempVar {
 };
 
 struct Scene {
-    Primitive::gbCube plane;
-    Primitive::gbCube cube;
+    gbCube plane;
+    gbCube cube;
     void render(RenderTarget& target) {
         target.draw(plane);
         target.draw(cube);
@@ -66,9 +66,9 @@ class Engine :public RenderClass {
 
     FrameBuffer frame;
     FrameBuffer gBuffer;
-    Primitive::Filter filter;
+    Filter filter;
     LightSystem light;
-    Primitive::Skybox skybox;
+    Skybox skybox;
     TempVar t;
     Scene s;
 public:

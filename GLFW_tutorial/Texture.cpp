@@ -19,18 +19,19 @@
         gen();
         setParameteri();
     }
+
     void TextureCubeMap::wrap(unsigned S, unsigned T, unsigned R) {
         Wrap_S = S;
         Wrap_T = T;
         Wrap_R = R;
         if (texture) setParameteri();
     }
+
     void TextureCubeMap::filter(unsigned MAG, unsigned MIN) {
         Filter_Min = MIN;
         Filter_Max = MAG;
         if (texture) setParameteri();
     }
-   
   
     bool TextureCubeMap::load(const std::string& directory, bool flip_vertically, bool gamma) {
         stbi_set_flip_vertically_on_load(flip_vertically);

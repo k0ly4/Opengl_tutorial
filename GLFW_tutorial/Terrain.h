@@ -292,9 +292,9 @@ class Grass :public Instancable {
     Texture2D* texture;
     DrawBuffer VAO;
     void init() {
-        VAO.data_draw = Primitive::Plane::VAO.data_draw;
+        VAO.data_draw = sBuffer::plane.getVAO().data_draw;
         VAO.begin();
-        Primitive::get(Primitive::plane).begin();
+        sBuffer::plane.getVBO().begin();
         VAO.attrib(0, 3, 5 * sizeof(float), 0);
         VAO.attrib(1, 2, 5 * sizeof(float), 3 * sizeof(float));
     }

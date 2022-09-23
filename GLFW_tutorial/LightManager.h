@@ -14,13 +14,13 @@ class LightSystem :public Drawable {
         d_light.uniform("d_light", shader);
         for (size_t i = 0; i < p_light.size(); i++)
             p_light[i].uniform("p_light[" + std::to_string(i) + "]", shader);
-        Primitive::Quad::VAO.draw();
+        sBuffer::quad.getVAO().draw();
     }
     float ambient;
     std::vector<P_Light> p_light;
     D_Light d_light;
     Texture2D texture_lamp;
-    Primitive::Billboard billboard_lamp;
+    Billboard billboard_lamp;
 public:
     int shadow_demonstration = 0;
     LightSystem() {
