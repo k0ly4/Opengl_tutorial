@@ -31,6 +31,7 @@
 		initCallbackFunc();
 		return 1;
 	}
+
 	void RenderWindow::setMonitor(GLFWmonitor* monitor, glm::vec2 pos) {
 		const  GLFWvidmode* mode = glfwGetVideoMode(monitor);
 

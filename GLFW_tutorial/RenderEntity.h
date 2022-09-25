@@ -1,7 +1,7 @@
 #ifndef RENDER_ENTITY_H
 #define RENDER_ENTITY_H
 
-#include "Type_Object.h"
+#include "TypeObject.h"
 
 class GeneralRender {
 

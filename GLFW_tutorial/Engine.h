@@ -1,14 +1,13 @@
 #ifndef ENGINE_H
 #define ENGINE_H
+
 #include"Camera.h"
-#include "Mesh.h"
 #include"Text.h"
 #include "DeclaredObjects.h"
-#include "Shapes.h"
+#include "Shape.h"
 #include "RenderWindow.h"
 #include<list>
 #include"Sprite.h"
-#include "Terrain.h"
 #include"LightManager.h"
 RenderWindow window;
 struct TempVar {
@@ -53,16 +52,10 @@ class Engine :public RenderClass {
     Event event;
     Texture2D filin;
     Camera camera;
-   
-    Terrain terrain;
-    
+
     Texture2D texture_terrain;
     Texture2D texture_grass;
 
-    // TerrainGreeneryModel greenize;
-    TerrainGreenery grass_in;
-    Grass grass;
-    Brush brush;
 
     FrameBuffer frame;
     FrameBuffer gBuffer;
@@ -83,9 +76,7 @@ public:
 
         setupWindow();
 
-        //  model.load("asset\\obj\\characters\\redguard.fbx");
-         //model.load("asset\\obj\\model\\untitled.fbx",1,1); //meshes: 14, vertices : 2534, indices : 3906, bones : 546
-        // model.setScale(glm::vec3(0.5f));
+       
         filin.loadFromFile("asset\\image\\favor.jpg", 1, 1, 1);
 
         
@@ -105,25 +96,9 @@ public:
         texture_terrain.loadFromFile("asset\\image\\image.jpg", 1, 1, 1);
         texture_terrain.wrap(GL_REPEAT);
         texture_terrain.filter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-        terrain.generate(glm::uvec2(50), "asset\\image\\consider_this_question.jpg");
-        terrain.setPosition(glm::vec3(0, -10.f, 0));
-        terrain.setTexture(texture_terrain);
 
         texture_grass.filter(GL_NEAREST);
         texture_grass.loadFromFile("asset\\image\\grass.png", 1, 1, 1);
-
-        //  model.load("asset/tree.obj");
-          //model.setScale(glm::vec3(0.1f));
-
-        grass.setTexture(texture_grass);
-        grass.setPosition(glm::vec3(0.f, 0.5f, 0.f));
-        //  model.setScale(glm::vec3(0.15f));
-          //greenize.setObject(model, glShader::m_light_uniform_color_instance);
-          //greenize.create(terrain, 70);
-
-        grass_in.setObject(&grass, glShader::m_texture_instance);
-        grass_in.create(terrain, 5000);
-        brush.setTerrain(&terrain);
 
 
         frame.addTexture(GL_RGBA16F, GL_RGBA, GL_NEAREST);
@@ -159,11 +134,6 @@ public:
         if (s > 0.f) {
             s = (speed * time) / s;
             camera.move(glm::vec3(vec_move.x * s, 0.f, vec_move.z * s));
-            if (t.checkCollision) {
-                float posY;
-                if (terrain.getHeight(camera.getPosition().x, camera.getPosition().z, posY))
-                    camera.setPosition(camera.getPosition().x, posY + 1.5f, camera.getPosition().z);
-            }
         }
 
     }
@@ -178,9 +148,6 @@ public:
                 }
                 else if (event.key.code == GLFW_KEY_LEFT_SHIFT) {
                     t.checkCollision = !t.checkCollision;
-                }
-                else if (event.key.code == GLFW_KEY_R) {
-                    grass_in.create(terrain, 5000);
                 }
                 else if (event.key.code == GLFW_KEY_F) {
                     t.shadow_view = !t.shadow_view;
@@ -231,16 +198,6 @@ public:
                     light.global().setDirection(-camera.getBasis().front);
                 }
             }
-            else if (event.type == Event::MouseScrolled) {
-                if (brush.getMode() == Brush::UP) {
-                    brush.setColor(glm::vec3(1.f, 0.f, 0.f));
-                    brush.setMode(Brush::DOWN);
-                }
-                else {
-                    brush.setColor(glm::vec3(0.f, 0.f, 1.f));
-                    brush.setMode(Brush::UP);
-                }
-            }
             else if (event.type == Event::WindowResized) {
                 gBuffer.create(window.getSize());
                 frame.create(window.getSize());
@@ -274,15 +231,8 @@ public:
 
         if (!Mouse::isAction(Mouse::Right, Key::Press)) {
             Cursor::setMode(Cursor::Normal);
-            brush.upPosition(camera);
-            if (Mouse::isAction(Mouse::Left, Key::Press)) {
-                const float strength = 5.f;
-                grass_in.upArray(brush.paint(time * strength));
-            }
         }
         // window.draw(model.getSkellet());
-
-        window.draw(brush);
         window.draw(light);
 
         //exposure

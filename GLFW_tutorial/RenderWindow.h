@@ -8,7 +8,7 @@
 class RenderWindow:public RenderTarget {
 
 public:
-	//Интервал между обновлением экранного буфера
+	//Интервал между обновлениями экранного буфера
 	inline void setFrameInterval(int interval) {
 		glfwSwapInterval(interval);
 	}
@@ -73,6 +73,7 @@ public:
 	}
 
 private:
+
 	GLFWwindow* window = 0;
 	void initCallbackFunc();
 };

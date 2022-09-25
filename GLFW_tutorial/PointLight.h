@@ -2,6 +2,7 @@
 #define POINT_LIGHT_H
 #include "RenderWindow.h"
 #include "Camera.h"
+
 class P_Light {
 public:
     glm::vec3 position;

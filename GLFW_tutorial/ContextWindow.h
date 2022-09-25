@@ -15,6 +15,7 @@ public:
 	static inline bool isFocus() {
 		return focus;
 	}
+
 private:
 
 	struct callback {

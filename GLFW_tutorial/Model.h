@@ -1,6 +1,7 @@
 #ifndef MODEL_H
 #define MODEL_H
-#include "b_Mesh.h"
+#include "bMesh.h"
+#include "Convex.h"
 //структура для манипуляции мешами
 class MeshArray{
 public:
@@ -17,7 +18,7 @@ class b_MeshArray {
 protected:
     NodeAnim node;
     Skeleton bones;
-   Convex skellet;
+    Convex skellet;
     ManagerAnimation animation;
     glm::mat4 inverse_global;
     glm::vec3 color_skellet = glm::vec3(0.f, 1.f, 0.f);
@@ -59,10 +60,10 @@ public:
 
         return animation;
     }
-    inline void push_back(const b_Mesh&& mesh) {
+    inline void push_back(const bMesh&& mesh) {
         meshes.push_back(mesh);
     }
-    inline b_Mesh& operator[](size_t index) {
+    inline bMesh& operator[](size_t index) {
         return meshes[index];
     }
     Convex& getSkellet() {
@@ -73,7 +74,7 @@ public:
         return skellet;
     }
 protected:
-    std::vector<b_Mesh> meshes;
+    std::vector<bMesh> meshes;
 };
 class ModelLoader
 {
@@ -103,7 +104,7 @@ class ModelLoader
         {
             // Узел содержит только индексы объектов в сцене.
             // Сцена же содержит все данные; узел - это лишь способ организации данных
-            meshes->push_back(b_Mesh(scene->mMeshes[node->mMeshes[i]], scene, &meshes->bones, directory, gammaCorectiton));
+            meshes->push_back(bMesh(scene->mMeshes[node->mMeshes[i]], scene, &meshes->bones, directory, gammaCorectiton));
         }
         // После того, как мы обработали все меши (если таковые имелись), мы начинаем рекурсивно обрабатывать каждый из дочерних узлов
         for (size_t i = 0; i < node->mNumChildren; i++)

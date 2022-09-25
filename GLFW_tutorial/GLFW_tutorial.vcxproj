@@ -24,6 +24,7 @@
     <ProjectGuid>{45ae5249-7224-45b9-9341-e56561bcd26e}</ProjectGuid>
     <RootNamespace>GLFWtutorial</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Blin</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -142,6 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Assimp.cpp" />
+    <ClCompile Include="AssimpLib.cpp" />
+    <ClCompile Include="bMesh.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Clipboard.cpp" />
@@ -157,14 +161,18 @@
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLFW.cpp" />
     <ClCompile Include="GLobal.cpp" />
+    <ClCompile Include="Glyph.cpp" />
     <ClCompile Include="Instancable.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Perspective.cpp" />
     <ClCompile Include="PrimitiveEntity.cpp" />
@@ -176,15 +184,21 @@
     <ClCompile Include="ResourceTypes.cpp" />
     <ClCompile Include="Resource_manager.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Transformable.cpp" />
     <ClCompile Include="Vectors.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assimp.h" />
     <ClInclude Include="Billboard.h" />
+    <ClInclude Include="bMesh.h" />
     <ClInclude Include="Clipboard.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Color.h" />
@@ -200,21 +214,23 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Filter.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GLM.h" />
     <ClInclude Include="GLobal.h" />
+    <ClInclude Include="Glyph.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Instancable.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Buffer.h" />
-    <ClInclude Include="b_Mesh.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CascadedShadow.h" />
     <ClInclude Include="DIrectionLight.h" />
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="GLFW.h" />
     <ClInclude Include="LightManager.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
@@ -232,7 +248,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowFrameBuffer.h" />
     <ClInclude Include="ShadowMap.h" />
-    <ClInclude Include="Shapes.h" />
+    <ClInclude Include="Shape.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="stb_image.h" />
@@ -241,7 +257,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Transformable.h" />
-    <ClInclude Include="Type_Object.h" />
+    <ClInclude Include="TypeObject.h" />
     <ClInclude Include="Vectors.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "CascadedShadow.h"
 #include "ShadowMap.h"
+
 class D_Light_Shadow {
     ShadowMap shadow_map;
     glm::vec3 direction;

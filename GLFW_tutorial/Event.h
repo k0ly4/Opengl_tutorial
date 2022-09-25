@@ -122,6 +122,7 @@ public:
 	void next() {
 		events.pop_front();
 	}
+
 	Event& last() {
 		return events.back();
 	}

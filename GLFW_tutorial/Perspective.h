@@ -2,6 +2,7 @@
 #define PERSPECTIVE_H
 #include "Rects.h"
 #include <iostream>
+
 struct Box {
     float
         left,
@@ -35,4 +36,5 @@ union ProjData
         std::memset(this, 0, sizeof(ProjData));
     }
 };
+
 #endif 
