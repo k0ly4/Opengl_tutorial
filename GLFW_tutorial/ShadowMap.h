@@ -32,7 +32,7 @@ public:
 
     void render(void (*render_scene) (RenderTarget& target));
 
-    void render(RenderClass* render);;
+    void render(RenderScene* render);;
 
 private:
 

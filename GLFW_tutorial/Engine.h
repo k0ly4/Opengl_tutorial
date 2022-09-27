@@ -1,45 +1,19 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include"Camera.h"
-#include"Text.h"
-#include "DeclaredObjects.h"
-#include "Shape.h"
-#include "RenderWindow.h"
-#include<list>
-#include"Sprite.h"
-#include"LightManager.h"
+#include"GameModules.h"
+#include "EventModule.h"
+#include "GraphicModule.h"
+#include "Scene.h"
 
 RenderWindow window;
 
-struct TempVar {
-    size_t cur_animation = 0;
-    bool need_shadow_update = 0;
-    int shadow_level = 0;
-    // b_Model model;
-    bool shadow_view = 0;
-    int cur_bone = 0;
-    int mode_bone = 0;
-    bool rawMotionCursor = 0;
-    bool checkCollision = 0;
-};
+class Engine  {
 
-struct Scene {
-    gbCube plane;
-    gbCube cube;
-    void render(RenderTarget& target) {
-        target.draw(plane);
-        target.draw(cube);
-    }
-};
-class Engine :public RenderClass {
     void setupWindow() {
         window.create(GAME::RENDER_SIZE, u8"Коля лучший");
-
-        camera.setProjection(GAME::PROJECTION);
-
-        camera.cur_pos_mouse = Mouse::getPosition();
-        window.setView(camera);
+       
+        window.setView(scene.camera);
 
         ImageLoader::flipVerticallyOnLoad(false);
         auto resource = ImageLoader::getSTBI("asset\\image\\favor.jpg",4);
@@ -51,20 +25,16 @@ class Engine :public RenderClass {
 
     }
   
-    Event event;
-    Texture2D filin;
-    Camera camera;
-
-    FrameBuffer frame;
-    GBuffer gBuffer;
-    Filter filter;
-    LightSystem light;
-    Skybox skybox;
-    TempVar t;
-    Scene s;
+    Scene scene;
+    GraphicPipeline graphic;
+    EventModule event;
 
 public:
-    Engine() {
+
+    Engine():
+    scene(window),
+    graphic(window)
+    {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         GlRender::DepthTest(true);
@@ -72,178 +42,18 @@ public:
        //  glEnable(GL_ALPHA_TEST);
        //  glAlphaFunc(GL_GREATER, 0.8);
        // GlRender::Blend(true);
-
         setupWindow();
 
-        ImageLoader::flipVerticallyOnLoad(1);
-        filin.loadFromFile("asset\\image\\favor.jpg");
-
-        
-        s.cube.setPosition(glm::vec3(10.f));
-        s.cube.setColor(glm::vec3(1.f));
-        s.plane.setPosition(glm::vec3(5.f));
-        s.plane.setScale(glm::vec3(20.f,0.5f,20.f));
-       
-        s.plane.setColor(glm::vec3(0.9f));
-        
-
-        light.add(PointLight(glm::vec3(1.f), glm::vec3(25.f, 10.f, 25.f), glm::vec2(0.032f, 0.09f)),&camera);
-        light.getDirLight() = DirectionLight(glm::vec3(0.9f), glm::vec3(1.f, 1.f, 0.f));
-        light.getDirLight().createMap(1024, 1024, camera);
-        light.setAmbientFactor(0.05f);
-
-       
-        
-        frame.create(window.getSize(), TextureDataFormat(GL_RGBA16F, GL_RGBA, GL_NEAREST));
-        gBuffer.create(window.getSize());
-
-        filter.setExposure(2.2f);
-
     }
-    void move_camera(float time) {
-        const float speed = 10.f;
-        glm::vec3 vec_move(0.f);
-
-        if (Keyboard::getKey(GLFW_KEY_W).action) {
-            vec_move.z = 1;
-        }
-        else if (Keyboard::getKey(GLFW_KEY_S).action) {
-            vec_move.z = -1;
-        }
-        if (Keyboard::getKey(GLFW_KEY_D).action) {
-            vec_move.x = 1;
-        }
-        else if (Keyboard::getKey(GLFW_KEY_A).action) {
-            vec_move.x = -1;
-        }
-
-        //  camera.move(glm::vec3(vec_move.x * time * speed, 0.f, vec_move.z * time * speed));
-        float s = sqrt(abs(vec_move.z) + abs(vec_move.x));
-        if (s > 0.f) {
-            s = (speed * time) / s;
-            camera.move(glm::vec3(vec_move.x * s, 0.f, vec_move.z * s));
-        }
-
-    }
+  
     void update(float time, Clock& clock) {
-        while (window.pollEvent(event))
-        {
-            if (event.type == Event::KeyPressed) {
-                if (event.key.code == GLFW_KEY_ESCAPE) window.close();
-                else if (event.key.code == GLFW_KEY_LEFT_CONTROL) {
-                    t.rawMotionCursor = !t.rawMotionCursor;
-                    Mouse::setRawMotion(t.rawMotionCursor);
-                }
-                else if (event.key.code == GLFW_KEY_LEFT_SHIFT) {
-                    t.checkCollision = !t.checkCollision;
-                }
-                else if (event.key.code == GLFW_KEY_F) {
-                    t.shadow_view = !t.shadow_view;
-                }
-                else if (event.key.code == GLFW_KEY_T) {
-
-                    light.shadow_demonstration = ~(light.shadow_demonstration);
-                }
-                else if (event.key.code == GLFW_KEY_N) {
-                    t.shadow_level++;
-                    if (t.shadow_level >= NUM_CASCADES)t.shadow_level = NUM_CASCADES-1;
-                    printf("Shadow_Level:%d\n", t.shadow_level);
-                }
-                else if (event.key.code == GLFW_KEY_M) {
-                    t.shadow_level--;
-                    if (t.shadow_level < 0)t.shadow_level = 0;
-                    printf("Shadow_Level:%d\n", t.shadow_level);
-                }
-                /*else if (event.key == GLFW_KEY_V) {
-                    cur_bone++;
-                    model.setBoneID(cur_bone);
-                }
-                else if (event.key == GLFW_KEY_C) {
-                    cur_bone--;
-                    if (cur_bone < 0)cur_bone = 0;
-                    model.setBoneID(cur_bone);
-                }
-                else if (event.key == GLFW_KEY_B) {
-                    mode_bone = ~mode_bone;
-                    model.setBoneMode(mode_bone);
-                }
-                else if (event.key == GLFW_KEY_G) {
-                    cur_animation++;
-                    model.Animation().switchAnimation(cur_animation);
-                }
-                else if (event.key == GLFW_KEY_H) {
-                    if (cur_animation !=0 ) {
-                        cur_animation--;
-                        model.Animation().switchAnimation(cur_animation);
-                    }
-                }*/
-            }
-            else if (event.type == Event::MouseButtonPressed) {
-                if (event.mouseButton.button == Mouse::Right) {
-                    camera.cur_pos_mouse = Mouse::getPosition();
-                }
-                else if (event.mouseButton.button == Mouse::Middle) {
-                    light.getDirLight().setDirection(-camera.getBasis().front);
-                }
-            }
-            else if (event.type == Event::WindowResized) {
-                gBuffer.create(window.getSize());
-                frame.setSize(window.getSize());
-            }
-
-        }
-        if (Mouse::isAction(Mouse::Right, Key::Press)) {
-            Cursor::setMode(Cursor::Disabled);
-            camera.mouse_move(Mouse::getPosition());
-        }
-        move_camera(time);
-
-        //model.tick(time);
+        event.update(time, window, graphic, scene);;
     }
-    void render(float time) {
-        //shadow
-        light.getDirLight().render(this,camera);
 
-        //gbuffer
-        GlRender::setClearColor(Color(0.f));
-        GlRender::bind(gBuffer);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        drawScene_gBuffer();
-        //scene
-        GlRender::bind(frame);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        light.draw(gBuffer, camera);
-        gBuffer.implementDepth(frame);
-
-        if (!Mouse::isAction(Mouse::Right, Key::Press)) {
-            Cursor::setMode(Cursor::Normal);
-        }
-        // window.draw(model.getSkellet());
-        window.draw(light);
-
-        //exposure
-        GlRender::unbind();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if (t.shadow_view)
-            filter.displayRed(light.getDirLight().getMap(), t.shadow_level);
-        else
-            filter.drawExposure(frame.getTexture());
-
-        window.display();
+    void render() {
+        graphic.render(window, scene, event);
     }
+ 
 private:
-
-    void drawScene_shadow(RenderTarget& target, glShader::Object shader) {
-      //  target.drawDepth(terrain);
-        target.draw(s.cube, shader);
-        target.draw(s.plane,shader);
-    }
-
-    void drawScene_gBuffer() {
-      //  window.draw(terrain);
-        s.render(window);
-    }
 };
 #endif

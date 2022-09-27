@@ -22,14 +22,11 @@ public:
     inline void setAmbientFactor(float ambient) {
         ambient_ = ambient;
     }
-
-    inline void draw(FrameBuffer& gBuffer, Camera& camera) {
-        render(glShader::get(glShader::gb_light), gBuffer, camera);
-    }
-
     inline void draw(View* view, const Shader& shader) {
         billboardLamp_.draw(view, shader);
     }
+
+    void uniform(const Shader& shader, const Camera& camera);
 
 private:
 
@@ -40,6 +37,5 @@ private:
     Texture2D textureLamp_;
     Billboard billboardLamp_;
 
-    void render(const Shader& shader, FrameBuffer& gBuffer, Camera& camera);
 };
 #endif

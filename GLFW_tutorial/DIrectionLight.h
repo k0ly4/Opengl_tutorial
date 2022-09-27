@@ -30,7 +30,7 @@ public:
         shadow_maps_.setDirectionLight(direction_);
     }
 
-    void render(RenderClass* render_class, Camera& camera) {
+    void render(RenderScene& render_class, Camera& camera) {
         shadow_maps_.render(camera,render_class);
     }
 

@@ -14,7 +14,7 @@ int main()
         // Обработка ввоа
         float time = clock.restart();
         engine->update(time, clock);
-        engine->render(time);
+        engine->render();
        // camera.update();
     
     }

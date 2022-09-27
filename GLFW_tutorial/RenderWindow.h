@@ -2,7 +2,7 @@
 #ifndef RENDER_WINDOW_H
 #define RENDER_WINDOW_H
 
-#include "GBuffer.h"
+#include "Framebuffer.h"
 #include "Input.h"
 
 class RenderWindow:public RenderTarget {

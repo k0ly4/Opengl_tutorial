@@ -1,19 +1,19 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
-
 #include "Texture.h"
 #include "buffer.h"
 #include<map>
 #include<random>
-#include"Render.h"
+#include "Render.h"
 
 /// <summary>
-/// RenderClass
+/// RenderScene
 /// </summary>
-class RenderClass {
+class RenderScene {
 public:
-    virtual void drawScene_shadow(RenderTarget& target, glShader::Object shader) = 0;
+    virtual void inGBuffer(RenderTarget& target) = 0;
+    virtual void inShadowMap(RenderTarget& target, glShader::Object shader) = 0;
 };
 
 /// <summary>

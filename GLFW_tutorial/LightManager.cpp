@@ -17,14 +17,7 @@ PointLight& LightSystem::add(const PointLight& pointLight, const View3D* view) {
     return pLights_.front();
 }
 
-void LightSystem::render(const Shader& shader, FrameBuffer& gBuffer, Camera& camera) {
-
-    gBuffer.getTexture(0).use(0);
-    gBuffer.getTexture(1).use(1);
-    gBuffer.getTexture(2).use(2);
-
-    shader.use();
-
+void LightSystem::uniform(const Shader& shader,const Camera& camera) {
     shader.uniform("viewPos", camera.getPosition());
     shader.uniform("ambientFactor", ambient_);
     shader.uniform("gWVP", camera.getVP());
@@ -35,6 +28,4 @@ void LightSystem::render(const Shader& shader, FrameBuffer& gBuffer, Camera& cam
     for(auto i = pLights_.begin();i!=pLights_.end();i++,index++){
         i->uniform("p_light[" + std::to_string(index) + "]", shader);
     }
-
-    sBuffer::quad.getVAO().draw();
 }

@@ -108,7 +108,7 @@ std::vector<glm::vec4> CascadeViews::getFrustumCornersWorldSpace(const glm::mat4
 /// CascadeShadow
 /// </summary>
 /// 
-void CascadeShadow::render(View3D & view_player, RenderClass * render)
+void CascadeShadow::render(View3D & view_player, RenderScene& render)
 {
     views.compute(view_player, dirLight_);
     fbo.setView(views[0]);
@@ -118,5 +118,5 @@ void CascadeShadow::render(View3D & view_player, RenderClass * render)
     glShader::get(glShader::cascades_shadow_depth).use();
     for (size_t i = 0; i < NUM_CASCADES; i++)
         glShader::get(glShader::cascades_shadow_depth).uniform("lightSpaceMatrices[" + std::to_string(i) + "]", views[i].getVP());
-    render->drawScene_shadow(fbo, glShader::cascades_shadow_depth);
+    render.inShadowMap(fbo, glShader::cascades_shadow_depth);
 }

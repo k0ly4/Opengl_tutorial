@@ -180,9 +180,6 @@
     <ClCompile Include="Cube.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="Filter.cpp">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
-    </ClCompile>
     <ClCompile Include="Skybox.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
@@ -239,6 +236,18 @@
     </ClCompile>
     <ClCompile Include="GBuffer.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="EventModule.cpp">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicModule.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="PostEffects.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -392,9 +401,6 @@
     <ClInclude Include="Plane.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Filter.h">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
-    </ClInclude>
     <ClInclude Include="DeclaredObjects.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
@@ -436,6 +442,21 @@
     </ClInclude>
     <ClInclude Include="GBuffer.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="PostEffects.h">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicModule.h">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="EventModule.h">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModules.h">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Исходные файлы\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

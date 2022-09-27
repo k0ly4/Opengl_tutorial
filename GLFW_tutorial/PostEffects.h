@@ -1,8 +1,37 @@
-#ifndef FILTER_H
-#define FILTER_H
+#ifndef POST_EFFECTS_H
+#define POST_EFFECTS_H
 
 #include "PrimitiveEntity.h"
+/// <summary>
+/// Debugger
+/// </summary>
+class Debugger {
+public:
 
+    static void display(const Texture2D& texture) {
+        const Shader& shader = glShader::get(glShader::frame_exposure);
+        shader.use();
+        shader.uniform("exposure", exposure);
+        texture.use(0);
+        sBuffer::quad.getVAO().draw();
+    }
+
+    static void displayRedChannel(const Texture2D& texture) {
+        const Shader& shader = glShader::get(glShader::red);
+        shader.use();
+        texture.use(0);
+        sBuffer::quad.getVAO().draw();
+    }
+
+private:
+    static float exposure;
+};
+
+
+
+/// <summary>
+/// Filter
+/// </summary>
 class Filter {
 
 public:

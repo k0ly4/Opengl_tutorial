@@ -11,7 +11,7 @@ public:
 
     CascadeViews() {
         cascade_ends.resize(NUM_CASCADES+1);
-        computeEnds(GAME::PROJECTION.near,GAME::PROJECTION.far);
+        computeEnds(GAME::PROJECTION.near, GAME::PROJECTION.far);
     }
 
     void compute(View3D& view_player, const glm::vec3& lightDir);
@@ -64,7 +64,7 @@ public:
             fbo.getTexture().use(begin);
     }  
 
-    void render(View3D& view_player, RenderClass* render);
+    void render(View3D& view_player, RenderScene& render);
 
 private:
 
