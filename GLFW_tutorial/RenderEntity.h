@@ -6,14 +6,14 @@
 class GeneralRender {
 
 public:
-	const glm::ivec2& getSize() {
-		return size;
+	const glm::ivec2& getSize()const {
+		return size_;
 	}
 
 protected:
-	glm::ivec2 size;
+	glm::ivec2 size_;
 	friend class GlRender;
-	unsigned int id;
+	unsigned int id_;
 };
 
 class RenderTarget {

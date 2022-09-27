@@ -5,14 +5,14 @@
 /// </summary>
 /// 
 bool Asset::load(const std::string& path, bool gamma) {
-    GeneralTexture* text = FileManager::getLoadedTexture(path);
-    if (text) {
-        std::cout << "Texture already had created " << path << "\n";
-        texture = Texture2D(*text, glm::uvec2(0));
+    const TextureResource* resource = ImageLoader::getTexture(path, gamma);
+    if (resource) {
+        texture = Texture2D(*resource);
         return 1;
     }
-    return texture.loadFromFile(path, 1, gamma);
+    return 0;
 }
+
 /// <summary>
 /// MaterialMesh
 /// </summary>
@@ -24,7 +24,7 @@ void MaterialMesh::addAssets(aiMaterial* mat, const std::string& directory, aiTe
     for (size_t i = 0; i < mat->GetTextureCount(type); i++)
     {
         mat->GetTexture(type, i, &str);
-        std::cout << str.C_Str() << std::endl;
+        log("MaterialMesh::addAssets "+std::string(str.C_Str())+"\n");
         texture.push_back(Asset(directory + '/' + std::string(str.C_Str()), typeName, gammaCorrection));
     }
 }

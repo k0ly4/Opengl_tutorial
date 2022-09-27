@@ -10,43 +10,35 @@
 class MatrixShell {
 
 public:
-    MatrixShell() :needUpInverse(0), matrix(1.f) {}
-    void set(const glm::mat4& matrix_) {
-        matrix = matrix_;
-        needUpInverse = 1;
+
+    MatrixShell() :
+        needUpInverse_(0),
+        matrix_(1.f),
+        inverse_(1.f) {}
+
+    void set(const glm::mat4& matrix) {
+        matrix_ = matrix;
+        needUpInverse_ = 1;
     }
+
     const glm::mat4& get()const {
-        return matrix;
+        return matrix_;
     }
-    const glm::mat4& getInverse() {
-        if (needUpInverse) {
-            inverse = glm::inverse(matrix);
+
+    const glm::mat4& getInverse()const {
+        if (needUpInverse_) {
+            inverse_ = glm::inverse(matrix_);
+            needUpInverse_ = 0;
         }
-        return inverse;
+        return inverse_;
     }
 
 private:
-    bool needUpInverse;
-    glm::mat4 matrix;
-    glm::mat4 inverse;
-};
-
-/// <summary>
-/// cMatrix
-/// </summary>
-class cMatrix {
-
-public:
-    cMatrix(MatrixShell& shell_) :shell(shell_) {}
-    const glm::mat4& get()const {
-        return shell.get();
-    }
-    const glm::mat4& inverse()const {
-        return shell.getInverse();
-    }
-
-private:
-    MatrixShell& shell;
+   
+    mutable bool needUpInverse_;
+    mutable glm::mat4 inverse_;
+    glm::mat4 matrix_;
+   
 };
 
 /// <summary>
@@ -56,17 +48,19 @@ class ProjectionMatrix {
 
 public:
     ProjectionMatrix() {}
-    inline cMatrix getMatrixShell() {
-        return cMatrix(matrix);
+    inline const MatrixShell& getMatrixShell()const {
+        return matrix;
     }
 
     inline const ProjData& getData()const {
         return data;
     }
+
     inline const glm::mat4& get()const {
         return matrix.get();
     }
-    inline const glm::mat4& getInverse() {
+
+    inline const glm::mat4& getInverse()const {
         return matrix.getInverse();
     }
 
@@ -105,51 +99,57 @@ class BasisMatrix {
 public:
 
     BasisMatrix() {
-        basis = { glm::vec3(1.f,0.f,0.f),GAME::WORLD_UP,glm::vec3(0.f,0.f,-1.f),glm::vec3(0.f) };
-        needUpMatrix = 1;
+        needUpMatrix_ = 1;
     }
 
-    inline cMatrix getMatrixShell() {
+    inline const MatrixShell& getMatrixShell()const {
         upMatrix();
-        return cMatrix(matrix);
+        return matrix_;
     }
 
-    inline const glm::mat4& get() {
+    inline const glm::mat4& get()const {
         upMatrix();
-        return matrix.get();
+        return matrix_.get();
     }
 
-    inline const glm::mat4& getInverse() {
-        return matrix.getInverse();
+    inline const glm::mat4& getInverse()const {
+        return matrix_.getInverse();
     }
 
     inline const Basis& getBasis()const {
-        return basis;
+        return basis_;
     }
 
-    inline void setPosition(const glm::vec3& pos) {
-        basis.position = pos;
-        needUpMatrix = 1;
+    inline void setPosition(const glm::vec3& position) {
+        if (basis_.position != position) {
+            basis_.position = position;
+            needUpMatrix_ = 1;
+        }
     }
 
-    inline void look(const glm::vec3& direction) {
-        basis.front = glm::normalize(-direction);
-        needUpMatrix = 1;
+    inline void lookInDir(const glm::vec3& direction) {
+        basis_.front = glm::normalize(-direction);
+        needUpMatrix_ = 1;
     }
 
-    void setBasis(const Basis& basis_) {
-        basis = basis_;
+    void setBasis(const Basis& basis) {
+        if (basis_ != basis) {
+            basis_ = basis;
+            needUpMatrix_ = 1;
+        }
     }
 
 private:
 
-    MatrixShell matrix;
-    bool needUpMatrix;
-    Basis basis;
+    mutable MatrixShell matrix_;
+    mutable bool needUpMatrix_;
 
-    inline void upMatrix() {
-        if (needUpMatrix) {
-            matrix.set(basis.lookAt());
+    Basis basis_;
+
+    inline void upMatrix() const{
+        if (needUpMatrix_) {
+            matrix_.set(basis_.getMatrix());
+            needUpMatrix_ = 0;
         }
     }
 };

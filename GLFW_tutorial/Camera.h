@@ -6,41 +6,45 @@
 
 class View {
 public:
-    virtual  cMatrix getProjection() = 0;
-    virtual  cMatrix getView() = 0;
+    virtual const MatrixShell& getProjection() const = 0;
+    virtual const MatrixShell& getView()const = 0;
 
-    virtual glm::mat4 getVP() = 0;
-    virtual glm::mat4 getInverseVP() = 0;
-    virtual void use(const Shader&) = 0; 
+    virtual glm::mat4 getVP()const = 0;
+    virtual glm::mat4 getInverseVP()const = 0;
+    virtual void use(const Shader&) const= 0; 
 };
 
 class ViewMatrix :public View {
   
 public:
-    cMatrix getProjection() {
-        return cMatrix(proj);
+
+    inline const MatrixShell& getProjection()const {
+        return proj;
     }
-    cMatrix getView() {
-        return cMatrix(view);
+    inline const MatrixShell& getView()const {
+        return view;
     }
-    glm::mat4 getVP() {
+    inline glm::mat4 getVP()const {
         return proj.get() * view.get();
     }
-    glm::mat4 getInverseVP() {
+    inline glm::mat4 getInverseVP()const {
         return view.getInverse() * proj.getInverse();
     }
 
-    inline void use(const Shader& shader) {
+    inline void use(const Shader& shader) const{
         shader.uniform("projection", proj.get());
         shader.uniform("camera", view.get());
     }
+
     void setProjection(const glm::mat4& matrix) {
         proj.set(matrix);
     }
+
     void setView(const glm::mat4& matrix) {
         view.set(matrix);
     }
 private:
+
     MatrixShell view;
     MatrixShell proj;
 };
@@ -54,8 +58,10 @@ public:
         shader.uniform("projection",proj.get());
     }
 protected:
+
     ProjectionMatrix proj;
     BasisMatrix view;
+
 };
 
 class View3D :public View {
@@ -66,20 +72,21 @@ public:
         view = _view.view;
     }
   
-    inline  glm::mat4 getInverseVP() {
+    inline  glm::mat4 getInverseVP()const {
         return view.getInverse() * proj.getInverse();
     }
-    inline glm::mat4 getVP() {
+    inline glm::mat4 getVP()const {
         return proj.get() * view.get();
     }
-    inline cMatrix getProjection() {
+
+    inline const MatrixShell& getProjection()const {
         return view.getMatrixShell();
     }
-    inline cMatrix getView() {
+    inline const MatrixShell& getView() const {
          return view.getMatrixShell();
     }
 
-    inline void toGlobal(glm::vec3& window_coord) {
+    inline void toGlobal(glm::vec3& window_coord)const {
         glm::vec4 res = view.getInverse() * proj.getInverse() * glm::vec4(window_coord, 1.f);
         window_coord = res / res.w;
     }
@@ -97,7 +104,7 @@ public:
         proj.set(box);
     }
 
-    inline void use(const Shader& shader) {
+    inline void use(const Shader& shader)const {
         shader.uniform("projection", proj.get());
         shader.uniform("camera", view.get());
     }
@@ -108,11 +115,11 @@ public:
     inline void setPosition(float x, float y, float z) {
         view.setPosition(glm::vec3(x, y, z));
     }
-
     inline const glm::vec3& getPosition()const {
         return view.getBasis().position;
     }
-    inline BasisMatrix& getTransform() {
+
+    inline const BasisMatrix& getTransform()const {
         return view;
     }
     inline const ProjData& getProjectionData()const {
@@ -122,6 +129,7 @@ public:
         return view.getBasis();
     }
 protected:
+
     ProjectionMatrix proj;
     BasisMatrix view;
 };
@@ -136,6 +144,7 @@ public:
     void mouse_move(glm::vec2 pos_mouse);
 
 private:
+
     AngleEuler angle;
     float  SENSITIVITY = 0.05f;
 };

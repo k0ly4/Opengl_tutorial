@@ -2,7 +2,9 @@
 #define TRANSFORM_H
 
 #include "Game.h"
-
+/// <summary>
+/// Angle3D
+/// </summary>
 struct Angle3D {
 	glm::vec3 axis;
 	float angle;
@@ -16,7 +18,9 @@ struct Angle3D {
 	Angle3D(const glm::vec4& rotate) 
 		:axis(rotate.x, rotate.y, rotate.z), angle(rotate.w) {}
 };
-
+/// <summary>
+/// Transform3D
+/// </summary>
 struct Transform3D {
 
 	Angle3D rotate;
@@ -33,20 +37,51 @@ struct Transform3D {
 		return glm::scale(glm::rotate(glm::translate(glm::mat4(1.f), position), glm::radians(rotate.angle), rotate.axis), scale);
 	}
 };
-
+/// <summary>
+/// Basis
+/// </summary>
 struct Basis {
 
 	glm::vec3
 		right,
 		up,
 		front;
+
 	glm::vec3 position;
 
-	inline glm::mat4 lookAt()const {
+	Basis(const glm::vec3& position_, const glm::vec3& right_, const glm::vec3& up_, const glm::vec3& front_) :
+	position(position_),
+	right(right_),
+	up(up_),
+	front(front_)
+	{}
+
+	Basis() :
+		right(glm::vec3(1.f, 0.f, 0.f)),
+		up(GAME::WORLD_UP),
+		front(glm::vec3(0.f, 0.f, -1.f)),
+		position(glm::vec3(0.f)) 
+	{}
+
+	inline glm::mat4 getMatrix()const {
 		return glm::lookAt(position, position + front, GAME::WORLD_UP);
 	}
 };
 
+inline bool operator ==(const Basis& left, const Basis& right) {
+	return ((left.right == right.right) &&
+			(left.up == right.up) &&
+			(left.front == right.front) &&
+			(left.position == right.position)
+		);
+}
+inline bool operator !=(const Basis& left, const Basis& right) {
+	return (!(left == right));
+}
+
+/// <summary>
+/// AngleEuler
+/// </summary>
 struct AngleEuler {
 	float yaw;
 	float pitch;

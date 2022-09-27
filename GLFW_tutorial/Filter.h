@@ -10,7 +10,7 @@ public:
     void displayRed(const Texture2D& texture) {
         Red(glShader::get(glShader::red), texture);
     }
-    void displayRed(const g_ArrayTexture2D& texture, int level) {
+    void displayRed(const ArrayTexture2D& texture, int level) {
         Red(glShader::get(glShader::red_array), texture, level);
     }
     void setExposure(float exp) {
@@ -35,7 +35,7 @@ private:
             texture.use(0);
             sBuffer::quad.getVAO().draw();
         }
-        void Red(const Shader& shader, const g_ArrayTexture2D& texture, int level) {
+        void Red(const Shader& shader, const ArrayTexture2D& texture, int level) {
             shader.use();
             texture.use(0);
             shader.uniform("level", level);

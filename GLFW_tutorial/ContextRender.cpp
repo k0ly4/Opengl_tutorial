@@ -40,10 +40,10 @@
 	}
 
 void GlRender::bind(GeneralRender& fbo) {
-	if (last_fbo != fbo.id) {
-		last_fbo = fbo.id;
+	if (last_fbo != fbo.id_) {
+		last_fbo = fbo.id_;
 		glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
-		Viewport::set(fbo.size);
+		Viewport::set(fbo.size_);
 	}
 }
 

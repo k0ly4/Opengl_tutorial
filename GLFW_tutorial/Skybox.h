@@ -10,7 +10,7 @@ public:
     }
 
     void load(const std::string& directory, bool flip_vertically = 1, bool gamma = 0) {
-        texture.load(directory, flip_vertically, gamma);
+        texture.loadFromDirectory(directory, flip_vertically, gamma);
     }
 
     void draw(View* view, const Shader& shader) {

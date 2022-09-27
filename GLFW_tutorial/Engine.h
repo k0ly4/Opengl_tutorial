@@ -9,7 +9,9 @@
 #include<list>
 #include"Sprite.h"
 #include"LightManager.h"
+
 RenderWindow window;
+
 struct TempVar {
     size_t cur_animation = 0;
     bool need_shadow_update = 0;
@@ -39,9 +41,9 @@ class Engine :public RenderClass {
         camera.cur_pos_mouse = Mouse::getPosition();
         window.setView(camera);
 
-        stbi_set_flip_vertically_on_load(false);
-        Image image("asset\\image\\favor.jpg");
-        window.setIcon(1, &image);
+        ImageLoader::flipVerticallyOnLoad(false);
+        auto resource = ImageLoader::getSTBI("asset\\image\\favor.jpg",4);
+        window.setIcon(resource->getImage());
 
         window.setFrameInterval(1);
         window.setLimitSizeable(true, glm::ivec2(GLFW_DONT_CARE), glm::ivec2(GLFW_DONT_CARE));
@@ -53,17 +55,14 @@ class Engine :public RenderClass {
     Texture2D filin;
     Camera camera;
 
-    Texture2D texture_terrain;
-    Texture2D texture_grass;
-
-
     FrameBuffer frame;
-    FrameBuffer gBuffer;
+    GBuffer gBuffer;
     Filter filter;
     LightSystem light;
     Skybox skybox;
     TempVar t;
     Scene s;
+
 public:
     Engine() {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -76,8 +75,8 @@ public:
 
         setupWindow();
 
-       
-        filin.loadFromFile("asset\\image\\favor.jpg", 1, 1, 1);
+        ImageLoader::flipVerticallyOnLoad(1);
+        filin.loadFromFile("asset\\image\\favor.jpg");
 
         
         s.cube.setPosition(glm::vec3(10.f));
@@ -88,25 +87,14 @@ public:
         s.plane.setColor(glm::vec3(0.9f));
         
 
-        light.add(P_Light(glm::vec3(1.f), glm::vec3(25.f, 10.f, 25.f), glm::vec2(0.032f, 0.09f)),&camera);
-        light.global() = D_Light(glm::vec3(0.9f), glm::vec3(1.f, 1.f, 0.f), camera.getPosition());
-        light.global().createMap(1024, 1024, camera);
+        light.add(PointLight(glm::vec3(1.f), glm::vec3(25.f, 10.f, 25.f), glm::vec2(0.032f, 0.09f)),&camera);
+        light.getDirLight() = DirectionLight(glm::vec3(0.9f), glm::vec3(1.f, 1.f, 0.f));
+        light.getDirLight().createMap(1024, 1024, camera);
         light.setAmbientFactor(0.05f);
 
-        texture_terrain.loadFromFile("asset\\image\\image.jpg", 1, 1, 1);
-        texture_terrain.wrap(GL_REPEAT);
-        texture_terrain.filter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-
-        texture_grass.filter(GL_NEAREST);
-        texture_grass.loadFromFile("asset\\image\\grass.png", 1, 1, 1);
-
-
-        frame.addTexture(GL_RGBA16F, GL_RGBA, GL_NEAREST);
-        frame.create(window.getSize());
-
-        gBuffer.addTexture(GL_RGBA16F, GL_RGBA, GL_NEAREST);
-        gBuffer.addTexture(GL_RGBA16F, GL_RGBA, GL_NEAREST);
-        gBuffer.addTexture(GL_RGBA, GL_RGBA, GL_NEAREST);
+       
+        
+        frame.create(window.getSize(), TextureDataFormat(GL_RGBA16F, GL_RGBA, GL_NEAREST));
         gBuffer.create(window.getSize());
 
         filter.setExposure(2.2f);
@@ -195,12 +183,12 @@ public:
                     camera.cur_pos_mouse = Mouse::getPosition();
                 }
                 else if (event.mouseButton.button == Mouse::Middle) {
-                    light.global().setDirection(-camera.getBasis().front);
+                    light.getDirLight().setDirection(-camera.getBasis().front);
                 }
             }
             else if (event.type == Event::WindowResized) {
                 gBuffer.create(window.getSize());
-                frame.create(window.getSize());
+                frame.setSize(window.getSize());
             }
 
         }
@@ -214,7 +202,7 @@ public:
     }
     void render(float time) {
         //shadow
-        light.global().render(this,camera);
+        light.getDirLight().render(this,camera);
 
         //gbuffer
         GlRender::setClearColor(Color(0.f));
@@ -239,18 +227,20 @@ public:
         GlRender::unbind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (t.shadow_view)
-            filter.displayRed(light.global().getMap(), t.shadow_level);
+            filter.displayRed(light.getDirLight().getMap(), t.shadow_level);
         else
             filter.drawExposure(frame.getTexture());
 
         window.display();
     }
 private:
+
     void drawScene_shadow(RenderTarget& target, glShader::Object shader) {
       //  target.drawDepth(terrain);
         target.draw(s.cube, shader);
         target.draw(s.plane,shader);
     }
+
     void drawScene_gBuffer() {
       //  window.draw(terrain);
         s.render(window);

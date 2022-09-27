@@ -61,6 +61,9 @@
     <Filter Include="Исходные файлы\Scene\Objects\Text">
       <UniqueIdentifier>{056ad88a-fe03-459f-91c8-20751e37a15e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\assimp">
+      <UniqueIdentifier>{d191ca78-17c6-4705-a139-f59d1db20f19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -201,20 +204,41 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>Исходные файлы\Scene\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClCompile>
-    <ClCompile Include="AssimpLib.cpp">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClCompile>
-    <ClCompile Include="Assimp.cpp">
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
     </ClCompile>
     <ClCompile Include="bMesh.cpp">
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
+    </ClCompile>
+    <ClCompile Include="Assimp.cpp">
+      <Filter>Файлы ресурсов\assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="AssimpLib.cpp">
+      <Filter>Файлы ресурсов\assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthFrameBuffer.cpp">
+      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="CascadedShadow.cpp">
+      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageLoader.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -242,7 +266,7 @@
     <ClInclude Include="RenderWindow.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
-    <ClInclude Include="DIrectionLight.h">
+    <ClInclude Include="DirectionLight.h">
       <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
     </ClInclude>
     <ClInclude Include="LightManager.h">
@@ -250,9 +274,6 @@
     </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowFrameBuffer.h">
-      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
@@ -304,9 +325,6 @@
     </ClInclude>
     <ClInclude Include="ResourceTypes.h">
       <Filter>Исходные файлы\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Transformable.h">
       <Filter>Исходные файлы\Scene</Filter>
@@ -401,11 +419,23 @@
     <ClInclude Include="Convex.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Assimp.h">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClInclude>
     <ClInclude Include="bMesh.h">
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp.h">
+      <Filter>Файлы ресурсов\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthFrameBuffer.h">
+      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageLoader.h">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

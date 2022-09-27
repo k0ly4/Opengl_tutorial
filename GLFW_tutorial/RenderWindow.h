@@ -2,7 +2,7 @@
 #ifndef RENDER_WINDOW_H
 #define RENDER_WINDOW_H
 
-#include "FrameBuffer.h"
+#include "GBuffer.h"
 #include "Input.h"
 
 class RenderWindow:public RenderTarget {
@@ -23,8 +23,8 @@ public:
 	}
 
 	//Иконка: По умолчанию: 0, Null
-	inline void setIcon(size_t size, const GLFWimage* icon) {
-		glfwSetWindowIcon(window, size, icon);
+	inline void setIcon(const GLFWimage& icon) {
+		glfwSetWindowIcon(window, 1, &icon);
 	}
 
 	//Скрыть оконное пространство

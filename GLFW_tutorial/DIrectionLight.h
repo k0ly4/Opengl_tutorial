@@ -1,60 +1,60 @@
 #ifndef DIRECTION_LIGHT_H
 #define DIRECTION_LIGHT_H
-#include "RenderWindow.h"
+
+#include "Light.h"
 #include "Camera.h"
 #include "CascadedShadow.h"
 #include "ShadowMap.h"
 
-class D_Light_Shadow {
-    ShadowMap shadow_map;
-    glm::vec3 direction;
+class DirectionLight :public Light {
+   
 public:
-    D_Light_Shadow() {
-        float factor = 30.f;
-        shadow_map.orientProjection(Box(-factor, factor, -factor, factor, 1.f, 100.f));
-    }
-    void setOrient(const glm::vec3& Direction, const glm::vec3& position) {
-        direction = glm::normalize(Direction);
-        shadow_map.orientView(position, direction);
-    }
-};
 
-class D_Light {
-    glm::vec3 direction;
-    friend class LightSystem;
-    CascadeShadow cascaded_shadow_maps;
-public:
-    glm::vec3 color;
-    D_Light() {}
-    D_Light(
-        const glm::vec3& Color,
-        const glm::vec3& Direction,
-        const glm::vec3& Position
-    ) :color(Color), direction(glm::normalize(Direction))
+    DirectionLight()
+        :direction_(0.f),
+        Light() {}
+
+    DirectionLight(
+        const glm::vec3& color,
+        const glm::vec3& direction
+    ) : Light(color),
+        direction_(glm::normalize(direction))
     {}
+
     void createMap(int width, int height,View& camera) {
-        cascaded_shadow_maps.create(camera, direction);
+        shadow_maps_.setDirectionLight(direction_);
     }
-    void setDirection(const glm::vec3& _irection) {
-        direction = glm::normalize(_irection);
-        cascaded_shadow_maps.setDirection(direction);
+
+    void setDirection(const glm::vec3& direction) {
+        direction_ = glm::normalize(direction);
+        shadow_maps_.setDirectionLight(direction_);
     }
+
     void render(RenderClass* render_class, Camera& camera) {
-        cascaded_shadow_maps.render(camera,render_class);
+        shadow_maps_.render(camera,render_class);
     }
-    g_ArrayTexture2D getMap() {
-        return cascaded_shadow_maps.getTexture();
+
+    ArrayTexture2D getMap() {
+        return shadow_maps_.getTexture();
     }
+
     void uniform(const std::string& name, const Shader& shader) {
-        shader.uniform(name + ".direction", direction);
-        shader.uniform(name + ".color", color);
-        cascaded_shadow_maps.uniform(shader, name, 3);
+        Light::uniform(name, shader);
+        shader.uniform(name + ".direction", direction_);
+        shadow_maps_.uniform(shader, name, 3);
        
     }
+
     void uniform(const std::string& name, const Shader& shader,size_t index_cascade) {
-        shader.uniform(name + ".direction", direction);
-        shader.uniform(name + ".color", color);
-        cascaded_shadow_maps.uniform(shader, 3, index_cascade, name);
+        Light::uniform(name, shader);
+        shader.uniform(name + ".direction", direction_);     
+        shadow_maps_.uniform(shader, 3, index_cascade, name);
     }
+
+private:
+    CascadeShadow shadow_maps_;
+    glm::vec3 direction_;
+
+    friend class LightSystem;
 };
 #endif
