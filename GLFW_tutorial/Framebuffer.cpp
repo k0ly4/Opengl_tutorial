@@ -134,26 +134,20 @@
 /// RenderTexture
 /// </summary>
 
-    void RenderTexture::create(int width, int height, GLint format, GLint filterMin, GLint filterMax) {
-        try
-        {
+    bool RenderTexture::create(int width, int height, GLint format, GLint filterMin, GLint filterMax) {
+        
             size_ = glm::ivec2(width, height);
             texture.filter(filterMin, filterMax);
             texture.wrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
-            texture.create(width, height, format, format);
+            texture.create(size_, format, format);
             glBindFramebuffer(GL_FRAMEBUFFER, id_);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getId().get(), 0);
 
             if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-                throw FramebufferNonCompleteException();
+                log("(!)Error::RenderTexture::Non complete\n");
+                return 0;
             }   
-        }
-        catch (const Exception& exception)
-        {
-            exception.log();
-        }
-
         GlRender::unbind();
-
+        return 1;
     }

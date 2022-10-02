@@ -19,18 +19,6 @@
     <Filter Include="Исходные файлы\Graphics">
       <UniqueIdentifier>{14b4515c-1e7f-4b13-ad18-c9d59cf5cf98}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Graphics\LightSystem">
-      <UniqueIdentifier>{3dd2cd06-4620-457f-9bc4-21ca22bebd85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Graphics\LightSystem\Shadow">
-      <UniqueIdentifier>{18de3448-5321-47d5-acf4-94077133d61d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Graphics\LightSystem\Light">
-      <UniqueIdentifier>{5dc0d36c-3bd8-4df0-b3ea-dab8bf0c10e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Input">
-      <UniqueIdentifier>{4fb5886e-28dd-4ee9-a853-d9d124cbab40}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\Game">
       <UniqueIdentifier>{0cb05546-a8c2-4fb5-9d53-252e86db6720}</UniqueIdentifier>
     </Filter>
@@ -63,6 +51,18 @@
     </Filter>
     <Filter Include="Файлы ресурсов\assimp">
       <UniqueIdentifier>{d191ca78-17c6-4705-a139-f59d1db20f19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\LightSystem">
+      <UniqueIdentifier>{3dd2cd06-4620-457f-9bc4-21ca22bebd85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\LightSystem\Shadow">
+      <UniqueIdentifier>{18de3448-5321-47d5-acf4-94077133d61d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\LightSystem\Light">
+      <UniqueIdentifier>{5dc0d36c-3bd8-4df0-b3ea-dab8bf0c10e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Input">
+      <UniqueIdentifier>{4fb5886e-28dd-4ee9-a853-d9d124cbab40}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -217,19 +217,19 @@
       <Filter>Файлы ресурсов\assimp</Filter>
     </ClCompile>
     <ClCompile Include="ShadowMap.cpp">
-      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="DepthFrameBuffer.cpp">
-      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="CascadedShadow.cpp">
-      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="LightManager.cpp">
-      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
-      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClCompile>
     <ClCompile Include="ImageLoader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
@@ -261,7 +261,7 @@
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
     </ClInclude>
     <ClInclude Include="CascadedShadow.h">
-      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="TypeObject.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
@@ -276,16 +276,16 @@
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
     <ClInclude Include="DirectionLight.h">
-      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
     <ClInclude Include="LightManager.h">
-      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
     <ClInclude Include="PointLight.h">
-      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
-      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="Buffer.h">
       <Filter>Исходные файлы\Resources</Filter>
@@ -432,10 +432,10 @@
       <Filter>Файлы ресурсов\assimp</Filter>
     </ClInclude>
     <ClInclude Include="DepthFrameBuffer.h">
-      <Filter>Исходные файлы\Graphics\LightSystem\Shadow</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
-      <Filter>Исходные файлы\Graphics\LightSystem\Light</Filter>
+      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
     <ClInclude Include="ImageLoader.h">
       <Filter>Исходные файлы\Resources</Filter>
@@ -457,6 +457,9 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Исходные файлы\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureEntity.h">
+      <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ public:
         texture_ = &texture;
     }
 
-    void draw(View* view, const Shader& shader) {
+    void draw(const View* view, const Shader& shader) {
         shader.use();
         view->use(shader);
         if (texture_) texture_->use(0);
@@ -31,8 +31,10 @@ public:
     }
 
 private:
+
     Texture2D* texture_ = 0;
     glm::vec3 color = glm::vec3(1.f);
+
 };
 
 
@@ -44,7 +46,7 @@ public:
         id_obj = glShader::gb_color_uniform;
     }
 
-    void draw(View* view, const Shader& shader) {
+    void draw(const View* view, const Shader& shader) {
         shader.use();
         view->use(shader);
         uniformMaterial(shader);

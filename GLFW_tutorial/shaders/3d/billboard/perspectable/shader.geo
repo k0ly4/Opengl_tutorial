@@ -17,24 +17,24 @@ void main()
     vec3 v_up= up*size.y;
     vec3 v_right= right*size.x;
 
-    pos -= (v_right + v_up)* 0.5f;
+    pos += ( v_up-v_right)* 0.5f;
     gl_Position = VP* vec4(pos, 1.0);
-    texCoord = vec2(0.f, 0.f);
+    texCoord = vec2(0.f, 1.f) ;
     EmitVertex();
  
-    pos += v_up;
+    pos -= v_up;
     gl_Position = VP* vec4(pos, 1.0);
-    texCoord = vec2(0.f, 1.f);
+    texCoord =vec2(0.f, 0.f);
     EmitVertex();
  
-    pos += (v_right-v_up);
-    gl_Position = VP* vec4(pos, 1.0);
-    texCoord = vec2(1.f, 0.f);
-    EmitVertex();
- 
-    pos += v_up;
+    pos += (v_right+v_up);
     gl_Position = VP* vec4(pos, 1.0);
     texCoord = vec2(1.f, 1.f);
+    EmitVertex();
+ 
+    pos -= v_up;
+    gl_Position = VP* vec4(pos, 1.0);
+    texCoord = vec2(1.f, 0.f);
     EmitVertex();
  
     EndPrimitive();

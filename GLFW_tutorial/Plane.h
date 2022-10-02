@@ -15,7 +15,7 @@ public:
         this->texture = &texture;
     }
 
-    void draw(View* view, const Shader& shader) {
+    void draw(const View* view, const Shader& shader) {
         shader.use();
         view->use(shader);
         uniformTransform(shader);
@@ -36,7 +36,7 @@ public:
         id_obj = glShader::gb_color_uniform;
     }
 
-    void draw(View* view, const Shader& shader) {
+    void draw(const View* view, const Shader& shader) {
         shader.use();
         view->use(shader);
         uniformMaterial(shader);

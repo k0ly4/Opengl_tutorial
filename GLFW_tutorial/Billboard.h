@@ -24,9 +24,10 @@ public:
             position.resize(index + 1);
             VAO.setCountVertexDraw(position.size());
         }
-        else if (position[index] == new_pos)return;
+        else if (position[index] == new_pos)
+            return;
+
         position[index] = new_pos;
-        VAO.begin();
         VBO.begin();
         VBO.data(position);
     }
@@ -37,7 +38,7 @@ public:
         eye = eye_;
     }
     void setTexture(Texture2D& texture) { this->texture = &texture; }
-    void draw(View* view, const Shader& shader) {
+    void draw(const View* view, const Shader& shader) {
         if (eye) {
             shader.use();
             shader.uniform("VP", view->getVP());
@@ -48,7 +49,7 @@ public:
             VAO.draw();
         }
         else {
-            printf("(!)Billbord::eye don't set\n");
+            log("(!)Billbord::eye don't set\n");
         }
     }
 };

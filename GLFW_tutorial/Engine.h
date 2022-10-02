@@ -31,9 +31,7 @@ class Engine  {
 
 public:
 
-    Engine():
-    scene(window),
-    graphic(window)
+    Engine()
     {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -43,6 +41,8 @@ public:
        //  glAlphaFunc(GL_GREATER, 0.8);
        // GlRender::Blend(true);
         setupWindow();
+        scene.initialize(window);
+        graphic.initialize(window);
 
     }
   

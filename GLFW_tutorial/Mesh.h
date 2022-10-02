@@ -120,7 +120,7 @@ public:
         VAO.draw();
     }
 
-    void draw(View* view, const Shader& shader);
+    void draw(const View* view, const Shader& shader);
 
 private:
 

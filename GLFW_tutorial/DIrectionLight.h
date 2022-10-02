@@ -6,8 +6,11 @@
 #include "CascadedShadow.h"
 #include "ShadowMap.h"
 
+/// <summary>
+/// DirectionLight
+/// </summary>
 class DirectionLight :public Light {
-   
+
 public:
 
     DirectionLight()
@@ -17,44 +20,66 @@ public:
     DirectionLight(
         const glm::vec3& color,
         const glm::vec3& direction
-    ) : Light(color),
-        direction_(glm::normalize(direction))
-    {}
+    ) :
+        Light(color),
+        direction_(glm::normalize(direction)) {}
 
-    void createMap(int width, int height,View& camera) {
-        shadow_maps_.setDirectionLight(direction_);
+    void setActive(bool enable) {
+        active = enable;
+    }
+    inline void setSizeMap(const glm::ivec2& size) {
+        shadow_maps_.setSize(size);
     }
 
-    void setDirection(const glm::vec3& direction) {
-        direction_ = glm::normalize(direction);
-        shadow_maps_.setDirectionLight(direction_);
+    void setMultShadow(float value) {
+        shadow_maps_.setMult(value);
     }
 
-    void render(RenderScene& render_class, Camera& camera) {
-        shadow_maps_.render(camera,render_class);
-    }
-
-    ArrayTexture2D getMap() {
+    const ArrayTexture2D& getShadowMap()const {
         return shadow_maps_.getTexture();
     }
 
+    void upShadowMap(RenderScene& render_class, const Camera& camera) {
+        if (active == 0)
+            return;
+        shadow_maps_.render(camera, direction_, render_class);
+    }
+
+    void uniformShadow(const std::string& name, const Shader& shader, size_t unit) {
+        if (active == 0)
+            return;
+        shadow_maps_.uniform(shader, name, unit);
+    }
+
+    inline void setDirection(const glm::vec3& direction) {
+        direction_ = glm::normalize(direction);
+    }
+
     void uniform(const std::string& name, const Shader& shader) {
+        if (active == 0) {
+            shader.uniform(name + ".enable", active);
+            return;
+        }
+            
         Light::uniform(name, shader);
         shader.uniform(name + ".direction", direction_);
-        shadow_maps_.uniform(shader, name, 3);
-       
     }
 
     void uniform(const std::string& name, const Shader& shader,size_t index_cascade) {
+        if (active == 0) {
+            shader.uniform(name + ".enable", active);
+            return;
+        }
         Light::uniform(name, shader);
         shader.uniform(name + ".direction", direction_);     
         shadow_maps_.uniform(shader, 3, index_cascade, name);
     }
 
 private:
+
+    bool active = 0;
     CascadeShadow shadow_maps_;
     glm::vec3 direction_;
 
-    friend class LightSystem;
 };
 #endif

@@ -3,6 +3,7 @@
 
 #include "GLobal.h"
 #include <map>
+#include <vector>
 
 #include "Color.h"
 #include "Rects.h"
@@ -29,5 +30,6 @@ type getSum(size_t size, const type* data) {
         result += data[i];
     return result;
 }
+
 
 #endif

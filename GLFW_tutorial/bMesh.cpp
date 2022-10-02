@@ -343,7 +343,7 @@ void bMesh::draw(const Shader& shader)
     VAO.draw();
 }
 
-void bMesh::draw(View* view, const Shader& shader)
+void bMesh::draw(const View* view, const Shader& shader)
 {
     shader.use();
     view->use(shader);

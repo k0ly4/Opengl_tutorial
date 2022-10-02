@@ -6,7 +6,7 @@
 /// <summary>
 /// RenderTextureDepth
 /// </summary>
-class RenderTextureDepth :public GeneralRender, public RenderTarget {
+class RenderTextureDepth :public GeneralRender, public RenderTarget,public Sizeable {
     
 public:
 
@@ -24,8 +24,18 @@ public:
         return Texture2D(texture, size_);
     }
 
+    const glm::ivec2& getSize()const {
+        return size_;
+    }
+    ~RenderTextureDepth() {
+        glDeleteFramebuffers(1, &id_);
+    }
 private:
+
     TexturePointer texture;
+
+    RenderTextureDepth(const RenderTextureDepth&) = delete;
+    RenderTextureDepth& operator=(const RenderTextureDepth&) = delete;
 };
 
 /// <summary>
@@ -38,23 +48,78 @@ public:
     RenderCascadedDepth() {
         glGenFramebuffers(1, &id_);
     }
-
-    bool create(int cascadeLevels, const glm::ivec2& Size);
-
-    void bind() {
-        GlRender::bind(*this);
+    RenderCascadedDepth( size_t numCascades, const glm::ivec2& size) {
+        glGenFramebuffers(1, &id_);
+        create(numCascades, size);
     }
-
-    void create(size_t cascadeLevels, int width, int height) {
-        create(cascadeLevels, glm::ivec2(width, height));
+    bool create(size_t cascadeLevels, const glm::ivec2& Size);
+    bool create(size_t cascadeLevels, int width, int height) {
+       return create(cascadeLevels, glm::ivec2(width, height));
     }
 
     const ArrayTexture2D& getTexture()const {
-        return texture;
+        return map_;
     }
 
+    const glm::ivec2& getSize()const {
+        return map_.getSize();
+    }
+    ~RenderCascadedDepth() {
+        glDeleteFramebuffers(1, &id_);
+    }
 private:
-    ArrayTexture2D texture;
+    ArrayTexture2D map_;
+
+    RenderCascadedDepth(const RenderCascadedDepth&) = delete;
+    RenderCascadedDepth& operator=(const RenderCascadedDepth&) = delete;
+};
+
+/// <summary>
+/// RenderDepthMap
+/// </summary>
+class  RenderDepthCubeMap :public GeneralRender, public RenderTarget {
+
+public:
+
+    RenderDepthCubeMap() {
+        glGenFramebuffers(1, &id_);
+    }
+
+    RenderDepthCubeMap(const glm::ivec2& size) {
+        glGenFramebuffers(1, &id_);
+        create(size);
+    }
+
+    bool create(const glm::ivec2& size);
+    bool create(int width, int height) {
+        return create(glm::ivec2(width, height));
+    }
+
+    const TextureCubeMap& getTexture()const {
+        return map_;
+    }
+
+    const glm::ivec2& getSize()const {
+        return map_.getSize();
+    }
+
+    void uniform(const Shader& shader, const std::string& name, size_t unit);
+
+    void render(const View3D& view_player, const glm::vec3& lightPos, RenderScene& render);
+
+    ~RenderDepthCubeMap() {
+        glDeleteFramebuffers(1, &id_);
+    }
+private:
+
+    bool upLightPos(const glm::vec3& lightPos);
+
+    glm::mat4 transforms[6];
+    glm::vec3 curLightPos;
+    TextureCubeMap map_;
+    ProjectionMatrix proj_matrix_;
+    RenderDepthCubeMap(const RenderDepthCubeMap&) = delete;
+    RenderDepthCubeMap& operator=(const RenderDepthCubeMap&) = delete;
 };
 
 #endif

@@ -23,6 +23,8 @@ public:
         bool rawMotionCursor = 0;
         bool checkCollision = 0;
         bool debugGbuffer = 0;
+        float zMult = 10.f;
+        bool debugCascadeShadow = 0;
     }f;
 
     void update(float time, RenderWindow& window, GraphicPipeline& graphic, Scene& scene);

@@ -17,8 +17,8 @@
 class Scene :public RenderScene {
 public:
 
-	Scene(RenderWindow& window);
-
+	Scene() {}
+	void initialize(RenderWindow& window);
 	void inGBuffer(RenderTarget& target);
 
 	void inShadowMap(RenderTarget& target, glShader::Object shader);
@@ -30,8 +30,12 @@ public:
 	Texture2D filin;
 	LightSystem light;
 	gbCube plane;
-	gbCube cube;
+	gbCube cube; 
+	gbCube cube2;
+	gbCube wall;
 	Camera camera;
+	gbPlane plane2;
+	std::vector<Drawable*>gBufferObjects;
 
 };
 #endif

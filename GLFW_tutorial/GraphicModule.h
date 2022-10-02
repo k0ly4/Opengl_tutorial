@@ -15,9 +15,10 @@
 class GraphicPipeline :public FrameBuffer
 {
 public:
-
-    GraphicPipeline(RenderWindow& window);
-
+    GraphicPipeline(){
+        filter.setExposure(2.2f);
+    }
+    void initialize(RenderWindow& window);
     void render(RenderWindow& window, Scene& scene, EventModule& event);
 //
 //protected:

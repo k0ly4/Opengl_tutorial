@@ -271,6 +271,7 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureEntity.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Transformable.h" />
     <ClInclude Include="TypeObject.h" />

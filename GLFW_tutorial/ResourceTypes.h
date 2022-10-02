@@ -37,8 +37,12 @@ public:
 		texture(std::make_shared<TextureID>())
 	{}
 
-	inline void reBuild() {
-		texture = std::make_shared<TextureID>();
+	inline bool reBuild() {
+		if (texture.unique() == 0) {
+			texture = std::make_shared<TextureID>();
+			return 1;
+		}
+		return 0;
 	}
 
 	inline unsigned int get() const {
@@ -74,7 +78,7 @@ struct TextureDataFormat
 			size.y,
 			0,
 			format,
-			internal_format == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE,
+			getType(internal_format),
 			data);
 	}
 
@@ -84,6 +88,11 @@ struct TextureDataFormat
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
+	static GLenum getType(GLenum internal_format) {
+		return 	internal_format == GL_RGBA16F || internal_format == GL_DEPTH_COMPONENT || internal_format == GL_DEPTH_COMPONENT32F ? 
+			GL_FLOAT : GL_UNSIGNED_BYTE;
+	}
+
 };
 
 /// <summary>
@@ -98,6 +107,10 @@ public:
 
 	const TexturePointer& getId()const {
 		return id_;
+	}
+
+	virtual inline bool detach() {
+		return id_.reBuild();
 	}
 protected:
 	TexturePointer id_;

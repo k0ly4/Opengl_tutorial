@@ -70,7 +70,7 @@ public:
         need_end_primitive = 1;
         vertex.clear();
     }
-    void draw(View* view, const Shader& shader) {
+    void draw(const View* view, const Shader& shader) {
         shader.use();
         view->use(shader);
         if (VAO.data_draw.data.mode_primitive == GlRender::POINTS) {

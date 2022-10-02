@@ -158,7 +158,7 @@ Mesh::Mesh(aiMesh* mesh, const aiScene* scene, const std::string& directory, boo
     init_data_draw();
 }
 
-void Mesh::draw(View* view, const Shader& shader)
+void Mesh::draw(const View* view, const Shader& shader)
 {
     shader.use();
     view->use(shader);

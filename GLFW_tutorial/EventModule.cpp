@@ -19,7 +19,16 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
                 Mouse::setRawMotion(f.rawMotionCursor);
             }
             else if (event.key.code == Keyboard::LeftShift) {
-                f.checkCollision = !f.checkCollision;
+                f.debugCascadeShadow = !f.debugCascadeShadow;
+                scene.light.setDebugMode(f.debugCascadeShadow);
+            }
+            else if (event.key.code == Keyboard::U) {
+                f.zMult -= 1.f;
+                scene.light.getDirLight().setMultShadow(f.zMult);
+            }
+            else if (event.key.code == Keyboard::Y) {
+                f.zMult += 1.f;
+                scene.light.getDirLight().setMultShadow(f.zMult);
             }
             else if (event.key.code == Keyboard::F) {
                 f.shadow_view = !f.shadow_view;
@@ -30,12 +39,15 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
             }
             else if (event.key.code == Keyboard::N) {
                 f.shadow_level++;
-                if (f.shadow_level >= NUM_CASCADES)f.shadow_level = NUM_CASCADES - 1;
+                if (f.shadow_level >= scene.light.getDirLight().getShadowMap().getCount())
+                    f.shadow_level = scene.light.getDirLight().getShadowMap().getCount() - 1;
                 printf("Shadow_Level:%d\n", f.shadow_level);
             }
             else if (event.key.code == Keyboard::M) {
                 f.shadow_level--;
-                if (f.shadow_level < 0) f.shadow_level = 0;
+                if (f.shadow_level < 0) 
+                    f.shadow_level = 0;
+               
                 printf("Shadow_Level:%d\n", f.shadow_level);
             }
             else if (event.key.code == Keyboard::E)
@@ -49,6 +61,7 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
             }
             else if (event.mouseButton.button == Mouse::Middle) {
                 scene.light.getDirLight().setDirection(-scene.camera.getBasis().front);
+                scene.light.getPoints().begin()->setPosition(scene.camera.getPosition());
             }
         }
         else if (event.type == Event::WindowResized) {

@@ -3,38 +3,50 @@
 
 #include "TypeObject.h"
 
+/// <summary>
+/// GeneralRender
+/// </summary>
 class GeneralRender {
 
 public:
-	const glm::ivec2& getSize()const {
-		return size_;
+
+	virtual const glm::ivec2& getSize()const = 0;
+
+	unsigned int getId()const  {
+		return id_;
 	}
 
 protected:
-	glm::ivec2 size_;
-	friend class GlRender;
+
 	unsigned int id_;
 };
 
+/// <summary>
+/// RenderTarget
+/// </summary>
 class RenderTarget {
 
 public:
-	inline void setView(View& view) {
-		this->view = &view;
+
+	inline void setView(const View& view) {
+		view_ = &view;
 	}
+
 	inline void draw(Drawable& object) {
-		object.draw(view, glShader::get(object.id_obj));
+		object.draw(view_, glShader::get(object.id_obj));
 	}
+
 	inline void draw(Drawable& object, glShader::Object index_shader) {
-		object.draw(view, glShader::get(index_shader));
+		object.draw(view_, glShader::get(index_shader));
 	}
+
 	inline void draw(Drawable& object, const Shader& shader) {
-		object.draw(view, shader);
+		object.draw(view_, shader);
 	}
 
 protected:
-	View* view = 0;
 
+	const View* view_ = 0;
 };
 #endif
 

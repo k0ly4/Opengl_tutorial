@@ -22,3 +22,4 @@ Perspective::Perspective(float _ratio, float _fov, float _near, float _far) :rat
 glm::mat4 Perspective::getMatrix()const {
         return glm::perspective(glm::radians(fov), ratio, near, far);
     }
+

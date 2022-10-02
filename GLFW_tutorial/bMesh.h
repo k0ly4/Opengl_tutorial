@@ -333,7 +333,7 @@ public:
 
     void draw(const Shader& shader);
 
-    void draw(View* view, const Shader& shader);
+    void draw(const View* view, const Shader& shader);
 
 private:
 

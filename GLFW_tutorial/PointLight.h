@@ -4,23 +4,28 @@
 #include "Camera.h"
 
 class PointLight:public Light {
+
 public:
 
     PointLight(const glm::vec3& color,
         const glm::vec3& position,
         const glm::vec2& attenuation)
         : attenuation_(attenuation), position_(position),Light(color)
-    {}
+    {
+        shadow_map_ = std::make_shared<RenderDepthCubeMap>(glm::ivec2(512));
+    }
 
     PointLight():
         position_(0.f),
-        attenuation_(1.f) 
-    {}
+        attenuation_(0.f)
+
+    { 
+        shadow_map_ = std::make_shared<RenderDepthCubeMap>(glm::ivec2(512));
+    }
 
     void setPosition(const glm::vec3& position) {
         position_ = position;
     }
-
     const glm::vec3& getPosition()const {
         return position_;
     }
@@ -38,8 +43,22 @@ public:
         shader.uniform(name + ".attenuation", attenuation_);
     }
 
+    //shadow
+    inline void uniformShadow(const std::string& name, const Shader& shader, size_t unit) {
+        shadow_map_->uniform(shader, name, unit);
+    }
+
+    inline void createMap(const glm::ivec2& size) {
+        shadow_map_->create(size);
+    }
+
+    inline void upShadowMap(RenderScene& render_class, const Camera& camera) {
+        shadow_map_->render(camera,position_, render_class);
+    }
+
 private:
 
+    std::shared_ptr<RenderDepthCubeMap> shadow_map_;
     glm::vec3 position_;
     glm::vec2 attenuation_;
 

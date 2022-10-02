@@ -56,7 +56,7 @@ public:
 		object = Object;
 		VAO = object->getDrawBuffer();
 	}
-	virtual void draw(View* view, const Shader& shader) {
+	virtual void draw(const View* view, const Shader& shader) {
 		shader.use();
 		view->use(shader);
 		object->uniform(shader);
