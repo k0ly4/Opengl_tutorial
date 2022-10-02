@@ -1,17 +1,7 @@
 #include "Sprite.h"
 
-void Sprite::initRenderData()
-{
-    if (VAO_init == 0) {
-        sBuffer::quad2D.getVBO().begin();
-        VAO.begin();
-        VAO.attrib(0, 4, 4 * sizeof(float), 0);
-        VAO_init = 1;
-    }
-}
-
 void Sprite::transform() {
-    glm::vec2 size = scale * this->size;
+    glm::vec2 size = scale * size_;
     model = glm::mat4(1.0f);
 
     model = glm::translate(model, glm::vec3(origin + position, 0.0f));
@@ -22,39 +12,36 @@ void Sprite::transform() {
     model = glm::scale(model, glm::vec3(size, 1.0f)); // последним идет масштабирование
 }
 
-inline void Sprite::setTexture(Texture2D& texture) {
-    this->texture = texture;
-    size = texture.getSize();
+void Sprite::setTexture(const Texture2D& texture) {
+    texture_ = &texture;
+    size_ = texture.getSize();
     need_update_model = 1;
 }
 
 void Sprite::setTextureRect(const FloatRect& cut_rect) {
+    const glm::ivec2& texSize = texture_->getSize();
 
     model_uv = glm::translate(glm::mat4(1.f),
-        glm::vec3(cut_rect.x / texture.getSize().x, (texture.getSize().y - cut_rect.h - cut_rect.y) / texture.getSize().y, 0.f));
-    model_uv = glm::scale(model_uv,
-        glm::vec3(cut_rect.w / texture.getSize().x, cut_rect.h / texture.getSize().y, 0.f));
+        glm::vec3(cut_rect.x / texSize.x, (texSize.y - cut_rect.h - cut_rect.y) / texSize.y, 0.f));
 
-    size.x = cut_rect.w;
-    size.y = cut_rect.h;
+    model_uv = glm::scale(model_uv,
+        glm::vec3(cut_rect.w / texSize.x, cut_rect.h / texSize.y, 0.f));
+
+    size_.x = cut_rect.w;
+    size_.y = cut_rect.h;
     need_update_model = 1;
 }
 
-void Sprite::draw(View* view, Shader& shader) {
+void Sprite::draw(const View* view,const Shader& shader) {
     shader.use();
     view->use(shader);
-    shader.uniform("color", color);
+    shader.uniform("color", color_);
     shader.uniform("model_uv", model_uv);
     if (need_update_model) {
         transform();
         need_update_model = 0;
     }
     shader.uniform("model", model);
-    texture.use(0);
-    VAO.begin();
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    VAO.end();
+    texture_->use(0);
+    sBuffer::quad2D.getVAO().draw();
 }
-
-ArrayBufferObject Sprite::VAO;
-bool Sprite::VAO_init = 0;

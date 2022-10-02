@@ -13,11 +13,12 @@ LightSystem::LightSystem() {
     ambient_ = 0.1f;
 
     ImageLoader::flipVerticallyOnLoad(1);
-    textureLamp_.loadFromFile("asset\\image\\lamp.png");
+    textureLamp_.getPath("asset\\image\\lamp.png");
 
     id_obj = billboardLamp_.id_obj;
     billboardLamp_.setTexture(textureLamp_);
     billboardLamp_.setSize(glm::vec2(1.f));
+    pLights_.reserve(10);
 }
 
 void LightSystem::upShadowMap(RenderScene& scene,const Camera& camera) {
@@ -27,11 +28,11 @@ void LightSystem::upShadowMap(RenderScene& scene,const Camera& camera) {
     }
 }
 
-PointLight& LightSystem::add(const PointLight& pointLight, const View3D* view) {
+size_t LightSystem::add(const PointLight& pointLight, const View3D* view) {
     billboardLamp_.setPosition(pointLight.getPosition(), pLights_.size());
     billboardLamp_.setEye(view);
     pLights_.push_back(pointLight);
-    return pLights_.front();
+    return pLights_.size()-1;
 }
 
 void LightSystem::uniform(const Shader& shader,const Camera& camera) {
@@ -42,9 +43,9 @@ void LightSystem::uniform(const Shader& shader,const Camera& camera) {
     shader.uniform("debugMode", debugMode);
     dirLightGlobal_.uniform(SHADER_D_LIGHT, shader);
    
-    size_t index = 0;
-    for(auto i = pLights_.begin(); i!=pLights_.end(); i++, index++){
-        i->uniform(SHADER_P_LIGHT+"[" + std::to_string(index) + "]", shader);
+   
+    for (size_t i = 0; i < pLights_.size(); i++) {
+        pLights_[i].uniform(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader);
     }
 
     if (isShadow) {
@@ -55,8 +56,7 @@ void LightSystem::uniform(const Shader& shader,const Camera& camera) {
 
 void LightSystem::uniformShadow(const Shader& shader, const Camera& camera) { 
     dirLightGlobal_.uniformShadow(SHADER_D_LIGHT, shader, 3);
-    size_t index = 0;
-    for (auto i = pLights_.begin(); i != pLights_.end(); i++, index++) {
-        i->uniformShadow(SHADER_P_LIGHT + "[" + std::to_string(index) + "]", shader, 4);
+    for (size_t i = 0; i < pLights_.size(); i++) {
+        pLights_[i].uniformShadow(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader, 4);
     }
 }

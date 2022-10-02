@@ -62,12 +62,16 @@ bool RenderCascadedDepth::create(size_t cascadeLevels, const glm::ivec2& size)
 /// RenderCascadedDepth
 /// </summary>
 
-bool RenderDepthCubeMap::create(const glm::ivec2& size)
-{
+bool RenderDepthCubeMap::create(const glm::ivec2& size,float far_plane)
+{   
     if (map_.getSize() == size) {
+        setFarPlane(far_plane);
         return 1;
     }
-    proj_matrix_.set((float)size.x / (float)size.y, 90.f, 1.f, 25.f);
+    constexpr float near_plane = 1.f;
+    proj_matrix_.set((float)size.x / (float)size.y, 90.f, near_plane, far_plane);
+    needUpTransforms = 1;
+
     map_.create(size, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT);
     map_.filter(TextureFilter::Nearest);
     map_.wrap(TextureWrap::ClampToEdge);
@@ -91,9 +95,9 @@ void RenderDepthCubeMap::uniform(const Shader& shader, const std::string& name, 
 }
 
 bool RenderDepthCubeMap::upLightPos(const glm::vec3& lightPos) {
-    if (curLightPos == lightPos)
+    if (curLightPos == lightPos && needUpTransforms == 0)
         return 0;
-
+    needUpTransforms = 1;
     curLightPos = lightPos;
     const glm::mat4& proj = proj_matrix_.get();
    

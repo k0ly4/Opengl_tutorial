@@ -1,5 +1,19 @@
 #include "ContextRender.h"
 
+/// Blend------------------------------------------------------------
+/// <summary>
+/// GlRender
+
+void Blend::Enable(bool enable) {
+	if (isEnable == enable) return;
+	isEnable = enable;
+	if (isEnable) glEnable(GL_BLEND);
+	else glDisable(GL_BLEND);
+}
+
+bool Blend::isEnable = 0;
+
+/// GlRender------------------------------------------------------------
  /// <summary>
  /// GlRender
  /// </summary>
@@ -19,14 +33,6 @@ void GlRender::DepthTest(bool enable) {
 	}
 }
 
-void GlRender::Blend(bool enable) {
-	if (isBlend != enable) {
-		isBlend = enable;
-		if (enable)glEnable(GL_BLEND);
-		else glDisable(GL_BLEND);
-	}
-}
-
 void GlRender::PolygonMode(GLenum mode) {
 	if (polygonMode != mode) {
 		polygonMode = mode;
@@ -42,11 +48,12 @@ void GlRender::unbind() {
 	}
 }
 
-void GlRender::bind(const GeneralRender& fbo) {
+void GlRender::bind(const GeneralRender& fbo,bool renderMode) {
 	if (last_fbo != fbo.getId()) {
 		last_fbo = fbo.getId();
 		glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
-		Viewport::set(fbo.getSize());
+		if(renderMode)
+			Viewport::set(fbo.getSize());
 	}
 }
 
@@ -66,5 +73,5 @@ IntRect  GlRender::Viewport::cur;
 unsigned int GlRender::last_fbo = 0;
 Color GlRender::cur_color_clear(0.f);
 bool GlRender::isDepthTest = 0;
-bool GlRender::isBlend = 0;
+
 GLenum GlRender::polygonMode = GL_FILL;

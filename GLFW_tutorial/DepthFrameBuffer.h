@@ -85,18 +85,25 @@ public:
         glGenFramebuffers(1, &id_);
     }
 
-    RenderDepthCubeMap(const glm::ivec2& size) {
+    RenderDepthCubeMap(const glm::ivec2& size,float far_plane) {
         glGenFramebuffers(1, &id_);
-        create(size);
+        create(size, far_plane);
     }
 
-    bool create(const glm::ivec2& size);
-    bool create(int width, int height) {
-        return create(glm::ivec2(width, height));
+    bool create(const glm::ivec2& size, float far_plane);
+    bool create(int width, int height, float far_plane) {
+        return create(glm::ivec2(width, height),far_plane);
     }
 
     const TextureCubeMap& getTexture()const {
         return map_;
+    }
+
+    void setFarPlane(float far_plane) {
+        if (proj_matrix_.getData().persp.far == far_plane)return;
+        constexpr float near_plane = 1.f;
+        proj_matrix_.set(proj_matrix_.getData().persp.ratio, 90.f, near_plane, far_plane);
+        needUpTransforms = 1;
     }
 
     const glm::ivec2& getSize()const {
@@ -113,6 +120,7 @@ public:
 private:
 
     bool upLightPos(const glm::vec3& lightPos);
+    bool needUpTransforms = 1;
 
     glm::mat4 transforms[6];
     glm::vec3 curLightPos;

@@ -40,7 +40,7 @@ float factorCubeShadow(PointLight light,vec3 FragPos,float angle){
     );  
 
     float shadow = 0.0;
-    float bias = max(0.06 * (1.0 - angle), 0.005);
+    float bias = max(0.06 * (1.0 - angle), 0.01);
     float diskRadius = (1.0 + (currentDepth / light.far_plane)) / 25.0;  
     for(int i = 0; i < samples; ++i)
     {

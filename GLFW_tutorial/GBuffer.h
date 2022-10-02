@@ -12,10 +12,10 @@ class GBuffer:public FrameBuffer {
 public:
 
     void create(const glm::ivec2 size) {
-        TextureDataFormat dataFormats[3] = { 
-            TextureDataFormat (GL_RGBA16F, GL_RGBA, GL_NEAREST),    //Position
-            TextureDataFormat (GL_RGBA16F, GL_RGBA, GL_NEAREST),    //Normal
-            TextureDataFormat (GL_RGBA, GL_RGBA, GL_NEAREST)        //Diffuse + Specular
+       const TextureData dataFormats[3] = { 
+            TextureData(GL_RGBA16F, GL_RGBA, GL_NEAREST),    //Position
+            TextureData(GL_RGBA16F, GL_RGBA, GL_NEAREST),    //Normal
+            TextureData(GL_RGBA, GL_RGBA, GL_NEAREST)        //Diffuse + Specular
         };      
         FrameBuffer::create(size, 3, dataFormats);
     }
@@ -29,19 +29,12 @@ public:
         glTexture::active(GL_TEXTURE0 + unit);
         glTexture::bind2D(textures_[1]);
     }
+
     inline void useDiffuseMap(size_t unit) {
         glTexture::active(GL_TEXTURE0 + unit);
         glTexture::bind2D(textures_[2]);
     }
-    inline void render(void (*renderScene)()) {
 
-        GlRender::setClearColor(Color(0.f));
-        GlRender::bind(*this);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderScene();
-
-    }
     void render(RenderWindow& window, RenderScene& scene) {
 
         GlRender::setClearColor(Color(0.f));
@@ -51,6 +44,7 @@ public:
         scene.inGBuffer(window);
 
     }
+
     void display(LightSystem& lights,const Camera& camera) {
         const Shader& shader = glShader::get(glShader::gb_light);
 

@@ -41,21 +41,12 @@
         return 1;
     }
 
-    void TextureCubeMap::create(const glm::ivec2& size, GLenum internal_format, GLenum format) {
+    void TextureCubeMap::create(const glm::ivec2& size, const TextureFormat& format) {
         detach();
         glTexture::bindCubeMap(id_);
         size_ = size;
         for (unsigned int i = 0; i < 6; ++i){
-            glTexImage2D(
-                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
-                0, 
-                internal_format,
-                size_.x, 
-                size.y, 
-                0, 
-                format, 
-                TextureDataFormat::getType(internal_format), 
-                NULL);
+            format.TexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, size_, NULL);
         }
         glTexture::bindCubeMap(0);
     }
@@ -63,7 +54,7 @@
     /// <summary>
     /// Texture2D
     /// </summary>
-    bool Texture2D::loadFromFile(const std::string& path, bool generateMipmap, bool gammaMod) {
+    bool Texture2D::getPath(const std::string& path, bool generateMipmap, bool gammaMod) {
         const TextureResource* resource = ImageLoader::getTexture(path, gammaMod);
         if(resource == 0) return 0;
 
@@ -80,22 +71,12 @@
         return 1;
     }
 
-    void Texture2D::create(const glm::ivec2& size, GLint internal_format, GLint format, const void* data, bool generateMipmap) {
+    void Texture2D::create(const glm::ivec2& size, const TextureFormat& format, const void* data, bool generateMipmap) {
 
         detach();
         size_ = size;
         isGenerateMipmap_ = generateMipmap;
-
-        glTexImage2D(
-            GL_TEXTURE_2D, 
-            0, 
-            internal_format, 
-            size.x, 
-            size.y, 
-            0, 
-            format,
-            TextureDataFormat::getType(internal_format),
-            data);
+        format.setDataTexture2D(size, data);
 
         if (isGenerateMipmap_)
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -105,22 +86,10 @@
     /// ArrayTexture2D
     /// </summary>
   
-    void ArrayTexture2D::create(size_t count, const glm::ivec2& size, GLenum internal_format,GLenum format,const void* data){
+    void ArrayTexture2D::create(size_t count, const glm::ivec2& size, const TextureFormat& format,const void* data){
 
         detach();
         size_ = size;
         count_ = count;
-    
-        glTexImage3D(
-            GL_TEXTURE_2D_ARRAY,
-            0,
-            internal_format,
-            size_.x,
-            size_.y,
-            count,
-            0,
-            format,
-            TextureDataFormat::getType(internal_format),
-            data);
-
+        format.TexImage3D(GL_TEXTURE_2D_ARRAY, size_, count, data);
     }

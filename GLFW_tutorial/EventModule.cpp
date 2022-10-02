@@ -61,7 +61,7 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
             }
             else if (event.mouseButton.button == Mouse::Middle) {
                 scene.light.getDirLight().setDirection(-scene.camera.getBasis().front);
-                scene.light.getPoints().begin()->setPosition(scene.camera.getPosition());
+                scene.light.getPoint(0).setPosition(scene.camera.getPosition());
             }
         }
         else if (event.type == Event::WindowResized) {

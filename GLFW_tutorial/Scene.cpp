@@ -3,7 +3,7 @@
 #include "GraphicModule.h"
 #include "EventModule.h"
 
-void Scene::initialize(RenderWindow& window) {
+void Scene::initialize3DScene(RenderWindow& window) {
 	wall.setPosition(glm::vec3(6.f));
 	wall.setScale(glm::vec3(1.f, 3.f, 3.f));
 	wall.setColor(Color::RED);
@@ -13,7 +13,7 @@ void Scene::initialize(RenderWindow& window) {
 	cube.setTexture(filin);
 	cube.setRotate(Angle3D(20.f, glm::vec3(1.f, 0.5f, 0.5f)));
 
-	cube2.setPosition(glm::vec3(11.f,6.6f,13.f));
+	cube2.setPosition(glm::vec3(11.f, 6.6f, 13.f));
 	cube2.setTexture(filin);
 
 	plane.setPosition(glm::vec3(5.f));
@@ -22,50 +22,86 @@ void Scene::initialize(RenderWindow& window) {
 	/// <attenuation>
 	/// glm::vec2(0.032f, 0.09f))
 	/// </summary>
-	
-	light.add(PointLight(glm::vec3(0.9f), glm::vec3(5.f, 13.f, 5.f), glm::vec2(0.032f, 0.09f)), &camera);
+
+	light.add(PointLight(glm::vec3(0.5f), glm::vec3(5.f, 13.f, 5.f), glm::vec2(0.032f, 0.09f)), &camera);
 	light.getDirLight().setColor(glm::vec3(0.2f));
 	light.getDirLight().setDirection(glm::vec3(1.f, 1.f, 0.f));
 	light.getDirLight().setSizeMap(glm::ivec2(1024));
 	light.setAmbientFactor(0.01f);
-
+	std::cout << light.getPoint(0).getRadius();
 	plane2.setColor(Color::GREEN);
-	plane2.setPosition(glm::vec3(15.f,7.f,10.f));
+	plane2.setPosition(glm::vec3(15.f, 7.f, 10.f));
 	plane2.setScale(glm::vec3(5.f));
 
 	camera.setProjection(GAME::PROJECTION);
 	camera.cur_pos_mouse = Mouse::getPosition();
 
 	ImageLoader::flipVerticallyOnLoad(1);
-	filin.loadFromFile("asset\\image\\favor.jpg");
+	filin.getPath("asset\\image\\favor.jpg");
 
-	gBufferObjects.push_back(&plane2);
+	//gBufferObjects.push_back(&plane2);
 	gBufferObjects.push_back(&plane);
 	gBufferObjects.push_back(&wall);
 	gBufferObjects.push_back(&cube);
 	gBufferObjects.push_back(&cube2);
 }
 
+void Scene::initializeUI(RenderWindow& window) {
+	view2D.setProjection(FloatRect(0.f, 0.f, window.getSize()));
+	texCowBoy.getPath("asset\\image\\The fastest camp in the west.png");
+	texError.getPath("asset\\image\\FUrfZuZXoAEnZBE.jpg");
+
+	sError.setTexture(texError);
+	sError.setPosition(0.f, 0.f);
+
+	sCowBoy.setTexture(texCowBoy);
+	sCowBoy.setPosition(300.f, 200.f);
+
+}
+
+
+/// <summary>
+/// Render
+/// </summary>
+
 void Scene::inGBuffer(RenderTarget& target) {
+	Blend::Enable(false);
+	GlRender::DepthTest(true);
+
 	CullFace::Enable(false);
 	target.draw(plane2);
 
 	CullFace::Enable(true);
 	CullFace::Mode(CullFace::Back);
-	target.draw(plane);
 	for (size_t i = 0; i < gBufferObjects.size(); i++) {
 		target.draw(*gBufferObjects[i]);
 	}
 }
 
 void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
+
+	Blend::Enable(false);
+	GlRender::DepthTest(true);
+
 	CullFace::Enable(false);
 	target.draw(plane2, shader);
-
+	
 	CullFace::Enable(true);
 	CullFace::Mode(CullFace::Front);
 	for (size_t i = 0; i < gBufferObjects.size(); i++) {
 		target.draw(*gBufferObjects[i], shader);
 	}
 	
+}
+
+void Scene::inUI(RenderTarget& target) {
+	target.setView(view2D);
+
+	CullFace::Enable(false);
+	GlRender::DepthTest(false);
+	Blend::Enable(true);
+
+	target.draw(sCowBoy);
+	target.draw(sError);
+
 }

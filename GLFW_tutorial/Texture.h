@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "TextureEntity.h"
+#include "Resource_manager.h"
 
 /// <summary>
 /// TextureCubeMap
@@ -15,7 +15,10 @@ public:
 
     bool loadFromDirectory(const std::string& directory, bool flipVertically = 1, bool gammaMod = 0);
 
-    void create(const glm::ivec2& size, GLenum internal_format, GLenum format);
+    void create(const glm::ivec2& size, const TextureFormat& format);
+    inline void create(const glm::ivec2& size, GLenum internal_format, GLenum format) {
+        create(size, TextureFormat(internal_format, format));
+    }
 
     void wrap(unsigned S, unsigned T, unsigned R) {
         if (wrap_.get() == glm::uvec3(S, T, R))
@@ -111,8 +114,13 @@ public:
         Texture2D(textureId, glm::ivec2(width, height))
     {}
 
-    bool loadFromFile(const std::string& path_to_image, bool generateMipmap = 1, bool gammaMod = 1);
-    void create(const glm::ivec2& size, GLint internal_format, GLint format, const void* data = nullptr, bool generateMipmap = 1);
+    bool getPath(const std::string& path_to_image, bool generateMipmap = 1, bool gammaMod = 1);
+
+    void create(const glm::ivec2& size,const TextureFormat& format, const void* data = nullptr, bool generateMipmap = 1);
+
+    inline void create(const glm::ivec2& size, GLint internal_format, GLint format, const void* data = nullptr, bool generateMipmap = 1) {
+        create(size, TextureFormat(internal_format, format), data, generateMipmap);
+    }
 
     void wrap(GLint S, GLint T) {
         if (wrap_.get() == glm::uvec2(S, T))
@@ -131,15 +139,22 @@ public:
         glTexture::bind2D(id_);
         filter_.setup(GL_TEXTURE_2D, filter_max, filter_min);
     }
-
+    
     inline void filter(GLint filterMinMax) {
         filter(filterMinMax, filterMinMax);
     }
 
-    bool haveMipmaps() {
+    inline void filter(const TextureFilter& filterMinMax) {
+        filter(filterMinMax.getMax(), filterMinMax.getMin());
+    }
+
+    inline bool haveMipmaps()const  {
         return isGenerateMipmap_;
     }
 
+    inline void bindToFramebuffer(size_t unit) {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + unit, GL_TEXTURE_2D, id_.get(), 0);
+    }
 private:
 
     bool detach() {
@@ -159,7 +174,7 @@ private:
 };
 
 /// <summary>
-/// GeneralTexture2D
+/// ArrayTexture2D
 /// </summary>
 class ArrayTexture2D:public Texture,public Sizeable {
 
@@ -169,8 +184,12 @@ public:
         :Sizeable(),
         count_(0)
     {}
-    
-    void create(size_t count, const glm::ivec2& size, GLenum internal_format, GLenum format, const void* data = nullptr);
+
+    void create(size_t count, const glm::ivec2& size, const TextureFormat& format, const void* data = nullptr);
+
+    inline void create(size_t count, const glm::ivec2& size, GLenum internal_format, GLenum format, const void* data = nullptr) {
+        create(count, size, TextureFormat(internal_format, format), data);
+    }
 
     inline void use(size_t text_unit)const {
         glTexture::active(GL_TEXTURE0 + text_unit);
@@ -206,6 +225,7 @@ public:
     inline size_t getCount()const {
         return count_;
     }
+
 private:
 
     bool detach() {

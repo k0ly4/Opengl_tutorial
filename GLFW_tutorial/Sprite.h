@@ -8,31 +8,31 @@
 class Sprite :public Drawable, public Transformable {
     
 public:
-    Sprite() : color(1.f), model_uv(1.f), model(1.f)
+
+    Sprite() : 
+        color_(1.f), 
+        model_uv(1.f), 
+        model(1.f),
+        size_(0.f)
     {
         id_obj = glShader::sprite;
-        this->initRenderData();
     }
 
     inline void setColor(const Color& color) {
-        this->color = color;
+        color_ = color;
     }
-    void setTexture(Texture2D& texture);
+    void setTexture(const Texture2D& texture);
     void setTextureRect(const FloatRect& cut_rect);
 
-    void draw(View* view, Shader& shader);
+    void draw(const View* view,const Shader& shader);
 
 private:
 
-    static bool VAO_init;
-    static ArrayBufferObject VAO;
-
-    glm::vec2 size;
-    Color color;
+    glm::vec2 size_;
+    Color color_;
     glm::mat4 model, model_uv; 
-    Texture2D texture;
+    const Texture2D* texture_;
 
-    static void initRenderData();
     void transform();
 };
 

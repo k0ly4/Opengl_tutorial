@@ -15,16 +15,18 @@ public:
 		return color_;
 	}
 
-	void setColor(const glm::vec3& color) {
+	virtual void setColor(const glm::vec3& color) {
 		color_ = color;
 	}
 
-	virtual void uniform(const std::string& name,const Shader& shader)const {
+	inline virtual void uniform(const std::string& name,const Shader& shader)const {
 		shader.uniform(name + ".color", color_);
 	}
 
 protected:
+
 	glm::vec3 color_;
+
 private:
 	
 };

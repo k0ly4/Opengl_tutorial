@@ -22,7 +22,7 @@ public:
     void render(RenderWindow& window, Scene& scene, EventModule& event);
 //
 //protected:
-
+    RenderTexture ui;
     FrameBuffer frame;
     GBuffer gBuffer;
     Filter filter;

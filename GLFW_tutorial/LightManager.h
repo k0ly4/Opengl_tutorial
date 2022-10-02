@@ -13,7 +13,7 @@ public:
 
     LightSystem();
 
-    PointLight& add(const PointLight& point_light, const View3D* view);
+    size_t add(const PointLight& point_light, const View3D* view);
 
     void upShadowMap(RenderScene& scene, const Camera& camera);
 
@@ -37,17 +37,16 @@ public:
         }
         billboardLamp_.draw(view, shader);
     }
-    std::list<PointLight>& getPoints() {
-        return pLights_;
+    PointLight& getPoint(size_t id) {
+        return pLights_[id];
     }
     void uniform(const Shader& shader, const Camera& camera);
 
 private:
-
     int debugMode = 0;
     bool isShadow;
     float ambient_;
-    std::list<PointLight>pLights_;
+    std::vector<PointLight>pLights_;
     DirectionLight dirLightGlobal_;
 
     Texture2D textureLamp_;

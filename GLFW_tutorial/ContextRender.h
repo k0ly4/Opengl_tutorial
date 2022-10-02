@@ -5,6 +5,8 @@
 #include "Math.h"
 #include "GLFW.h"
 #include "ContextWindow.h"
+
+/// CullFace------------------------------------------------------------
 /// <summary>
 /// CullFace
 /// </summary>
@@ -55,6 +57,27 @@ private:
 
 };
 
+/// GlRender------------------------------------------------------------
+/// <summary>
+/// GlRender
+/// </summary>
+class Blend
+{
+public:
+	
+	static void Enable(bool new_state);
+
+private:
+
+	Blend();
+	~Blend();
+
+	static bool isEnable;
+};
+
+
+
+/// GlRender------------------------------------------------------------
 /// <summary>
 /// GlRender
 /// </summary>
@@ -79,7 +102,7 @@ public:
 	}
 
 	static void DepthTest(bool enable);
-	static void Blend(bool enable);
+	
 
 	class  Viewport {
 		
@@ -170,7 +193,7 @@ public:
 	}
 
 	static void unbind();
-	static void bind(const GeneralRender& fbo);
+	static void bind(const GeneralRender& fbo, bool renderMode = 1);
 
 private:
 
@@ -179,7 +202,7 @@ private:
 	static Color cur_color_clear;
 	static GLenum polygonMode;
 	static bool isDepthTest;
-	static bool isBlend;
+	
 	static unsigned int last_fbo;
 
 }; 

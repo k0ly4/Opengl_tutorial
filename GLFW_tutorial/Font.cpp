@@ -91,7 +91,7 @@ MapGlyph Font::createFontTexture(size_t size_char) {
         sym_y * max_size.y
     };
 
-    render.create(size_texture.x, size_texture.y, GL_RED, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);//GL_LINEAR
+    render.create(size_texture.x, size_texture.y, TextureData(GL_RED, GL_RED, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR));//GL_LINEAR
     GlRender::setClearColor(0.f);
     GlRender::bind(render);
     glClear(GL_COLOR_BUFFER_BIT);

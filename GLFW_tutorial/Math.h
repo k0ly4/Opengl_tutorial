@@ -30,6 +30,15 @@ type getSum(size_t size, const type* data) {
         result += data[i];
     return result;
 }
-
+/// <summary>
+/// 
+/// </summary>
+/// <param name="power:">Сила источника</param>
+/// <param name="min:">Пренебрегаемый ноль на градиенте распространения источника</param>
+/// <param name="c:"> Константа затухания ( c.x * d*d + c.y * d + c.z )</param>
+/// <returns></returns>
+inline float getLimitPropagation(float power,float min,const glm::vec3& c) {
+    return (-c.y + std::sqrtf(c.y * c.y - 4 * c.x * (c.z - power / min))) / (2 * c.x);
+}
 
 #endif

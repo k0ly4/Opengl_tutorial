@@ -4,6 +4,10 @@
 #include "Shader.h"
 #include "Math.h"
 
+/// View------------------------------------------------------------
+/// <summary>
+/// Interface
+/// </summary>
 class View {
 public:
     virtual const MatrixShell& getProjection() const = 0;
@@ -14,6 +18,10 @@ public:
     virtual void use(const Shader&) const= 0; 
 };
 
+/// ViewMatrix------------------------------------------------------------
+/// <summary>
+/// 
+/// </summary>
 class ViewMatrix :public View {
   
 public:
@@ -49,14 +57,37 @@ private:
     MatrixShell proj;
 };
 
+/// View2D------------------------------------------------------------
+/// <summary>
+/// View for 2D world coord
+/// </summary>
 class View2D:public View {
 public:
+    View2D()
+    {
+     
+    }
    inline void setProjection(const FloatRect& rect) {
        proj.set(rect, -1.f, 1.f);
-    }
-   inline void use(const Shader& shader)const {
+   }
+
+   ///override
+   inline void use(const Shader& shader)const override {
         shader.uniform("projection",proj.get());
-    }
+   }
+   inline  glm::mat4 getInverseVP()const override {
+       return view.getInverse() * proj.getInverse();
+   }
+   inline glm::mat4 getVP()const override {
+       return proj.get() * view.get();
+   }
+   inline const MatrixShell& getProjection()const override {
+       return view.getMatrixShell();
+   }
+   inline const MatrixShell& getView() const override {
+       return view.getMatrixShell();
+   }
+
 protected:
 
     ProjectionMatrix proj;
@@ -64,6 +95,10 @@ protected:
 
 };
 
+/// View3D------------------------------------------------------------
+/// <summary>
+/// 
+/// </summary>
 class View3D :public View {
 
 public:
@@ -87,7 +122,7 @@ public:
     }
 
     inline void toGlobal(glm::vec3& window_coord)const {
-        glm::vec4 res = view.getInverse() * proj.getInverse() * glm::vec4(window_coord, 1.f);
+        glm::vec4 res = getInverseVP() * glm::vec4(window_coord, 1.f);
         window_coord = res / res.w;
     }
 
@@ -134,6 +169,10 @@ protected:
     BasisMatrix view;
 };
 
+/// Camera------------------------------------------------------------
+/// <summary>
+///
+/// </summary>
 class Camera :public View3D {
 
 public:
