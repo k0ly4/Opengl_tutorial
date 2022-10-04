@@ -7,6 +7,9 @@ class FloatRect {
 public:
     float x, y, w, h;
     FloatRect();
+    FloatRect(float def) :
+        x(def), y(def), w(def), h(def) 
+    {}
     FloatRect(float left, float top, float width, float height);
     FloatRect(const glm::vec2& pos, float width, float height) :
         FloatRect(pos.x, pos.y, width, height) {}
@@ -16,6 +19,23 @@ public:
     bool contain(const glm::vec2& point)const;
 private:
 };
+bool operator ==(const FloatRect& left, const FloatRect& right);
+
+inline FloatRect operator *(const FloatRect& left, float value) {
+    return FloatRect(left.x * value, left.y * value, left.w * value, left.h * value);
+}
+inline FloatRect operator /(const FloatRect& left, float value) {
+    return FloatRect(left.x / value, left.y / value, left.w / value, left.h / value);
+}
+inline FloatRect operator *(const FloatRect& left, const glm::vec2& size) {
+    return FloatRect(left.x * size.x, left.y * size.y, left.w * size.x, left.h * size.y);
+}
+inline FloatRect operator /(const FloatRect& left, const glm::vec2& size) {
+    return FloatRect(left.x / size.x, left.y / size.y, left.w / size.x, left.h / size.y);
+}
+inline bool operator !=(const FloatRect& left, const FloatRect& right) {
+    return !(left == right);
+}
 
 class IntRect {
 public:
@@ -27,6 +47,7 @@ private:
 };
 
 bool operator ==(const IntRect& left, const IntRect& right);
-bool operator !=(const IntRect& left, const IntRect& right);
-
+inline bool operator !=(const IntRect& left, const IntRect& right) {
+    return !(left == right);
+}
 #endif 

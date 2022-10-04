@@ -48,15 +48,20 @@ void Scene::initialize3DScene(RenderWindow& window) {
 
 void Scene::initializeUI(RenderWindow& window) {
 	view2D.setProjection(FloatRect(0.f, 0.f, window.getSize()));
+	//view2D.setProjection(Box(0.f, window.getSize().x, 0.f, window.getSize().y, -1.f, 1.f));
 	texCowBoy.getPath("asset\\image\\The fastest camp in the west.png");
 	texError.getPath("asset\\image\\FUrfZuZXoAEnZBE.jpg");
 
 	sError.setTexture(texError);
-	sError.setPosition(0.f, 0.f);
+	sError.setPosition(50.f, 50.f);
+	sError.setOrigin(sError.getTextureRect().w/2.f, sError.getTextureRect().h/2.f);
+	sError.setRotate(glm::radians(78.f));
+	///sError.setTextureRect(FloatRect(glm::vec2(0.f), 100.f, 100.f));
 
 	sCowBoy.setTexture(texCowBoy);
 	sCowBoy.setPosition(300.f, 200.f);
-
+	sCowBoy.setScale(glm::vec3(0.5f));
+	sCowBoy.setColor(Color(1.f, 0.5f, 0.5f, 0.5f));
 }
 
 
@@ -100,8 +105,6 @@ void Scene::inUI(RenderTarget& target) {
 	CullFace::Enable(false);
 	GlRender::DepthTest(false);
 	Blend::Enable(true);
-
-	target.draw(sCowBoy);
 	target.draw(sError);
-
+	target.draw(sCowBoy);
 }

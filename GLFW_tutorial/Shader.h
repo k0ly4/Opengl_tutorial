@@ -127,6 +127,7 @@ public:
         m_light_uniform_color, 
         m_light_uniform_color_instance,
         m_texture, 
+        main_texture,
         m_texture_instance, 
         m_texture_normal, 
         m_texture_normal_instance, 

@@ -155,6 +155,7 @@
     <ClCompile Include="ContextRender.cpp" />
     <ClCompile Include="ContextTexture.cpp" />
     <ClCompile Include="ContextWindow.cpp" />
+    <ClCompile Include="Convex.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Cursor.cpp" />
     <ClCompile Include="DepthFrameBuffer.cpp" />

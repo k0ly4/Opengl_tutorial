@@ -11,6 +11,15 @@ bool FloatRect::contain(const glm::vec2& point)const {
     return (abs(point.x - x)) <= w && (abs(point.y - y) <= h);
 }
 
+bool operator ==(const FloatRect& left, const FloatRect& right) {
+    return ((left.x == right.x) &&
+        (left.y == right.y) &&
+        (left.w == right.w) &&
+        (left.h == right.h));
+}
+
+
+
 
 IntRect::IntRect() :x(0), y(0), w(0), h(0) {}
 IntRect::IntRect(int left, int top, int width, int height) :x(left), y(top), w(width), h(height) {}
@@ -22,6 +31,4 @@ bool operator ==(const IntRect& left, const IntRect& right) {
         (left.w == right.w) &&
         (left.h == right.h));
 }
-bool operator !=(const IntRect& left, const IntRect& right) {
-    return !(left == right);
-}
+

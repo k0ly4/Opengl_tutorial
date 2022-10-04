@@ -11,6 +11,6 @@ out vec2 texCoord;
 
 void main()
 {  
-    texCoord =vec2(model_uv* vec4(vertex.zw,0.f,1.f));
+    texCoord =vertex.zw;
    gl_Position =projection* model* vec4(vertex.xy,0.f,1.f);
 }

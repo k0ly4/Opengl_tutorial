@@ -6,11 +6,14 @@ uniform float exposure;
 in vec2 texCoord;
 out vec4 FragColor;
 
+vec3 getHDR(vec3 color){
+        const float gamma = 2.2f;
+       color =  vec3(1.f) - exp(-color* exposure);
+       return pow(color,vec3(1.f/gamma));
+}
+
 void main()
 {     
-       const float gamma = 2.2f;
-        vec3 hdrColor = texture(image,texCoord).rgb;
-        hdrColor =  vec3(1.f) - exp(-hdrColor* exposure);
-       hdrColor = pow(hdrColor,vec3(1.f/gamma));
-       FragColor =vec4(hdrColor,1.f);
+       vec4 imageColor = texture(image,texCoord);
+       FragColor =vec4(getHDR(imageColor.rgb),imageColor.a);
 }

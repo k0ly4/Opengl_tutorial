@@ -20,12 +20,19 @@ public:
     }
     void initialize(RenderWindow& window);
     void render(RenderWindow& window, Scene& scene, EventModule& event);
+    void setBufferFrameSize(const glm::ivec2& size) {
+        frame.setSize(size);
+        ui.create(size);
+        gBuffer.setSize(size);
+    }
 //
 //protected:
     RenderTexture ui;
     FrameBuffer frame;
     GBuffer gBuffer;
     Filter filter;
+private:
+
 };
 
 #endif

@@ -6,7 +6,9 @@
 /// <summary>
 /// GraphicPipeline
 /// </summary>
-
+inline void display(const Texture2D& texture) {
+    Debugger::display(texture);
+}
 void GraphicPipeline::initialize(RenderWindow& window) {
     frame.create(window.getSize(), TextureData(GL_RGBA16F, GL_RGBA, GL_NEAREST));
     gBuffer.create(window.getSize());
@@ -27,21 +29,28 @@ void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& ev
     //Simple pipeline
     gBuffer.implementDepth(frame);
 
-    //CullFace::Enable(false);
     window.draw(scene.light);
+
+    GlRender::bind(ui);
+    GlRender::setClearColor(0.f,0.f,0.f,0.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    scene.inUI(ui);
 
     //exposure
     GlRender::unbind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if (event.f.shadow_view) filter.displayRed(scene.light.getDirLight().getShadowMap(), event.f.shadow_level);
-    else if (event.f.debugGbuffer)Debugger::display(gBuffer.getTexture(0));
-    else filter.drawExposure(frame.getTexture());
-
-    GlRender::bind(ui);
+    Blend::Enable(true);
+    Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
+    GlRender::DepthTest(false);
     glClear(GL_COLOR_BUFFER_BIT);
-    scene.inUI(ui);
-    Debugger::display(gBuffer.getTexture(0));
+
+   // if (event.f.shadow_view) filter.displayRed(scene.light.getDirLight().getShadowMap(), event.f.shadow_level);
+    //else 
+    if (event.f.debugGbuffer)display(gBuffer.getTexture(0));
+    else filter.drawExposure(frame.getTexture());
+   
+    if (event.f.shadow_view) 
+        display(ui.getTexture());
+   
 
     window.display();
 }

@@ -3,6 +3,19 @@
 /// Blend------------------------------------------------------------
 /// <summary>
 /// GlRender
+/// 
+void Blend::Func(GLenum source, GLenum destination) {
+	if (srcFunc == source && dstFunc == destination) return;
+	srcFunc = source;
+	dstFunc = destination;
+	glBlendFunc(srcFunc, dstFunc);
+}
+
+void Blend::Equation(GLenum mode) {
+	if (modeEquation == mode) return;
+	modeEquation = mode;
+	glBlendEquation(modeEquation);
+}
 
 void Blend::Enable(bool enable) {
 	if (isEnable == enable) return;
@@ -11,8 +24,12 @@ void Blend::Enable(bool enable) {
 	else glDisable(GL_BLEND);
 }
 
-bool Blend::isEnable = 0;
+bool Blend::isEnable = false;
 
+GLenum Blend::srcFunc = Blend::None;
+GLenum Blend::dstFunc = Blend::None;
+
+GLenum Blend::modeEquation = Blend::Add;
 /// GlRender------------------------------------------------------------
  /// <summary>
  /// GlRender

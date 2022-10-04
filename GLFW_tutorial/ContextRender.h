@@ -1,4 +1,4 @@
-
+﻿
 #ifndef CONTEXT_RENDER_H
 #define CONTEXT_RENDER_H
 
@@ -26,14 +26,14 @@ public:
 		cw = GL_CW,
 	};
 
-	//������� ������ ��� �������� ������
+	//Обрезка задних или передних граней
 	static void Mode(ModeEnum new_state) {
 		if (mode != new_state) {
 			mode = new_state;
 			glCullFace(mode);
 		}
 	}
-	//�������� �������� ������� ������
+	//Включает контекст обрезки граней
 	static void Enable(bool new_state) {
 		if (new_state != enable) {
 			enable = new_state;
@@ -41,7 +41,7 @@ public:
 			else glDisable(GL_CULL_FACE);
 		}
 	}
-	//������ ����������� ������� ������ �� ��� ������ ������� �������
+	//Задает определение предних граней по или против часовой стрелке
 	static void FrontFace(FrontFaceEnum new_state) {
 		if (frontFace != new_state) {
 			frontFace = new_state;
@@ -64,14 +64,50 @@ private:
 class Blend
 {
 public:
+	enum FuncEnum:GLenum
+	{
+		Zero =						GL_ZERO,						//Коэффициент равен 0 (0, 0, 0, 0)
+		One =						GL_ONE,							//Коэффициент равен 1 (1, 1, 1, 1)
+
+		SrcColor =					GL_SRC_COLOR, 					//Коэффициент равен вектору источника цвета
+		OneMinusSrcColor =			GL_ONE_MINUS_SRC_COLOR,			//Коэффициент равен 1 минус вектор источника цвета
+
+		DstColor =					GL_DST_COLOR, 					//Коэффициент равен вектору цвета приемника
+		OneMinusDstColor =			GL_ONE_MINUS_DST_COLOR,			//Коэффициент равен 1 минус вектор цвета приемника
+
+		SrcAlpha =					GL_SRC_ALPHA,					//Коэффициент равен альфа - компоненте вектора цвета источника
+		OneMinusSrcAlpha =			GL_ONE_MINUS_SRC_ALPHA,			//Коэффициент равен 1 − альфа вектора цвета источника 
+
+		DstAlpha =					GL_DST_ALPHA,					//Коэффициент равен альфа - компоненте вектора цвета приемника 
+		OneMinusDstAlpha =			GL_ONE_MINUS_DST_ALPHA,			//Коэффициент равен 1 − альфа вектора цвета приемника 
+
+		ConstantColor =				GL_CONSTANT_COLOR,				//Коэффициент равен вектору постоянного цвета 
+		OneMInusConstantColor =		GL_ONE_MINUS_CONSTANT_COLOR,	//Коэффициент равен 1 − вектор постоянного цвета 
+		ConstantAlpha =				GL_CONSTANT_ALPHA,				//Коэффициент равен альфа - компоненте вектора постоянного цвета 
+		OneMinusConstantAlpha =		GL_ONE_MINUS_CONSTANT_ALPHA,	//Коэффициент равен 1 − альфа вектора постоянного цвета 
+
+		None
+	};
+
+	enum EquationEnum :GLenum
+	{
+		Add =				GL_FUNC_ADD,				// result = Источник + Приемник.
+		Subtract =			GL_FUNC_SUBTRACT,			// result = Источник − Приемник.
+		ReverseSubract =	GL_FUNC_REVERSE_SUBTRACT,	// result = Приемник − Источник.
+		Min =				GL_MIN,						// result = min(Приемник, Источник).
+		Max =				GL_MAX,						// result = max(Приемник, Источник).
 	
+	};
+	static void Func(GLenum sourse, GLenum destination);
+	static void Equation(GLenum mode);
 	static void Enable(bool new_state);
 
 private:
 
-	Blend();
-	~Blend();
-
+	Blend() {}
+	~Blend() {}
+	static GLenum modeEquation;
+	static GLenum srcFunc, dstFunc;
 	static bool isEnable;
 };
 

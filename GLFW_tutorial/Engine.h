@@ -33,17 +33,9 @@ public:
 
     Engine()
     {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        GlRender::DepthTest(true);
-        // GlRender::Blend(true);
-       //  glEnable(GL_ALPHA_TEST);
-       //  glAlphaFunc(GL_GREATER, 0.8);
-       // GlRender::Blend(true);
         setupWindow();
         scene.initialize(window);
         graphic.initialize(window);
-
     }
   
     void update(float time, Clock& clock) {

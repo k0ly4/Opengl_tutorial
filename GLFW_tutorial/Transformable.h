@@ -3,61 +3,96 @@
 
 #include "Shader.h"
 #include "Transform.h"
+
+/// <summary>
+/// Transformable2D
+/// </summary>
 class Transformable2D {
-protected:
-	float rotate;
-	glm::vec2 scale;
-	glm::vec2 position;
-	glm::vec2 origin;
+
 public:
-	virtual void setPosition(glm::vec2) = 0;
-	virtual void setScale(glm::vec2) = 0;
-	virtual void setOrigin(glm::vec2) = 0;
-	virtual void setRotate(float) = 0;
-	Transformable2D() :scale(1.f), position(0.f), origin(0.f), rotate(0.f) {}
+	Transformable2D(const glm::vec2& position, const glm::vec2& scale, const glm::vec2& origin, float rotate) :
+		transform_(position, scale, origin, rotate) {}
+
+	Transformable2D() :
+		transform_(glm::vec2(0.f), glm::vec2(1.f), glm::vec2(0.f), 0.f) {}
+
+	inline virtual void setPosition(const glm::vec2& position) {
+		transform_.setPosition(position);
+	}
+
+	inline virtual void setScale(const glm::vec2& scale) {
+		transform_.setScale(scale);
+	}
+
+	inline virtual void setOrigin(const glm::vec2& origin) {
+		transform_.setOrigin(origin);
+	}
+
+	inline virtual void setRotate(float angle_in_radians) {
+		transform_.setRotate(angle_in_radians);
+	}
+
+	inline const glm::vec2& getPosition()const {
+		return transform_.getPosition();
+	}
+
+	inline const glm::vec2& getScale()const {
+		return transform_.getScale();
+	}
+
+	inline float getRotate()const {
+		return transform_.getRotate();
+	}
+
+	inline const glm::vec2& getOrigin()const {
+		return transform_.getOrigin();
+	}
 
 	inline void Move(glm::vec2 offset) {
-		setPosition(position + offset);
+		setPosition(getPosition() + offset);
 	}
+
 	inline void Scale(glm::vec2 offset) {
-		setScale(scale + offset);
+		setScale(getScale() + offset);
 	}
+
 	inline void Rotate(float offset) {
-		setRotate(rotate + offset);
+		setRotate(getRotate() + offset);
 	}
-};
-class Transformable:public Transformable2D {
-protected:
-	bool need_update_model = 0;
-public:
-	inline void setPosition(glm::vec2 position) {
-		this->position = position;
-		need_update_model = 1;
-	}
-	inline void setRotate(float angle) {
-		rotate = angle;
-		need_update_model = 1;
-	}
-	inline void setOrigin(glm::vec2 origin) {
-		this->origin = origin;
-		need_update_model = 1;
-	}
-	inline void setScale(glm::vec2 scale) {
-		this->scale = scale;
-		need_update_model = 1;
-	}
+
 
 	void setPosition(float x, float y) {
 		setPosition(glm::vec2(x, y));
 	}
+
 	void setScale(float x, float y) {
 		setScale(glm::vec2(x, y));
 	}
+
 	void setOrigin(float x, float y) {
 		setOrigin(glm::vec2(x, y));
 	}
 
+	const Transform2D& getTransform()const {
+		return transform_;
+	}
+	void setTransform(const Transform2D& transform) {
+		transform_ = transform;
+	}
+
+protected:
+
+	inline void uniformTransform(const Shader& shader)const {
+		shader.uniform("model", transform_.getModel());
+	}
+
+	Transform2D transform_;
+
 };
+
+/// <summary>
+/// Transformable3D
+/// </summary>
 class Transformable3D {
 
 public:

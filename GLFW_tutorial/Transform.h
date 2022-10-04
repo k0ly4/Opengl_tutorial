@@ -18,6 +18,81 @@ struct Angle3D {
 	Angle3D(const glm::vec4& rotate) 
 		:axis(rotate.x, rotate.y, rotate.z), angle(rotate.w) {}
 };
+
+/// <summary>
+/// Transform3D
+/// </summary>
+class Transform2D {
+
+public:
+	
+	Transform2D(const glm::vec2& position, const glm::vec2& scale,const glm::vec2& origin, float rotate):
+		rotate_(rotate), 
+		position_(position), 
+		scale_(scale) {}
+
+	void setPosition(const glm::vec2& position) {
+		position_ = position;
+		needUpModel = 1;
+	}
+	const glm::vec2& getPosition()const {
+		return position_;
+	}
+
+	void setScale(const glm::vec2& scale) {
+		scale_ = scale;
+		needUpModel = 1;
+	}
+	const glm::vec2& getScale()const {
+		return scale_;
+	}
+	//In radians
+	void setRotate(float rotate_in_radians) {
+		rotate_ = rotate_in_radians;
+		needUpModel = 1;
+	}
+	//In radians
+	float getRotate()const {
+		return rotate_;
+	}
+
+	void setOrigin(const glm::vec2& origin) {
+		origin_ = origin;
+		needUpModel = 1;
+	}
+	const glm::vec2& getOrigin()const {
+		return origin_;
+	}
+
+	const glm::mat4& getModel() const{
+		if (needUpModel)calcModel();
+		return model;
+	}
+
+protected:
+
+	void calcModel()const {
+		model = glm::mat4(1.0f);
+		//Rotate
+		model = glm::translate(model, glm::vec3(origin_ + position_, 0.0f));
+		model = glm::rotate(model, rotate_, glm::vec3(0.0f, 0.0f, 1.0f));
+		//Move
+		model = glm::translate(model, glm::vec3(-scale_ * origin_, 0.0f));
+		//Scale
+		model = glm::scale(model, glm::vec3(scale_, 1.0f)); // последним идет масштабирование
+
+		needUpModel = 0;
+	}
+
+	mutable bool needUpModel = 1;
+	mutable glm::mat4 model;
+
+	float rotate_;
+	glm::vec2 position_;
+	glm::vec2 scale_;
+	glm::vec2 origin_;
+};
+
 /// <summary>
 /// Transform3D
 /// </summary>

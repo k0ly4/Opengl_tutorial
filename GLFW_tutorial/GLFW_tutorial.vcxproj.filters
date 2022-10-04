@@ -249,6 +249,9 @@
     <ClCompile Include="PostEffects.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Convex.cpp">
+      <Filter>Исходные файлы\Scene\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">

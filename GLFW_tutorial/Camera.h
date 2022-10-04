@@ -70,10 +70,13 @@ public:
    inline void setProjection(const FloatRect& rect) {
        proj.set(rect, -1.f, 1.f);
    }
-
+   inline void setProjection(const Box& box) {
+       proj.set(box);
+   }
    ///override
    inline void use(const Shader& shader)const override {
         shader.uniform("projection",proj.get());
+        shader.uniform("camera", glm::mat4(1.f));
    }
    inline  glm::mat4 getInverseVP()const override {
        return view.getInverse() * proj.getInverse();

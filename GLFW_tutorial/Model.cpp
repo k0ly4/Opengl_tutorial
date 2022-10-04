@@ -18,7 +18,7 @@ Convex& bMeshArray::getSkellet() {
     return skellet;
 }
 
-void bMeshArray::boneNode(NodeAnim& _node, Convex::Vertex* parent_vertex, size_t& global_index) {
+void bMeshArray::boneNode(NodeAnim& _node, ConvexVertex* parent_vertex, size_t& global_index) {
     if (_node.HasBone()) {
         skellet[global_index] = { parent_vertex->pos, color_skellet };
         global_index++;

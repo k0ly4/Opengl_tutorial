@@ -19,7 +19,7 @@ public:
         shader.use();
         shader.uniform("exposure", exposure);
 
-        GlRender::CullFace::Enable(false);
+        CullFace::Enable(false);
         sBuffer::quad.getVAO().draw();
     }
 
@@ -45,8 +45,8 @@ public:
         texture->use(0);
         shader.use();
         shader.uniform("exposure", exposure);
-
-        GlRender::CullFace::Enable(false);
+        shader.uniform("model", glm::mat4(1.f));
+        CullFace::Enable(false);
         sBuffer::quad2D.getVAO().draw();
     }
 

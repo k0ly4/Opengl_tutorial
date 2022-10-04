@@ -8,7 +8,7 @@
 #include "RenderWindow.h"
 #include"Sprite.h"
 #include "GBuffer.h"
-
+#include "Quad.h"
 #include "GameModules.h"
 
 /// <summary>

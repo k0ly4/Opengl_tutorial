@@ -56,7 +56,7 @@ protected:
 
     glm::mat4 inverse_global;
     glm::vec3 color_skellet = glm::vec3(0.f, 1.f, 0.f);
-    void boneNode(NodeAnim& _node, Convex::Vertex* parent_vertex, size_t& global_index);
+    void boneNode(NodeAnim& _node, ConvexVertex* parent_vertex, size_t& global_index);
     void tickNode(NodeAnim& _node, const glm::mat4& parent_transform);
     void infoNode(NodeAnim& _node, const std::string& tab);
     friend class ModelLoader;

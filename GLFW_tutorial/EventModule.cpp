@@ -65,8 +65,8 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
             }
         }
         else if (event.type == Event::WindowResized) {
-            graphic.gBuffer.setSize(window.getSize());
-            graphic.frame.setSize(window.getSize());
+            graphic.setBufferFrameSize(event.size.size);
+            scene.upSizeViews(event.size.size);
         }
 
     }

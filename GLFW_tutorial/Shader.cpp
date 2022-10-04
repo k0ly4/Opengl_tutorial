@@ -207,6 +207,8 @@ void glShader::init() {
     shader[m_texture].use();
     shader[m_texture].uniform("diffuse", 0);
 
+    setup(main_texture, "shaders\\3d\\texture\\main\\", 0, Uniform<int>("diffuse", 0));
+
     shader[m_texture_instance].load("shaders\\3d\\texture\\instance\\shader.vert", "shaders\\3d\\texture\\instance\\shader.frag");
     shader[m_texture_instance].use();
     shader[m_texture_instance].uniform("diffuse", 0);
