@@ -145,6 +145,7 @@ public:
         //Debug frame in one channel
         red,
         red_array,
+        red_font,
         //Total size
         shader_size
     };

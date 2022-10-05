@@ -2,46 +2,54 @@
 #ifndef GLYPH_H
 #define GLYPH_H
 
-#include <ft2build.h>
-#include FT_FREETYPE_H  
+#include "FontLoader.h" 
 #include "Texture.h"
 
+/////Glyph----------------------------------------------------
 class Glyph
 {
 public:
-    unsigned int texture;
-    glm::vec2 uv;
-    glm::uvec2 bearing;
+
+    FloatRect rect;
+    glm::ivec2 bearing;
     glm::uvec2 size;
     size_t advantage;
 
-    void load(FT_Face& face);
-
-    inline void useTexture() {
-        glTexture::active(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+    void load(const FT_Face& face);
+    void setRect(const glm::vec2& position,const glm::ivec2& sizeTexture) {
+        rect = FloatRect(position / glm::vec2(sizeTexture), glm::vec2(size) / glm::vec2(sizeTexture));
+    }
+    inline void useTexture()const {
+        texture.use(0);
     }
 
-    inline void dellTexture() {
-        glDeleteTextures(1, &texture);
-    }
+private:
+
+    GeneralTexture2D texture;
+
 };
 
+/////MapGlyph----------------------------------------------------
 class MapGlyph {
 
 public:
-   
-    inline bool operator ==(size_t Font_Size) {
-        return font_size == Font_Size;
-    }
-
+  
     MapGlyph() {}
 
-    MapGlyph(Texture2D& gl_texture, std::map< size_t, Glyph>& Alphabet, size_t gl_font_size) :
-        texture(gl_texture), alphabet(Alphabet), font_size(gl_font_size) {}
+    MapGlyph(Texture2D& gl_texture,const std::map<size_t, Glyph>& Alphabet) :
+        texture_(gl_texture), alphabet_(Alphabet) {}
 
-    Texture2D texture;
-    size_t font_size = 0;
-    std::map< size_t, Glyph> alphabet;
+    const Texture2D& getTexture()const  {
+        return texture_;
+    }
+
+    std::map<size_t, Glyph>& getMetrics()const {
+        return alphabet_;
+    }
+private:
+
+    Texture2D texture_;
+    mutable std::map<size_t, Glyph> alphabet_;
+
 };
 #endif

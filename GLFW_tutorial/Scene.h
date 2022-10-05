@@ -10,7 +10,7 @@
 #include "GBuffer.h"
 #include "Quad.h"
 #include "GameModules.h"
-
+#include "Font.h"
 /// <summary>
 /// Scene
 /// </summary>
@@ -47,6 +47,8 @@ public:
 	//Object2D
 	Sprite sCowBoy;
 	Sprite sError;
+	Font font;
+	Text text;
 	//Views
 	Camera camera;
 	View2D view2D;

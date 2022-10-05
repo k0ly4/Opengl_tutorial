@@ -9,5 +9,4 @@ out vec4 FragColor;
 void main()
 {      
        FragColor =vec4(color.rgb,color.a*texture(glyph,texCoord));
-      // FragColor = vec4(1.f,1.f,1.f,texture(glyph,texCoord));
 }

@@ -120,6 +120,10 @@ public:
         VAO_.attrib(1, 2, sizeof(UvVertex), sizeof(glm::vec3));
     }
 
+    void setDataDraw(const DataDraw& data) {
+        VAO_.data_draw = data;
+    }
+
     void resize(size_t new_size) {
         need_end_primitive = 1;
         vertices_.resize(new_size);
@@ -154,9 +158,11 @@ public:
         need_end_primitive = 1;
     }
 
-    const DrawBuffer& getVAO()const {
-        if (need_end_primitive)
-            endPrimitive();
+    void draw()const {
+        VAO_.draw();
+    }
+    DrawBuffer& getVAO() {
+        if (need_end_primitive) endPrimitive();
         return VAO_;
     }
 

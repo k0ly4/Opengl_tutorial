@@ -2,6 +2,8 @@
 #define TRANSFORM_H
 
 #include "Game.h"
+glm::mat4 getTransform();
+
 /// <summary>
 /// Angle3D
 /// </summary>
@@ -18,7 +20,6 @@ struct Angle3D {
 	Angle3D(const glm::vec4& rotate) 
 		:axis(rotate.x, rotate.y, rotate.z), angle(rotate.w) {}
 };
-
 /// <summary>
 /// Transform3D
 /// </summary>
@@ -29,7 +30,9 @@ public:
 	Transform2D(const glm::vec2& position, const glm::vec2& scale,const glm::vec2& origin, float rotate):
 		rotate_(rotate), 
 		position_(position), 
-		scale_(scale) {}
+		scale_(scale),
+		origin_(origin)
+	{}
 
 	void setPosition(const glm::vec2& position) {
 		position_ = position;
@@ -69,7 +72,12 @@ public:
 		return model;
 	}
 
+	bool isNeedUp()const {
+		return needUpModel;
+	}
 protected:
+
+	
 
 	void calcModel()const {
 		model = glm::mat4(1.0f);

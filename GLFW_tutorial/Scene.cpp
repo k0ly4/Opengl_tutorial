@@ -55,13 +55,19 @@ void Scene::initializeUI(RenderWindow& window) {
 	sError.setTexture(texError);
 	sError.setPosition(50.f, 50.f);
 	sError.setOrigin(sError.getTextureRect().w/2.f, sError.getTextureRect().h/2.f);
-	sError.setRotate(glm::radians(78.f));
-	///sError.setTextureRect(FloatRect(glm::vec2(0.f), 100.f, 100.f));
 
 	sCowBoy.setTexture(texCowBoy);
 	sCowBoy.setPosition(300.f, 200.f);
-	sCowBoy.setScale(glm::vec3(0.5f));
-	sCowBoy.setColor(Color(1.f, 0.5f, 0.5f, 0.5f));
+	
+
+	font.load("asset\\font\\UbuntuMono-R.ttf");
+	
+	sCowBoy.setTexture(font.getMapGlyphs(20).getTexture());
+	//sError.setTexture(font.getMapGlyphs(100).getTexture());
+	text.setFont(font);
+	text.setString(L"KOlya is the best");
+	text.setPosition(glm::vec2(20.f));
+	text.setSizeFont(20);
 }
 
 
@@ -107,4 +113,5 @@ void Scene::inUI(RenderTarget& target) {
 	Blend::Enable(true);
 	target.draw(sError);
 	target.draw(sCowBoy);
+	target.draw(text);
 }

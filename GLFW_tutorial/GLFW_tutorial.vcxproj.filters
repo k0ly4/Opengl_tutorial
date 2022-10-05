@@ -252,6 +252,9 @@
     <ClCompile Include="Convex.cpp">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="FontLoader.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -463,6 +466,9 @@
     </ClInclude>
     <ClInclude Include="TextureEntity.h">
       <Filter>Исходные файлы\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="FontLoader.h">
+      <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

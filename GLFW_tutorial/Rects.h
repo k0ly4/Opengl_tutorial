@@ -17,6 +17,9 @@ public:
         FloatRect(left,top, size.x,size.y) {}
     FloatRect(glm::vec2 pos, glm::vec2 size);
     bool contain(const glm::vec2& point)const;
+    inline glm::vec4 vec4()const {
+        return glm::vec4(x, y, w, h);
+    }
 private:
 };
 bool operator ==(const FloatRect& left, const FloatRect& right);

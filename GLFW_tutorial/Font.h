@@ -3,6 +3,7 @@
 
 #include "Glyph.h"
 #include "Framebuffer.h"
+#include "Convex.h"
 
 class Font {
 
@@ -10,32 +11,24 @@ public:
 
     Font();
 
-    MapGlyph& getTexture(size_t size_char);
-    bool loadFromFile(const std::string& path);
-
-    ~Font();
+    MapGlyph& getMapGlyphs(size_t size_char);
+    bool load(const std::string& path);
 
 private:
+    std::string path_;
+    unsigned alphCode_[288];
+    size_t alphSize;
 
-    FT_Library ft;
-    FT_Face face;
+    RenderTexture renderTexture_;
+    std::map<size_t, MapGlyph> mapGlyphs;
+    std::shared_ptr< FaceFont> face_;
+    ConvexUV convex;
 
-    const size_t MAX_CHAR_UTF = 256;
-    const size_t MIN_CHAR_UTF = 32;
-
-    const size_t MAX_CHAR_UNI = 1104;
-    const size_t MIN_CHAR_UNI = 1040;
-
-    float vertices[4][4];
-    unsigned int VAO,VBO;
-
-    RenderTexture render;
-    std::list<MapGlyph> lib_glyph;
-
+    void fillUnicode();
     bool loadGlyph(Glyph& glyph, size_t ch);
-    void display(std::map< size_t, Glyph>& alphabet, glm::uvec2 size, size_t step);
-    MapGlyph createFontTexture(size_t size_char);
-    void drawGlyph(Glyph& glyph, glm::vec2 pos);
+    void render(const glm::ivec2& sizeRender, std::map< size_t, Glyph>& alphabet, const glm::uvec2& size,  size_t step);
+    MapGlyph createFontMap(size_t size_char);
+    void drawGlyph(Glyph& glyph, const glm::vec2& pos);
 };
 #endif
 

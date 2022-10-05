@@ -247,6 +247,7 @@ void glShader::init() {
     setup(frame_exposure, "shaders\\framebuffer\\exposure\\", 0, Uniform<int>("image", 0));
     setup(red, "shaders\\framebuffer\\gbuffer\\shadow\\red\\", 0, Uniform<int>("image", 0));
     setup(red_array, "shaders\\framebuffer\\gbuffer\\shadow\\red\\array_texture\\", 0, Uniform<int>("image", 0));
+    setup(red_font, "shaders\\2d\\text\\red\\", 0, Uniform<int>("image", 0));
 
 
     shader[gb_light].loadDirectory("shaders\\framebuffer\\gbuffer\\light\\cascade_shadow\\");

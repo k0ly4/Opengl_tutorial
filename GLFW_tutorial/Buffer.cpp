@@ -70,7 +70,7 @@ std::unique_ptr<DataDraw::Draw> DataDraw::type[DataDraw::DrawSize] = {
 
   
     //data function
-
+    //GBO
     void GBO::data(size_t Size, const void* data) {
         if (cur_size < Size) {
             cur_size = Size;
@@ -87,7 +87,13 @@ std::unique_ptr<DataDraw::Draw> DataDraw::type[DataDraw::DrawSize] = {
 
 
 
-   
+    /// <summary>
+    /// ArrayBufferObject
+    /// </summary>
+    /// <param name="attribute"></param>
+    /// <param name="size"></param>
+    /// <param name="step"></param>
+    /// <param name="offset"></param>
     void ArrayBufferObject::attrib(size_t attribute, size_t size, size_t step, size_t offset) {
         size_attribute++;
         glEnableVertexAttribArray(attribute);

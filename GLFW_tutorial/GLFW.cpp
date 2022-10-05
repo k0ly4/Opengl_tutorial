@@ -16,7 +16,8 @@ void error_callback(int error, const char* description)
 bool GLFW::Context::initialize() {
         if (!glfwInit())
         {
-            std::cout << "(!)Failed to Initialization GLFW lib" << std::endl;
+            printf("(!)Error::GLFW::Context::initialize()::Failed to init GLFW");
+            exit(1);
             return 0;
         }
 

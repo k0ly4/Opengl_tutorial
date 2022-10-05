@@ -164,6 +164,7 @@
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventModule.cpp" />
     <ClCompile Include="Exception.cpp" />
+    <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="PostEffects.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventModule.h" />
     <ClInclude Include="Exception.h" />
+    <ClInclude Include="FontLoader.h" />
     <ClInclude Include="PostEffects.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="Game.h" />

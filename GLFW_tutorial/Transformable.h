@@ -81,7 +81,7 @@ public:
 	}
 
 protected:
-
+	
 	inline void uniformTransform(const Shader& shader)const {
 		shader.uniform("model", transform_.getModel());
 	}
