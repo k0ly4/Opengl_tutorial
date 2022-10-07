@@ -274,6 +274,7 @@ public:
     void attrib(size_t attribute, size_t size, size_t step, size_t offset);
     void attribI(size_t attribute, size_t size, size_t step, size_t offset);
     void attribInstanceVBOMat4(size_t attribute);
+    void attribInstanceMat4(size_t attribute, size_t step, size_t offset);
     void attribInstance(size_t attribute, size_t size, size_t step, size_t offset);
 
     static inline void end() {

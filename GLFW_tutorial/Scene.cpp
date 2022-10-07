@@ -11,7 +11,7 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	cube.setPosition(glm::vec3(10.f));
 	cube.setColor(glm::vec3(1.f));
 	cube.setTexture(filin);
-	cube.setRotate(Angle3D(20.f, glm::vec3(1.f, 0.5f, 0.5f)));
+	cube.setRotate(AngleAxis(20.f, glm::vec3(1.f, 0.5f, 0.5f)));
 
 	cube2.setPosition(glm::vec3(11.f, 6.6f, 13.f));
 	cube2.setTexture(filin);
@@ -28,7 +28,6 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	light.getDirLight().setDirection(glm::vec3(1.f, 1.f, 0.f));
 	light.getDirLight().setSizeMap(glm::ivec2(1024));
 	light.setAmbientFactor(0.01f);
-	std::cout << light.getPoint(0).getRadius();
 	plane2.setColor(Color::GREEN);
 	plane2.setPosition(glm::vec3(15.f, 7.f, 10.f));
 	plane2.setScale(glm::vec3(5.f));
@@ -53,21 +52,25 @@ void Scene::initializeUI(RenderWindow& window) {
 	texError.getPath("asset\\image\\FUrfZuZXoAEnZBE.jpg");
 
 	sError.setTexture(texError);
+	texError.wrap(TextureWrap::ClampToEdge);
 	sError.setPosition(50.f, 50.f);
 	sError.setOrigin(sError.getTextureRect().w/2.f, sError.getTextureRect().h/2.f);
 
-	sCowBoy.setTexture(texCowBoy);
-	sCowBoy.setPosition(300.f, 200.f);
+	sCowBoy.setTexture(texError);
+	sCowBoy.setPosition(700.f, 200.f);
 	
 
 	font.load("asset\\font\\UbuntuMono-R.ttf");
+	MapGlyph& map_ = font.getMapGlyphs(20);
+	sCowBoy.setTexture(map_.getTexture());
+	sError.setTexture(map_.getTexture());
 	
-	sCowBoy.setTexture(font.getMapGlyphs(20).getTexture());
-	//sError.setTexture(font.getMapGlyphs(100).getTexture());
-	text.setFont(font);
-	text.setString(L"KOlya is the best");
-	text.setPosition(glm::vec2(20.f));
-	text.setSizeFont(20);
+	text2.setFont(font);
+	text2.setString(L"KOlya is the best\nI love you");
+	text2.setPosition(glm::vec2(10.f));
+	text2.setSizeFont(20);
+	text2.setScale(glm::vec2(7.f));
+	text2.setColor(Color::YELLOW);
 }
 
 
@@ -77,7 +80,7 @@ void Scene::initializeUI(RenderWindow& window) {
 
 void Scene::inGBuffer(RenderTarget& target) {
 	Blend::Enable(false);
-	GlRender::DepthTest(true);
+	Depth::Enable(true);
 
 	CullFace::Enable(false);
 	target.draw(plane2);
@@ -92,7 +95,7 @@ void Scene::inGBuffer(RenderTarget& target) {
 void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
 
 	Blend::Enable(false);
-	GlRender::DepthTest(true);
+	Depth::Enable(true);
 
 	CullFace::Enable(false);
 	target.draw(plane2, shader);
@@ -109,9 +112,9 @@ void Scene::inUI(RenderTarget& target) {
 	target.setView(view2D);
 
 	CullFace::Enable(false);
-	GlRender::DepthTest(false);
+	Depth::Enable(false);
 	Blend::Enable(true);
-	target.draw(sError);
+	target.draw(text2);
 	target.draw(sCowBoy);
-	target.draw(text);
+
 }

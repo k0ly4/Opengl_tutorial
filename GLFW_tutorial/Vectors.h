@@ -17,6 +17,7 @@ struct Matrix3f :public glm::mat3 {
 };
 
 std::ostream& operator<< (std::ostream& out, const glm::vec3& vec);
+std::ostream& operator<< (std::ostream& out, const glm::vec4& vec);
 std::ostream& operator<< (std::ostream& out, const glm::mat4& mat);
 
 

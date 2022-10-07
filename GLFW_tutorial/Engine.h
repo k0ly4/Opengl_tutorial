@@ -5,7 +5,7 @@
 #include "EventModule.h"
 #include "GraphicModule.h"
 #include "Scene.h"
-
+#include "Clock.h"
 RenderWindow window;
 
 class Engine  {
@@ -22,7 +22,6 @@ class Engine  {
         window.setFrameInterval(1);
         window.setLimitSizeable(true, glm::ivec2(GLFW_DONT_CARE), glm::ivec2(GLFW_DONT_CARE));
         GlRender::setClearColor(Color::ColorU(150, 199, 196));
-
     }
   
     Scene scene;

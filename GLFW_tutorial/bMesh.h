@@ -112,7 +112,7 @@ class NodeMatrixAnimation {
         float time;
         const VectorKey& operator =(const aiVectorKey& vecKey) {
             value = to_vec3(vecKey.mValue);
-            time = vecKey.mTime;
+            time = (float)vecKey.mTime;
             return *this;
         }
     };
@@ -122,7 +122,7 @@ class NodeMatrixAnimation {
         float time;
         const QuatKey& operator =(const aiQuatKey& Key) {
             value = Key.mValue;
-            time = Key.mTime;
+            time = (float)Key.mTime;
             return *this;
         }
     };

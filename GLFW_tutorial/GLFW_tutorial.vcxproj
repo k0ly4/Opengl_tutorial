@@ -172,7 +172,6 @@
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLFW.cpp" />
-    <ClCompile Include="GLobal.cpp" />
     <ClCompile Include="Glyph.cpp" />
     <ClCompile Include="GraphicModule.cpp" />
     <ClCompile Include="ImageLoader.cpp" />
@@ -234,7 +233,6 @@
     <ClInclude Include="GameModules.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLM.h" />
-    <ClInclude Include="GLobal.h" />
     <ClInclude Include="Glyph.h" />
     <ClInclude Include="GraphicModule.h" />
     <ClInclude Include="ImageLoader.h" />

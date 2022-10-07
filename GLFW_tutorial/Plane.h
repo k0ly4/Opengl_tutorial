@@ -3,30 +3,25 @@
 
 #include "PrimitiveEntity.h"
 
-class Plane :public Drawable, public Transformable3D {
+class Plane :public Texturable, public Transformable3D {
    
 public:
    
-    Plane() {
-        id_obj = glShader::m_texture;
-    }
-
-    void setTexture(Texture2D& texture) {
-        this->texture = &texture;
+    Plane() 
+    {
+        id_obj = glShader::main_texture;
     }
 
     void draw(const View* view, const Shader& shader) {
         shader.use();
         view->use(shader);
         uniformTransform(shader);
-        texture->use(0);
+        uniformMaterial(shader);
         sBuffer::plane.getVAO().draw();
     }
 
 private:
 
-    
-    Texture2D* texture;
 };
 class gbPlane :public gbMateriable, public Transformable3D {
    

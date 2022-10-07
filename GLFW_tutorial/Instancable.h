@@ -17,13 +17,13 @@ struct InstanceMatrix {
 	glm::mat4 model = glm::mat4(1.f);
 	Transform3D transform;
 	virtual inline void setPosition(const glm::vec3& position) {
-		transform.position = position;
+		transform.setPosition(position);
 	}
-	inline void setRotate(const Angle3D& angle) {
-		transform.rotate = angle;
+	inline void setRotate(const AngleAxis& angle) {
+		transform.setRotate(angle);
 	}
 	inline void setScale(const glm::vec3& scale) {
-		transform.scale = scale;
+		transform.setScale(scale);
 	}
 	inline void saveModel() {
 		model = transform.getModel();

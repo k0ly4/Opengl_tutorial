@@ -108,6 +108,10 @@ std::unique_ptr<DataDraw::Draw> DataDraw::type[DataDraw::DrawSize] = {
         for (size_t i = 0; i < 4; i++)
             attribInstance(attribute + i, 4, sizeof(glm::mat4), i * sizeof(glm::vec4));
     }
+     void ArrayBufferObject::attribInstanceMat4(size_t attribute,size_t step,size_t offset) {
+         for (size_t i = 0; i < 4; i++)
+             attribInstance(attribute + i, 4, step, i * sizeof(glm::vec4)+ offset);
+     }
     void ArrayBufferObject::attribInstance(size_t attribute, size_t size, size_t step, size_t offset) {
         glEnableVertexAttribArray(attribute);
         glVertexAttribPointer(attribute, size, GL_FLOAT, GL_FALSE, step, (void*)(offset));

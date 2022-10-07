@@ -6,10 +6,11 @@
 #include <fstream>
 #include <sstream>
 #include "ImageLoader.h"
+
+////FileManager--------------------------
 class FileManager {
 
 public:
-
 	static bool read(std::string& data, const std::string& path);
 
 private:

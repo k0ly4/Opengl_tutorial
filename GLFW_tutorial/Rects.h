@@ -2,7 +2,35 @@
 #define RECTS_H
 
 #include "GLM.h"
+#include <iostream>
 
+////Line------------------------------------------------
+class CornerRect {
+public:
+
+    glm::vec2 lu;//left and up
+    glm::vec2 rd;//right and down
+
+    CornerRect(float leftUpX, float leftUpY, float rightDownX, float rightDownY) :
+        CornerRect(glm::vec2(leftUpX,leftUpY),glm::vec2(rightDownX,rightDownY))
+    {}
+    CornerRect(const glm::vec2& leftUp, const glm::vec2& rightDown) :
+        lu(leftUp), rd(rightDown) 
+    {}
+    CornerRect() :
+        CornerRect(glm::vec2(0.f),glm::vec2(0.f))
+    {}
+
+};
+
+inline CornerRect operator /(const CornerRect& a, const glm::vec2& scale) {
+    return CornerRect(a.lu / scale, a.rd/scale);
+}
+
+inline CornerRect operator *(const CornerRect& a, const glm::vec2& scale) {
+    return CornerRect(a.lu * scale, a.rd * scale);
+}
+////FloatRect------------------------------------------------
 class FloatRect {
 public:
     float x, y, w, h;
@@ -40,6 +68,12 @@ inline bool operator !=(const FloatRect& left, const FloatRect& right) {
     return !(left == right);
 }
 
+inline std::ostream& operator<< (std::ostream& out, const FloatRect& rect) {
+    out << rect.x << ' ' << rect.y << ' ' << rect.w << ' ' << rect.h;
+    return out;
+}
+
+////IntRect------------------------------------------------
 class IntRect {
 public:
     int x, y, w, h;

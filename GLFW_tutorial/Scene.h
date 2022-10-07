@@ -2,7 +2,6 @@
 #define SCENE_H
 
 #include"Camera.h"
-#include"Text.h"
 #include "DeclaredObjects.h"
 #include "Shape.h"
 #include "RenderWindow.h"
@@ -11,6 +10,8 @@
 #include "Quad.h"
 #include "GameModules.h"
 #include "Font.h"
+#include "Text.h"
+
 /// <summary>
 /// Scene
 /// </summary>
@@ -48,7 +49,7 @@ public:
 	Sprite sCowBoy;
 	Sprite sError;
 	Font font;
-	Text text;
+	Text text2;
 	//Views
 	Camera camera;
 	View2D view2D;

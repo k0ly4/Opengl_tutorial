@@ -84,7 +84,6 @@ public:
     {}
 
     GeneralTexture2D() {}
-
 protected:
 };
 

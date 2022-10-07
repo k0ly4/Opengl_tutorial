@@ -65,7 +65,6 @@ class View2D:public View {
 public:
     View2D()
     {
-     
     }
    inline void setProjection(const FloatRect& rect) {
        proj.set(rect, -1.f, 1.f);

@@ -24,7 +24,7 @@ void RenderTextureDepth::create(const glm::ivec2& Size)
     glReadBuffer(GL_NONE);
 
     if (GlRender::checkFramebufferStatus()) {
-        log("(!)ERROR::FRAMEBUFFER::NON-COMPLETE\n");
+        LOG("(!)ERROR::FRAMEBUFFER::NON-COMPLETE\n");
     }
     GlRender::unbind();
 }
@@ -49,7 +49,7 @@ bool RenderCascadedDepth::create(size_t cascadeLevels, const glm::ivec2& size)
     glReadBuffer(GL_NONE);
 
     if (GlRender::checkFramebufferStatus()) {
-        log("(!)ERROR::FRAMEBUFFER::RenderCascadedDepth::NON-COMPLETE\n");
+        LOG("(!)ERROR::FRAMEBUFFER::RenderCascadedDepth::NON-COMPLETE\n");
         return 0;
     }
 
@@ -82,7 +82,7 @@ bool RenderDepthCubeMap::create(const glm::ivec2& size,float far_plane)
     glReadBuffer(GL_NONE);
 
     if (GlRender::checkFramebufferStatus()) {
-        log("(!)ERROR::FRAMEBUFFER::RenderDepthCubeMap::NON-COMPLETE\n");
+        LOG("(!)ERROR::FRAMEBUFFER::RenderDepthCubeMap::NON-COMPLETE\n");
         return 0;
     }
     GlRender::unbind();
@@ -95,10 +95,10 @@ void RenderDepthCubeMap::uniform(const Shader& shader, const std::string& name, 
 }
 
 bool RenderDepthCubeMap::upLightPos(const glm::vec3& lightPos) {
-    if (curLightPos == lightPos && needUpTransforms == 0)
+    if (lastLightPos == lightPos && needUpTransforms == 0)
         return 0;
     needUpTransforms = 1;
-    curLightPos = lightPos;
+    lastLightPos = lightPos;
     const glm::mat4& proj = proj_matrix_.get();
    
     transforms[0] = proj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));
@@ -127,7 +127,7 @@ void RenderDepthCubeMap::render(const View3D& view_player,const glm::vec3& light
         mats[i] = transforms[i];
     }
     shader.uniform("shadowMatrices", mats);
-    shader.uniform("lightPos", curLightPos);
+    shader.uniform("lightPos", lastLightPos);
     shader.uniform("far_plane", proj_matrix_.getData().persp.far);
     render.inShadowMap(*this, glShader::cube_depth);
 }

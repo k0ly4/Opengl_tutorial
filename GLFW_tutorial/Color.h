@@ -1,7 +1,9 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
-#include "GLobal.h"
+#include"GLFW.h"
+#include "GLM.h"
+
 struct Color
 {
     static const Color

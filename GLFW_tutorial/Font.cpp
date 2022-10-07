@@ -84,14 +84,16 @@ MapGlyph Font::createFontMap(size_t size_char) {
     renderTexture_.create(size_texture, TextureData(GL_RED, GL_RED, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR));//GL_LINEAR
     GlRender::setClearColor(0.f, 0.f, 0.f, 0.f);
     GlRender::bind(renderTexture_);
+    Depth::Test(false);
+    CullFace::Enable(false);
     glClear(GL_COLOR_BUFFER_BIT);
 
     const Shader& shader = glShader::get(glShader::red_font);
     shader.use();
     shader.uniform("projection", glm::ortho(0.f, (float)size_texture.x, (float)size_texture.y, 0.f));
-    render(size_texture, alphabet, max_size,  sym_x);
-
+    render(size_texture, alphabet, max_size,  sym_x);    
     GlRender::unbind();
+    Depth::Test(true);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
@@ -101,7 +103,7 @@ MapGlyph Font::createFontMap(size_t size_char) {
 bool Font::loadGlyph(Glyph& glyph, size_t ch) {
     if (face_->loadGlyph(ch, FT_LOAD_RENDER) == 0)
         return 0;
-
+    FT_Render_Glyph(face_->getSlot(), FT_RENDER_MODE_SDF);
     glyph.load(face_->get());
     return 1;
 }
@@ -132,6 +134,7 @@ void Font::drawGlyph(Glyph& glyph, const glm::vec2& pos) {
 
     glyph.useTexture();
     convex.getVAO().draw();
+    glyph.dellTexture();
     //!need free resource glyph
    // glyph.dellTexture();
 }

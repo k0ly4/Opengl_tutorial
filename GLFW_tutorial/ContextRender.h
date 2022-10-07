@@ -111,7 +111,23 @@ private:
 	static bool isEnable;
 };
 
+/// GlRender------------------------------------------------------------
+/// <summary>
+/// Depth
+/// </summary>
+class Depth {
+public:
+	static void Enable(bool new_state);
+	static void Test(bool new_state);
+private:
+	
+	Depth() {}
+	~Depth() {}
 
+	static bool isEnableTest;
+	static bool isEnable;
+
+};
 
 /// GlRender------------------------------------------------------------
 /// <summary>
@@ -136,8 +152,6 @@ public:
 	static inline void setClearColor(float r, float g, float b, float a) {
 		setClearColor(Color(r, g, b, a));
 	}
-
-	static void DepthTest(bool enable);
 	
 
 	class  Viewport {
@@ -237,7 +251,6 @@ private:
 	~GlRender() {}
 	static Color cur_color_clear;
 	static GLenum polygonMode;
-	static bool isDepthTest;
 	
 	static unsigned int last_fbo;
 

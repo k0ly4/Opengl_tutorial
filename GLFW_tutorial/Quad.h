@@ -9,7 +9,7 @@ public:
     Quad() { 
         id_obj = glShader::frame_exposure;
     }
-    void setTexture(Texture2D& texture) {
+    void setTexture(const Texture2D& texture) {
         this->texture = &texture;
     }
     void draw(const View* view, const Shader& shader) {
@@ -25,7 +25,7 @@ public:
 
 private:
 
-    Texture2D* texture;
+    const Texture2D* texture =0 ;
     float exposure = 2.2f;
 };
 
@@ -33,16 +33,18 @@ private:
 class Quad2D :public Drawable {
     
 public:
-    Quad2D() {
+    Quad2D():
+        texture_(0) 
+    {
         id_obj = glShader::frame_exposure;
 
     }
-    void setTexture(Texture2D& texture) {
-        this->texture = &texture;
+    void setTexture(const Texture2D& texture) {
+       texture_ = &texture;
     }
     void draw(const View* view, const Shader& shader) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        texture->use(0);
+        texture_->use(0);
         shader.use();
         shader.uniform("exposure", exposure);
         shader.uniform("model", glm::mat4(1.f));
@@ -51,8 +53,10 @@ public:
     }
 
 private:
-    Texture2D* texture;
+
+    const Texture2D* texture_;
     float exposure = 2.2f;
+
 };
 
 #endif

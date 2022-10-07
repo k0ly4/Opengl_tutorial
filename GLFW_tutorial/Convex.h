@@ -22,6 +22,7 @@ struct UvVertex {
         uv(uv_) {}
 
 };
+
 /// <summary>
 /// Convex
 /// </summary>
@@ -158,10 +159,12 @@ public:
         need_end_primitive = 1;
     }
 
-    void draw()const {
+    void draw() {
+        if (need_end_primitive) endPrimitive();
         VAO_.draw();
     }
-    DrawBuffer& getVAO() {
+
+    DrawBuffer& getVAO()const {
         if (need_end_primitive) endPrimitive();
         return VAO_;
     }

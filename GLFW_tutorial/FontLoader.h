@@ -20,7 +20,9 @@ public:
 		}
 		return 1;
 	}
-
+	const FT_GlyphSlot& getSlot() {
+		return face_->glyph;
+	}
 	const FT_Face& get()const  {
 		return face_;
 	}
@@ -111,7 +113,7 @@ public:
 	}
 private:
 
-	static std::shared_ptr <FaceFont> load(const std::string& path)
+	static const std::shared_ptr <FaceFont>& load(const std::string& path)
 	{
 		FontResource font(lib.get(), path);
 		if (font.get()) {

@@ -1,6 +1,15 @@
-#include "Framebuffer.h"
-#include "Exception.h"
-    
+
+#include "Framebuffer.h"  
+
+inline bool testSize(const char* nameClass,const glm::ivec2& size)noexcept {
+
+    if (size.x == 0 || size.y == 0) {
+        LOG(LogWarning, "%s::size.xy == 0\n", nameClass);
+        return 1;
+    }
+
+    return 0;
+}
 /// <summary>
 /// FrameBuffer
 /// </summary>
@@ -11,8 +20,12 @@ void FrameBuffer::implementDepth(unsigned int write_fbo) {
     glBlitFramebuffer(0, 0, size_.x, size_.y, 0, 0, size_.x, size_.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
 
-bool FrameBuffer::setSize(const glm::ivec2& render_size) {
-    size_ = render_size;
+bool FrameBuffer::setSize(const glm::ivec2& size) {
+
+    if (testSize("RenderTexture", size))
+        return 0;
+
+    size_ = size;
     std::vector<unsigned int> attachment(texturesFormat_.size());
     GlRender::bind(*this,0);
 
@@ -33,7 +46,7 @@ bool FrameBuffer::setSize(const glm::ivec2& render_size) {
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rendereBuffer_);
 
     if(GlRender::checkFramebufferStatus()) {
-        log("(!)Error::FrameBuffer::Non complete\n");
+        LOG(LogError,"FrameBuffer::Non complete\n");
         return 0;
     }
 
@@ -41,10 +54,11 @@ bool FrameBuffer::setSize(const glm::ivec2& render_size) {
     return 1;
 }
 
-bool FrameBuffer::create(const glm::ivec2& render_size, size_t sizeTextures, const TextureData* setupTextures)
+bool FrameBuffer::create(const glm::ivec2& size, size_t sizeTextures, const TextureData* setupTextures)
 {
-   
-        size_ = render_size;
+        if (testSize("RenderTexture", size))
+            return 0;
+        size_ = size;
         std::vector<unsigned int> attachment(sizeTextures);
         textures_.clear();
         textures_.reserve(sizeTextures);
@@ -69,7 +83,7 @@ bool FrameBuffer::create(const glm::ivec2& render_size, size_t sizeTextures, con
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rendereBuffer_);
 
         if (GlRender::checkFramebufferStatus()) {
-            log("(!)Error::FrameBuffer::Non complete\n");
+            LOG(LogError,"FrameBuffer::Non complete\n");
             return 0;
         }
         GlRender::unbind();
@@ -79,9 +93,11 @@ bool FrameBuffer::create(const glm::ivec2& render_size, size_t sizeTextures, con
 /// <summary>
 /// RenderColor
 /// </summary>
-bool RenderColor::create(const glm::ivec2& render_size, size_t sizeTextures, const TextureData* setupTextures)
-{
-    size_ = render_size;
+bool RenderColor::create(const glm::ivec2& size, size_t sizeTextures, const TextureData* setupTextures)
+{   
+    if (testSize("RenderTexture", size))
+        return 0;
+    size_ = size;
     std::vector<unsigned int> attachment(sizeTextures);
     textures_.clear();
     textures_.reserve(sizeTextures);
@@ -100,7 +116,7 @@ bool RenderColor::create(const glm::ivec2& render_size, size_t sizeTextures, con
         glDrawBuffers(attachment.size(), attachment.data());
 
     if (GlRender::checkFramebufferStatus()) {
-        log("(!)Error::RenderColor::Non complete\n");
+        LOG(LogError, "RenderColor::Non complete\n");
         return 0;
     }
 
@@ -113,6 +129,10 @@ bool RenderColor::create(const glm::ivec2& render_size, size_t sizeTextures, con
 /// </summary>
 
 bool RenderTexture::create(const glm::ivec2& size, const TextureData& format_data) {
+        
+        if (testSize("RenderTexture",size))
+            return 0;
+
         size_ = size;
         data_format_ = format_data.getFormat();
         
@@ -124,7 +144,7 @@ bool RenderTexture::create(const glm::ivec2& size, const TextureData& format_dat
         texture.bindToFramebuffer(0);
 
         if (GlRender::checkFramebufferStatus()) {
-            log("(!)Error::RenderTexture::Non complete\n");
+            LOG(LogError, "RenderTexture::Non complete\n");
             return 0;
         }   
 
@@ -135,13 +155,15 @@ bool RenderTexture::create(const glm::ivec2& size, const TextureData& format_dat
 bool RenderTexture::create(const glm::ivec2& size) {
 
     if (size_ == size) return 1; 
-  
+    if (testSize("RenderTexture", size))
+        return 0;
+
     texture.create(size_, data_format_);
     GlRender::bind(*this, 0);
     texture.bindToFramebuffer(0);
 
     if (GlRender::checkFramebufferStatus()) {
-        log("(!)Error::RenderTexture::Non complete\n");
+        LOG(LogError,"RenderTexture::Non complete\n");
         return 0;
     }
 

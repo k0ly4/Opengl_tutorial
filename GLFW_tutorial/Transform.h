@@ -2,26 +2,31 @@
 #define TRANSFORM_H
 
 #include "Game.h"
-glm::mat4 getTransform();
 
+///AngleAxis----------------------------------------------------------
 /// <summary>
-/// Angle3D
+///
 /// </summary>
-struct Angle3D {
+struct AngleAxis {
+
 	glm::vec3 axis;
 	float angle;
 
-	Angle3D() 
+	AngleAxis()
 		:angle(0.f), axis(0.f) {}
 
-	Angle3D(float Angle, const glm::vec3& Axis) 
-		:angle(Angle), axis(Axis) {}
+	AngleAxis(float Angle, const glm::vec3& Axis)
+		:angle(Angle), 
+		axis(Axis) {}
 
-	Angle3D(const glm::vec4& rotate) 
-		:axis(rotate.x, rotate.y, rotate.z), angle(rotate.w) {}
+	AngleAxis(const glm::vec4& rotate)
+		:axis(rotate.x, rotate.y, rotate.z), 
+		angle(rotate.w) {}
 };
+
+///Transform3D----------------------------------------------------------
 /// <summary>
-/// Transform3D
+/// 
 /// </summary>
 class Transform2D {
 
@@ -31,7 +36,8 @@ public:
 		rotate_(rotate), 
 		position_(position), 
 		scale_(scale),
-		origin_(origin)
+		origin_(origin),
+		model(1.f)
 	{}
 
 	void setPosition(const glm::vec2& position) {
@@ -77,8 +83,6 @@ public:
 	}
 protected:
 
-	
-
 	void calcModel()const {
 		model = glm::mat4(1.0f);
 		//Rotate
@@ -101,27 +105,87 @@ protected:
 	glm::vec2 origin_;
 };
 
+///Transform3D----------------------------------------------------------
 /// <summary>
 /// Transform3D
 /// </summary>
-struct Transform3D {
+class Transform3D {
 
-	Angle3D rotate;
-	glm::vec3 position;
-	glm::vec3 scale;
+public:
 
-	Transform3D() 
-		:position(0.f), scale(1.f), rotate(0.f, glm::vec3(0.f, 1.f, 0.f)) {}
+	Transform3D(const glm::vec3& position, const glm::vec3& scale, const glm::vec3& origin, const AngleAxis& rotate) :
+		rotate_(rotate),
+		position_(position),
+		scale_(scale),
+		origin_(origin),
+		model(1.f)
+	{}
 
-	Transform3D(const glm::vec3& Pos, const glm::vec3& Scale, const Angle3D& Rotate) 
-		:rotate(Rotate), position(Pos), scale(Scale) {}
-
-	glm::mat4 getModel() {
-		return glm::scale(glm::rotate(glm::translate(glm::mat4(1.f), position), glm::radians(rotate.angle), rotate.axis), scale);
+	void setPosition(const glm::vec3& position) {
+		position_ = position;
+		needUpModel = 1;
 	}
+	const glm::vec3& getPosition()const {
+		return position_;
+	}
+
+	void setScale(const glm::vec3& scale) {
+		scale_ = scale;
+		needUpModel = 1;
+	}
+	const glm::vec3& getScale()const {
+		return scale_;
+	}
+	//In radians
+	void setRotate(const AngleAxis& angle) {
+		rotate_ = angle;
+		needUpModel = 1;
+	}
+	//In radians
+	const AngleAxis& getRotate()const {
+		return rotate_;
+	}
+
+	void setOrigin(const glm::vec3& origin) {
+		origin_ = origin;
+		needUpModel = 1;
+	}
+	const glm::vec3& getOrigin()const {
+		return origin_;
+	}
+
+	const glm::mat4& getModel() const {
+		if (needUpModel)calcModel();
+		return model;
+	}
+
+	bool isNeedUp()const {
+		return needUpModel;
+	}
+
+protected:
+
+	void calcModel()const {
+		model = glm::mat4(1.f);
+		model = glm::translate(model, position_);
+		model = glm::rotate(model, glm::radians(rotate_.angle), rotate_.axis);
+		model = glm::scale(model, scale_);
+
+		needUpModel = 0;
+	}
+
+	mutable bool needUpModel = 1;
+	mutable glm::mat4 model;
+
+	AngleAxis rotate_;
+	glm::vec3 position_;
+	glm::vec3 scale_;
+	glm::vec3 origin_;
 };
+
+///Basis----------------------------------------------------------
 /// <summary>
-/// Basis
+/// 
 /// </summary>
 struct Basis {
 
@@ -162,6 +226,7 @@ inline bool operator !=(const Basis& left, const Basis& right) {
 	return (!(left == right));
 }
 
+///AngleEuler----------------------------------------------------------
 /// <summary>
 /// AngleEuler
 /// </summary>

@@ -85,37 +85,11 @@ struct Uniform {
 /// </summary>
 class glShader {
    
-    glShader() {}
-    ~glShader() {}
-    static std::vector<Shader> shader;
-    static void setGBuffer(Shader& shader) {
-        shader.use();
-        shader.uniform("gPosition", 0);
-        shader.uniform("gNormal", 1);
-        shader.uniform("gAlbedoSpec", 2);
-        //shadow-maps
-        shader.uniform("d_light.shadow_map", 3);
-        shader.uniform("p_light[0].map", 4);
-        /*shader.uniform("d_light.shadow_map[1]", 4);
-        shader.uniform("d_light.shadow_map[2]", 5);
-        shader.uniform("d_light.shadow_map[3]", 6);*/
-    }
-
-    template<typename type_value>
-    static void setup(size_t index,const std::string& directory,bool geoShader,const Uniform<type_value>& uniform) {
-        shader[index].loadDirectory(directory, geoShader);
-        if (uniform.name.empty() == 0)
-        {  
-            shader[index].use();
-            uniform.use(shader[index]);
-        }
-    }
    
 public:
 
     enum Object :size_t
     {
-        sprite, 
         font,
         text, 
         shape,
@@ -126,7 +100,6 @@ public:
         m_light_layout_color, 
         m_light_uniform_color, 
         m_light_uniform_color_instance,
-        m_texture, 
         main_texture,
         m_texture_instance, 
         m_texture_normal, 
@@ -159,6 +132,36 @@ public:
     static void free() {
         for (auto& i : shader) 
             glDeleteShader(i.ID);
+    }
+
+private:
+
+    glShader() {}
+    ~glShader() {}
+
+    static std::vector<Shader> shader;
+
+    static void setGBuffer(Shader& shader) {
+        shader.use();
+        shader.uniform("gPosition", 0);
+        shader.uniform("gNormal", 1);
+        shader.uniform("gAlbedoSpec", 2);
+        //shadow-maps
+        shader.uniform("d_light.shadow_map", 3);
+        shader.uniform("p_light[0].map", 4);
+        /*shader.uniform("d_light.shadow_map[1]", 4);
+        shader.uniform("d_light.shadow_map[2]", 5);
+        shader.uniform("d_light.shadow_map[3]", 6);*/
+    }
+
+    template<typename type_value>
+    static void setup(size_t index, const std::string& directory, bool geoShader, const Uniform<type_value>& uniform) {
+        shader[index].loadDirectory(directory, geoShader);
+        if (uniform.name.empty() == 0)
+        {
+            shader[index].use();
+            uniform.use(shader[index]);
+        }
     }
 };
 

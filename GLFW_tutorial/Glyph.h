@@ -16,16 +16,22 @@ public:
     size_t advantage;
 
     void load(const FT_Face& face);
+
     void setRect(const glm::vec2& position,const glm::ivec2& sizeTexture) {
         rect = FloatRect(position / glm::vec2(sizeTexture), glm::vec2(size) / glm::vec2(sizeTexture));
     }
+
     inline void useTexture()const {
-        texture.use(0);
+        texture_->use(0);
+    }
+
+    void dellTexture() {
+        texture_ = 0;
     }
 
 private:
 
-    GeneralTexture2D texture;
+    std::shared_ptr<GeneralTexture2D> texture_ =0 ;
 
 };
 

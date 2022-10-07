@@ -24,7 +24,7 @@ void MaterialMesh::addAssets(aiMaterial* mat, const std::string& directory, aiTe
     for (size_t i = 0; i < mat->GetTextureCount(type); i++)
     {
         mat->GetTexture(type, i, &str);
-        log("MaterialMesh::addAssets "+std::string(str.C_Str())+"\n");
+        LOG("MaterialMesh::addAssets "+std::string(str.C_Str())+"\n");
         texture.push_back(Asset(directory + '/' + std::string(str.C_Str()), typeName, gammaCorrection));
     }
 }

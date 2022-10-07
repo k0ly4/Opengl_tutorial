@@ -30,7 +30,8 @@ public:
     void update(float time, RenderWindow& window, GraphicPipeline& graphic, Scene& scene);
 
 private:
-
+    void inputNormalCursor(Event& event, Scene& scene);
+    void inputDisabledCursor(Event& event, Scene& scene);
     void move_camera(float time, Scene& scene);
 	Event event;
 };

@@ -4,8 +4,9 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Camera.h"
+
+///Drawable---------------------------------------------
 /// <summary>
-/// Drawable
 /// Интерфейс между RenderGeneral* и объектом
 /// </summary>
 class Drawable {
@@ -14,8 +15,44 @@ public:
 	virtual void draw(const View * view, const Shader & shader) = 0;
 };
 
+///Texturable---------------------------------------------
 /// <summary>
-/// gbMateriable
+/// Texturable
+/// </summary>
+class Texturable :public Drawable {
+public:
+
+	Texturable() :
+		texture_(0),
+		color_(1.f) 
+	{}
+
+	void setColor(const Color& color) {
+		
+	}
+	const Color& getColor(const Color& color)const {
+		return color_;
+	}
+
+	void setTexture(const Texture2D& texture) {
+		texture_ = &texture;
+	}
+
+protected:
+	
+	const Texture2D* texture_ = 0;
+	const Color color_;
+
+	void uniformMaterial(const Shader& shader,const char* colorUniform = "color") {
+		if (texture_) texture_->use(0);
+		shader.uniform(colorUniform, color_);
+	}
+
+};
+
+///gbMateriable---------------------------------------------
+/// <summary>
+///
 /// </summary>
 class gbMateriable :public Drawable {
 

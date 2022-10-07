@@ -170,8 +170,8 @@ void NodeMatrixAnimation::create(const aiNodeAnim* node, float* time) {
 
 void Animation::create(const aiAnimation* animation) {
     data.name = animation->mName.C_Str();
-    data.duration = animation->mDuration;
-    data.tickPerSecond = animation->mTicksPerSecond != 0 ? animation->mTicksPerSecond : 25.f;
+    data.duration =(float) animation->mDuration;
+    data.tickPerSecond = animation->mTicksPerSecond != 0.0 ? (float)animation->mTicksPerSecond : 25.f;
     channel.resize(animation->mNumChannels);
     size_t index = 0;
     for (auto i = channel.begin(); i != channel.end(); i++, index++) 

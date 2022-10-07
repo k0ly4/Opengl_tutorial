@@ -47,8 +47,10 @@ struct Box {
     Box(float minX, float maxX, float minY, float maxY, float minZ, float maxZ);
     Box() {}
 
-    glm::mat4 getMatrix()const;
-
+    //no dirty flag
+    inline glm::mat4 getMatrix()const {
+        return glm::ortho(left, right, bottom, top, near, far);
+    }
 };
 
 std::ostream& operator<< (std::ostream& out, const Box& box);
@@ -57,15 +59,29 @@ std::ostream& operator<< (std::ostream& out, const Box& box);
 /// Perspective
 /// </summary>
 struct Perspective {
+
     float near;
     float far;
     float ratio;
     float fov;
-    Perspective() {}
-    Perspective(float _ratio, float _fov, float _near, float _far);
-    glm::mat4 getMatrix()const;
-};
 
+    Perspective() :
+        ratio(1.f),
+        fov(1.f),
+        near(0.f),
+        far(0.f) {}
+
+    Perspective(float _ratio, float _fov, float _near, float _far) :
+        ratio(_ratio),
+        fov(_fov),
+        near(_near),
+        far(_far) {}
+
+    //no dirty flag
+    inline glm::mat4 getMatrix()const {
+        return glm::perspective(glm::radians(fov), ratio, near, far);
+    }
+};
 inline bool operator ==(const Perspective& left, const Perspective& right) {
     return (left.far == right.far) && (left.near == right.near) && (left.fov == right.fov) && (left.ratio == right.ratio);
 }

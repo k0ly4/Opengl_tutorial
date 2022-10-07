@@ -12,7 +12,7 @@ void Sprite::setTextureRect(const FloatRect& rect) {
     needUpConvex_ = 1;
 }
 
-void Sprite::draw(const View* view,const Shader& shader) {
+void Sprite::draw(const View* view, const Shader& shader) {
     if (needUpConvex_)
         upConvex();
     shader.use();
@@ -20,5 +20,5 @@ void Sprite::draw(const View* view,const Shader& shader) {
     uniformTransform(shader);
     texture_->use(0);
     shader.uniform("color", color_);
-    convex_.getVAO().draw();
+    convex_.draw();
 }

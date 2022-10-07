@@ -185,9 +185,9 @@ void glShader::init() {
     shader[text].use();
     shader[text].uniform("glyph", 0);
 
-    shader[sprite].load("shaders\\2d\\sprite\\shader.vert", "shaders\\2d\\sprite\\shader.frag");
+   /* shader[sprite].load("shaders\\2d\\sprite\\shader.vert", "shaders\\2d\\sprite\\shader.frag");
     shader[sprite].use();
-    shader[sprite].uniform("image", 0);
+    shader[sprite].uniform("image", 0);*/
 
     shader[shape].load("shaders\\2d\\shape\\shader.vert", "shaders\\2d\\shape\\shader.frag");
     //3d
@@ -202,10 +202,6 @@ void glShader::init() {
     shader[m_uniform_color].loadDirectory("shaders\\3d\\color\\uniform\\");
 
     setup(m_layout_color, "shaders\\3d\\color\\layout\\", 0, Uniform<int>("", 0));
-
-    shader[m_texture].load("shaders\\3d\\texture\\standart\\shader.vert", "shaders\\3d\\texture\\standart\\shader.frag");
-    shader[m_texture].use();
-    shader[m_texture].uniform("diffuse", 0);
 
     setup(main_texture, "shaders\\3d\\texture\\main\\", 0, Uniform<int>("diffuse", 0));
 

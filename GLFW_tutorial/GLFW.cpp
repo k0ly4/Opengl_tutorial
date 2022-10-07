@@ -1,8 +1,8 @@
 #include "GLFW.h"
 struct PreSetupContext {
 
-    int width = 200;
-    int height = 200;
+    int width = 800;
+    int height = 600;
     std::string name = "Window";
     GLFWmonitor* monitor = NULL;
     GLFWwindow* share = NULL;

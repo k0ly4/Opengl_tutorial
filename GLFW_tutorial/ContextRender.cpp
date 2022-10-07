@@ -30,6 +30,29 @@ GLenum Blend::srcFunc = Blend::None;
 GLenum Blend::dstFunc = Blend::None;
 
 GLenum Blend::modeEquation = Blend::Add;
+
+
+/// Depth------------------------------------------------------------
+ /// <summary>
+ /// Depth
+ /// </summary>
+void Depth::Enable(bool enable) {
+	if (isEnable == enable) return;
+	isEnable = enable;
+	if (enable)glEnable(GL_DEPTH_TEST);
+	else glDisable(GL_DEPTH_TEST);
+	
+}
+
+void Depth::Test(bool enable) {
+	if (isEnableTest == enable) return;
+	isEnableTest = enable;
+	glDepthMask(enable);
+}
+
+bool Depth::isEnable = 0;
+bool Depth::isEnableTest =1;
+
 /// GlRender------------------------------------------------------------
  /// <summary>
  /// GlRender
@@ -42,13 +65,6 @@ GLenum Blend::modeEquation = Blend::Add;
 	}
 }
 
-void GlRender::DepthTest(bool enable) {
-	if (isDepthTest != enable) {
-		isDepthTest = enable;
-		if (enable)glEnable(GL_DEPTH_TEST);
-		else glDisable(GL_DEPTH_TEST);
-	}
-}
 
 void GlRender::PolygonMode(GLenum mode) {
 	if (polygonMode != mode) {
@@ -89,6 +105,5 @@ IntRect  GlRender::Viewport::cur;
 
 unsigned int GlRender::last_fbo = 0;
 Color GlRender::cur_color_clear(0.f);
-bool GlRender::isDepthTest = 0;
 
 GLenum GlRender::polygonMode = GL_FILL;

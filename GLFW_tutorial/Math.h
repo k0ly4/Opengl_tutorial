@@ -1,7 +1,9 @@
 #ifndef MATH_H
 #define MATH_H
 
-#include "GLobal.h"
+#include"GLFW.h"
+#include "GLM.h"
+
 #include <map>
 #include <vector>
 
@@ -9,7 +11,6 @@
 #include "Rects.h"
 #include "Perspective.h"
 #include "Vectors.h"
-#include "Clock.h"
 #include "Game.h"
 #include "Transform.h"
 #include "Matrix.h"

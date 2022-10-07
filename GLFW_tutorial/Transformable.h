@@ -96,63 +96,77 @@ protected:
 class Transformable3D {
 
 public:
-	Transformable3D();
+
+	Transformable3D(const glm::vec3& position, const glm::vec3& scale, const glm::vec3& origin, const AngleAxis& rotate) :
+		transform_(position, scale, origin, rotate) 
+	{}
+
+	Transformable3D() :
+		Transformable3D(
+			glm::vec3(0.f),
+			glm::vec3(1.f),
+			glm::vec3(0.f),
+			AngleAxis(glm::vec4(0.f,0.f,1.f,0.f))) 
+	{}
 	//Transform3D
-	void setTransform(const Transform3D& _transform) {
-		transform = _transform;
-		needUpMatrix = 1;
-	}
-	const Transform3D& getTransform()const {
-		return transform;
-	}
-	//Position
-	void setPosition(const glm::vec3& Position) {
-		transform.position = Position;
-		needUpMatrix = 1;
+
+	void setPosition(const glm::vec3& position) {
+		transform_.setPosition(position);
 	}
 	const glm::vec3& getPosition()const {
-		return transform.position;
+		return transform_.getPosition();
 	}
+
+	void setScale(const glm::vec3& scale) {
+		transform_.setScale(scale);
+	}
+	const glm::vec3& getScale()const {
+		return transform_.getScale();
+	}
+	//In radians
+	void setRotate(const AngleAxis& angle) {
+		transform_.setRotate(angle);
+	}
+	//In radians
+	const AngleAxis& getRotate()const {
+		return transform_.getRotate();
+	}
+
+	void setOrigin(const glm::vec3& origin) {
+		transform_.setOrigin(origin);
+	}
+
+	const glm::vec3& getOrigin()const {
+		return transform_.getOrigin();
+	}
+
+	void setTransform(const Transform3D& transform) {
+		transform_ = transform;
+	}
+
+	const Transform3D& getTransform()const {
+		return transform_;
+	}
+
 	inline void Move(const glm::vec3& offset) {
-		setPosition(transform.position + offset);
-	}
-	//Scale
-	void setScale(const glm::vec3& Scale) {
-		transform.scale = Scale;
-		needUpMatrix = 1;
-	}
-	const  glm::vec3& getScale()const {
-		return transform.scale;
+		setPosition(transform_.getPosition() + offset);
 	}
 	inline void Scale(const glm::vec3& offset) {
-		setScale(transform.scale + offset);
-	}
-	//Rotate
-	void setRotate(const Angle3D& Angle) {
-		transform.rotate = Angle;
-		needUpMatrix = 1;
-	}
-	const  Angle3D& getRotate()const {
-		return transform.rotate;
+		setScale(transform_.getScale() + offset);
 	}
 	inline void Rotate(float offset) {
-		setRotate(Angle3D(transform.rotate.angle + offset, transform.rotate.axis));
+		setRotate(AngleAxis(transform_.getRotate().angle + offset, transform_.getRotate().axis));
 	}
 
 protected:
+
 	inline void uniformTransform(const Shader& shader) {
-		shader.uniform("model", getModel());
-	}
-	const inline glm::mat4& getModel() {
-		setupModel();
-		return model;
+		shader.uniform("model", transform_.getModel());
 	}
 
 private:
-	bool needUpMatrix = 1;
-	glm::mat4 model;
-	Transform3D transform;
 
-	void setupModel();
+	Transform3D transform_;
+
 };
 #endif

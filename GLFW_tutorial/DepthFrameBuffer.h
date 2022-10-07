@@ -81,11 +81,13 @@ class  RenderDepthCubeMap :public GeneralRender, public RenderTarget {
 
 public:
 
-    RenderDepthCubeMap() {
+    RenderDepthCubeMap():
+        lastLightPos(0.f) {
         glGenFramebuffers(1, &id_);
     }
 
-    RenderDepthCubeMap(const glm::ivec2& size,float far_plane) {
+    RenderDepthCubeMap(const glm::ivec2& size,float far_plane):
+        lastLightPos(0.f) {
         glGenFramebuffers(1, &id_);
         create(size, far_plane);
     }
@@ -123,9 +125,10 @@ private:
     bool needUpTransforms = 1;
 
     glm::mat4 transforms[6];
-    glm::vec3 curLightPos;
+    glm::vec3 lastLightPos;
     TextureCubeMap map_;
     ProjectionMatrix proj_matrix_;
+
     RenderDepthCubeMap(const RenderDepthCubeMap&) = delete;
     RenderDepthCubeMap& operator=(const RenderDepthCubeMap&) = delete;
 };

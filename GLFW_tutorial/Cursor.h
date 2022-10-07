@@ -27,7 +27,9 @@ public:
 
 	//Показ, скрытие или отключение курсора
 	static void setMode(ModeDisplay mode_);
-
+	static ModeDisplay getMode() {
+		return mode;
+	}
 	//Установить иконку
 	static void setCursorImage(const GLFWimage* icon, glm::ivec2 hotSpot = glm::ivec2(0));
 

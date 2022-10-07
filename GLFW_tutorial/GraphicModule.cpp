@@ -40,7 +40,7 @@ void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& ev
     GlRender::unbind();
     Blend::Enable(true);
     Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
-    GlRender::DepthTest(false);
+    Depth::Enable(false);
     glClear(GL_COLOR_BUFFER_BIT);
 
    // if (event.f.shadow_view) filter.displayRed(scene.light.getDirLight().getShadowMap(), event.f.shadow_level);

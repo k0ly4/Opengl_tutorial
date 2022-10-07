@@ -1,11 +1,9 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
-#include "Texture.h"
 #include "buffer.h"
-#include<map>
-#include<random>
 #include "Render.h"
+
 
 /// <summary>
 /// RenderScene
