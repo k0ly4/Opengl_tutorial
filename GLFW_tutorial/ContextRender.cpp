@@ -44,12 +44,19 @@ void Depth::Enable(bool enable) {
 	
 }
 
-void Depth::Test(bool enable) {
+void Depth::Mask(bool enable) {
 	if (isEnableTest == enable) return;
 	isEnableTest = enable;
 	glDepthMask(enable);
 }
 
+void Depth::Func(GLenum func) {
+	if (func_ == func)return;
+	func_ = func;
+	glDepthFunc(func_);
+}
+
+GLenum Depth::func_ = Depth::Less;
 bool Depth::isEnable = 0;
 bool Depth::isEnableTest =1;
 

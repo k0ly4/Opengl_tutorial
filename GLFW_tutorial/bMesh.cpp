@@ -353,7 +353,7 @@ void bMesh::draw(const View* view, const Shader& shader)
 }
 
 void bMesh::init_data_draw() {
-    id_obj = glShader::m_texture_normal;
+    shaderHint = glShader::any_skeletal_animation;
     VAO.data_draw = DataDraw(DataDraw::DrawElements, GL_TRIANGLES, indices.size());
 }
 

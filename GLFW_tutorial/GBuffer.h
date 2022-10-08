@@ -39,24 +39,31 @@ public:
 
         GlRender::setClearColor(Color(0.f));
         GlRender::bind(*this);
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.inGBuffer(window);
 
     }
 
+    void setDebugMode(bool enable) {
+        debugMode = enable;
+    }
+
     void display(LightSystem& lights,const Camera& camera) {
-        const Shader& shader = glShader::get(glShader::gb_light);
+        const Shader& shader = glShader::get(glShader::gb_render);
 
         shader.use();
         usePositionMap(0);
         useNormalMap(1);
         useDiffuseMap(2);
-        lights.uniform(shader, camera);
+
+        shader.uniform("debugMode", debugMode);
+        shader.uniform("gWVP", camera.getVP());
+
+        lights.uniform(shader, camera,3);
         sBuffer::quad.getVAO().draw();
     }
    
 private:
-
+    int debugMode = 0;
 };
 #endif

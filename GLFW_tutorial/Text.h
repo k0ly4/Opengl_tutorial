@@ -105,7 +105,7 @@ public:
     Text() :
         convex_(4)
     {
-        id_obj = glShader::text;
+        shaderHint = glShader::text;
 
         initRenderData();
     }

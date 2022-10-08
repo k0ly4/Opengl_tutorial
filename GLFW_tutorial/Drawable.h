@@ -11,8 +11,12 @@
 /// </summary>
 class Drawable {
 public:
-	glShader::Object id_obj;
 	virtual void draw(const View * view, const Shader & shader) = 0;
+	inline glShader::Object getShaderHint()const {
+		return shaderHint;
+	}
+protected:
+	glShader::Object shaderHint;
 };
 
 ///Texturable---------------------------------------------
@@ -25,27 +29,86 @@ public:
 	Texturable() :
 		texture_(0),
 		color_(1.f) 
-	{}
+	{
+		shaderHint = glShader::texture;
+	}
 
-	void setColor(const Color& color) {
-		
+	virtual void setColor(const Color& color) {
+		color_ = color;
 	}
 	const Color& getColor(const Color& color)const {
 		return color_;
 	}
 
-	void setTexture(const Texture2D& texture) {
+	virtual void setTexture(const Texture2D& texture) {
 		texture_ = &texture;
 	}
 
 protected:
 	
 	const Texture2D* texture_ = 0;
-	const Color color_;
+	Color color_;
 
-	void uniformMaterial(const Shader& shader,const char* colorUniform = "color") {
-		if (texture_) texture_->use(0);
-		shader.uniform(colorUniform, color_);
+	void uniformMaterial(const Shader& shader)const {
+
+		shader.uniform("baseColor", color_);
+		if (texture_)
+		{
+			texture_->use(0);
+			shader.uniform("configMaterial", 1);
+		}
+		else 
+			shader.uniform("configMaterial",0);
+		
+	}
+
+};
+///Material---------------------------------------------
+class Material:public Uniformable {
+
+public:
+
+	Material():
+		baseColor_(1.f),
+		specular_(1.f),
+		diffuse_(0) 
+	{}
+
+	Material(const Color& baseColor, const Texture2D* texture, float specular) :
+		baseColor_(baseColor),
+		specular_(specular),
+		diffuse_(texture) 
+	{}
+
+	void setSpecular(float specular) {
+		specular_ = specular;
+	}
+
+	void setBaseColor(const Color& color) {
+		baseColor_ = color;
+	}
+	const Color& getColor()const {
+		return baseColor_;
+	}
+	void setTexture(const Texture2D& texture) {
+		diffuse_ = &texture;
+	}
+
+private:
+
+	float specular_;
+	Color baseColor_;
+	const Texture2D* diffuse_;
+
+	void uniform(const Shader& shader)const {
+		shader.uniform("specularMaterial", specular_);
+		shader.uniform("baseColor", baseColor_);
+		if (diffuse_) {
+			diffuse_->use(0);
+			shader.uniform("configMaterial", 1);
+		}
+		else
+			shader.uniform("configMaterial", 0);
 	}
 
 };
@@ -54,36 +117,35 @@ protected:
 /// <summary>
 ///
 /// </summary>
-class gbMateriable :public Drawable {
+class Materiable :public Drawable {
 
 public:
-	void setSpecular(float _specular) {
-		specular = _specular;
+
+	Materiable()
+	{
+		shaderHint = glShader::any;
 	}
-	void setColor(const glm::vec3& _color) {
-		base_color = _color;
-		diffuse = 0;
-		id_obj = glShader::gb_color_uniform;
+
+	void setSpecularMaterial(float specular) {
+		material.setSpecular(specular);
 	}
-	void setColor(const Color& color) {
-		setColor(color.vec3());
+
+	void setBaseColor(const Color& color) {
+		material.setBaseColor(color);
 	}
-	void setTexture(Texture2D& texture) {
-		id_obj = glShader::gb_texturable;
-		this->diffuse = &texture;
+
+	void setTexture(const Texture2D& texture) {
+		material.setTexture(texture);
 	}
 
 protected:
 
-	float specular = 0.1f;
-	glm::vec3 base_color = glm::vec3(1.f);
-	Texture2D* diffuse = 0;
-
-	void uniformMaterial(const Shader& shader) {
-		shader.uniform("specularMaterial", specular);
-		if (diffuse) diffuse->use(0);
-		else shader.uniform("color", base_color);
+	inline void uniformMaterial(const Shader& shader) const {
+		shader.uniform(material);
 	}
+
+	Material material;
+
 };
 #endif
 

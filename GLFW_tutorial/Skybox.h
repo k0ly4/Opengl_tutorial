@@ -6,7 +6,7 @@ class Skybox :public Drawable {
 public:
 
     Skybox() {
-        id_obj = glShader::skybox;
+        shaderHint = glShader::skybox;
     }
 
     void load(const std::string& directory, bool flip_vertically = 1, bool gamma = 0) {
@@ -18,9 +18,10 @@ public:
         shader.uniform("projection", view->getProjection().get());
         shader.uniform("camera", glm::mat4(glm::mat3(view->getView().get())));
         texture.use(0);
-        glDepthFunc(GL_LEQUAL);
+
+        Depth::Func(Depth::Lequal);
         VAO.draw();
-        glDepthFunc(GL_LESS);
+        Depth::Func(Depth::Less);
     }
 
 private:

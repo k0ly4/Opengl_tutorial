@@ -20,9 +20,7 @@ public:
     void setShadowMode(bool enable) {
         isShadow = enable;
     }
-    void setDebugMode(bool enable) {
-        debugMode = enable;
-    }
+    
     inline DirectionLight& getDirLight() {
         return dirLightGlobal_;
     }
@@ -40,10 +38,15 @@ public:
     PointLight& getPoint(size_t id) {
         return pLights_[id];
     }
-    void uniform(const Shader& shader, const Camera& camera);
-
+    void uniform(const Shader& shader, const Camera& camera, size_t unit_free);
+    void draw(RenderTarget& target,const Camera& camera, Drawable& object) {
+        const Shader& shader = glShader::get(target.getHintShader(object));
+        shader.use();
+        uniform(shader, camera, 1);
+        target.draw(object, shader);
+    }
 private:
-    int debugMode = 0;
+
     bool isShadow;
     float ambient_;
     std::vector<PointLight>pLights_;
@@ -52,7 +55,7 @@ private:
     Texture2D textureLamp_;
     Billboard billboardLamp_;
 
-    void uniformShadow(const Shader& shader, const Camera& camera);
+    void uniformShadow(const Shader& shader, const Camera& camera, size_t unitMap);
 
 };
 #endif

@@ -12,7 +12,7 @@ public:
 
 	virtual const glm::ivec2& getSize()const = 0;
 
-	unsigned int getId()const  {
+	inline unsigned int getId()const  {
 		return id_;
 	}
 
@@ -33,7 +33,7 @@ public:
 	}
 
 	inline void draw(Drawable& object) {
-		object.draw(view_, glShader::get(object.id_obj));
+		object.draw(view_, glShader::get(getHint(object.getShaderHint())));
 	}
 
 	inline void draw(Drawable& object, glShader::Object index_shader) {
@@ -43,9 +43,30 @@ public:
 	inline void draw(Drawable& object, const Shader& shader) {
 		object.draw(view_, shader);
 	}
-
+	void setDefaultHintShader(glShader::Object hint) {
+		defaultHintShader_ = hint;
+	}
+	glShader::Object getHintShader(Drawable& object) {
+		return getHint(object.getShaderHint());
+	}
 protected:
 
+	glShader::Object getHint(glShader::Object objectHint) {
+		if (objectHint == glShader::any) 
+		{
+			return defaultHintShader_;
+		}
+		else if (objectHint == glShader::any_skeletal_animation) 
+		{
+			return defaultHintShader_ == glShader::gb_texture ? glShader::gb_texture_animation : glShader::light_texture;
+		}
+		else 
+		{
+			return objectHint;
+		}
+	}
+
+	glShader::Object defaultHintShader_ = glShader::gb_texture;
 	const View* view_ = 0;
 };
 #endif

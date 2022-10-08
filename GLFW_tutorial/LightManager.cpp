@@ -15,7 +15,7 @@ LightSystem::LightSystem() {
     ImageLoader::flipVerticallyOnLoad(1);
     textureLamp_.getPath("asset\\image\\lamp.png");
 
-    id_obj = billboardLamp_.id_obj;
+    shaderHint = billboardLamp_.getShaderHint();
     billboardLamp_.setTexture(textureLamp_);
     billboardLamp_.setSize(glm::vec2(1.f));
     pLights_.reserve(10);
@@ -35,28 +35,25 @@ size_t LightSystem::add(const PointLight& pointLight, const View3D* view) {
     return pLights_.size()-1;
 }
 
-void LightSystem::uniform(const Shader& shader,const Camera& camera) {
-
-    shader.uniform("viewPos", camera.getPosition());
+void LightSystem::uniform(const Shader& shader,const Camera& camera,size_t unit_free) {
     shader.uniform("ambientFactor", ambient_);
-    shader.uniform("gWVP", camera.getVP());
-    shader.uniform("debugMode", debugMode);
+    shader.uniform("viewPos", camera.getPosition());
     dirLightGlobal_.uniform(SHADER_D_LIGHT, shader);
-   
-   
+  
     for (size_t i = 0; i < pLights_.size(); i++) {
         pLights_[i].uniform(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader);
     }
 
     if (isShadow) {
-        uniformShadow(shader, camera);
+        uniformShadow(shader, camera, unit_free);
     }
 
 }
 
-void LightSystem::uniformShadow(const Shader& shader, const Camera& camera) { 
-    dirLightGlobal_.uniformShadow(SHADER_D_LIGHT, shader, 3);
+void LightSystem::uniformShadow(const Shader& shader, const Camera& camera,size_t unitMap) { 
+    dirLightGlobal_.uniformShadow(SHADER_D_LIGHT, shader, unitMap);
+    unitMap++;
     for (size_t i = 0; i < pLights_.size(); i++) {
-        pLights_[i].uniformShadow(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader, 4);
+        pLights_[i].uniformShadow(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader, unitMap +i);
     }
 }

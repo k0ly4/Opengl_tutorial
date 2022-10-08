@@ -56,10 +56,9 @@ public:
     }
 
     void uniform(const std::string& name, const Shader& shader) {
-        if (active == 0) {
-            shader.uniform(name + ".enable", active);
-            return;
-        }
+        shader.uniform(name + ".enable", active);
+        if (active == 0)return;
+        
             
         Light::uniform(name, shader);
         shader.uniform(name + ".direction", direction_);

@@ -6,7 +6,7 @@
 /// 
 Convex::Convex() {
 
-    id_obj = glShader::m_layout_color;
+    shaderHint = glShader::color_layout;
     VAO.data_draw = DataDraw(DataDraw::DrawArrays, GlRender::LINE_STRIP, 0);
     VBO.setMode(GBO::DYNAMIC);
     VAO.begin();

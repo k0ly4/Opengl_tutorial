@@ -15,6 +15,7 @@ public:
     bool load(const std::string& path);
 
 private:
+
     std::string path_;
     unsigned alphCode_[288];
     size_t alphSize;

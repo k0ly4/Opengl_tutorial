@@ -70,7 +70,7 @@ void EventModule::inputNormalCursor(Event& event, Scene& scene){
         }
 
 }
-void EventModule::inputDisabledCursor(Event& event,Scene& scene) {
+void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline& graphic) {
     if (event.type == Event::KeyPressed) {
 
         if (event.key.code == Keyboard::LeftControl) {
@@ -80,7 +80,7 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene) {
 
         else if (event.key.code == Keyboard::LeftShift) {
             f.debugCascadeShadow = !f.debugCascadeShadow;
-            scene.light.setDebugMode(f.debugCascadeShadow);
+            graphic.gBuffer.setDebugMode(f.debugCascadeShadow);
         }
 
         else if (event.key.code == Keyboard::U) {
@@ -154,7 +154,7 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
             inputNormalCursor(event, scene);
         }
         else {
-            inputDisabledCursor(event, scene);
+            inputDisabledCursor(event, scene,graphic);
         }
             
         

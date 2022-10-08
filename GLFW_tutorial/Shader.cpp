@@ -171,86 +171,71 @@ void Shader::checkCompileErrors(unsigned int shader, const std::string type, con
 unsigned int Shader::last_use_shader = -1;
 
 
+
 /// <summary>
 /// glShader
 /// </summary>
+/// 
+/// 
+void setGBuffer(Shader& shader) {
+    shader.use();
+    shader.uniform("gPosition", 0);
+    shader.uniform("gNormal", 1);
+    shader.uniform("gAlbedoSpec", 2);
+    //shadow-maps
+    shader.uniform("d_light.map", 3);
+    shader.uniform("p_light[0].map", 4);
+    /*shader.uniform("d_light.shadow_map[1]", 4);
+    shader.uniform("d_light.shadow_map[2]", 5);
+    shader.uniform("d_light.shadow_map[3]", 6);*/
+}
+
+void setLightForward(Shader& shader) {
+    shader.use();
+    //shadow-maps
+    //material neccessery
+    shader.uniform("diffuse", 0);
+    //light
+    shader.uniform("d_light.map", 1);
+    shader.uniform("p_light[0].map", 2);
+
+}
+
 void glShader::init() {
     shader.resize(shader_size);
     //2d
-    shader[font].load("shaders\\2d\\text\\font\\shader.vert", "shaders\\2d\\text\\font\\shader.frag");
-    shader[font].use();
-    shader[font].uniform("glyph", 0);
+    shader[shape].loadDirectory("shaders\\2d\\shape\\");
 
-    shader[text].load("shaders\\2d\\text\\text\\shader.vert", "shaders\\2d\\text\\text\\shader.frag");
-    shader[text].use();
-    shader[text].uniform("glyph", 0);
-
-   /* shader[sprite].load("shaders\\2d\\sprite\\shader.vert", "shaders\\2d\\sprite\\shader.frag");
-    shader[sprite].use();
-    shader[sprite].uniform("image", 0);*/
-
-    shader[shape].load("shaders\\2d\\shape\\shader.vert", "shaders\\2d\\shape\\shader.frag");
+    setup(text,"shaders\\3d\\text\\", 0, Uniform<int>("glyph", 0));
     //3d
-    shader[skybox].load("shaders\\3d\\skybox\\shader.vert", "shaders\\3d\\skybox\\shader.frag");
-    shader[skybox].use();
-    shader[skybox].uniform("skybox", 0);
+    setup(skybox, "shaders\\3d\\skybox\\", 0, Uniform<int>("skybox", 0));
 
-    shader[billboard].loadDirectory("shaders\\3d\\billboard\\perspectable\\", 1);
-    shader[billboard].use();
-    shader[billboard].uniform("diffuse", 0);
+    setup(billboard, "shaders\\3d\\billboard\\", 1, Uniform<int>("diffuse", 0));
 
-    shader[m_uniform_color].loadDirectory("shaders\\3d\\color\\uniform\\");
+    setup(color_layout, "shaders\\3d\\non-texture\\layout\\", 0, Uniform<int>("", 0));
 
-    setup(m_layout_color, "shaders\\3d\\color\\layout\\", 0, Uniform<int>("", 0));
+    setup(texture, "shaders\\3d\\default\\", 0, Uniform<int>("diffuse", 0));
+    setup(texture_loc2, "shaders\\3d\\texture\\location2\\default\\", 0, Uniform<int>("diffuse", 0));
 
-    setup(main_texture, "shaders\\3d\\texture\\main\\", 0, Uniform<int>("diffuse", 0));
+    setup(texture_instance, "shaders\\3d\\texture\\location1\\instance\\", 0, Uniform<int>("diffuse", 0));
+    setup(texture_instance_loc2, "shaders\\3d\\texture\\location2\\instance\\", 0, Uniform<int>("diffuse", 0));
+    //forward
+    setup(light_texture, "shaders\\light\\forward\\default\\", 0, Uniform<int>("diffuse", 0));
+    setLightForward(shader[light_texture]);
+    //gBuffer
+    setup(gb_texture, "shaders\\light\\gbuffer\\object\\default\\", 0, Uniform<int>("diffuse", 0));
+    setup(gb_texture_animation, "shaders\\light\\gbuffer\\object\\animatable\\", 0, Uniform<int>("diffuse", 0));
 
-    shader[m_texture_instance].load("shaders\\3d\\texture\\instance\\shader.vert", "shaders\\3d\\texture\\instance\\shader.frag");
-    shader[m_texture_instance].use();
-    shader[m_texture_instance].uniform("diffuse", 0);
-
-    shader[m_texture_normal].load("shaders\\3d\\texture\\normal\\shader.vert", "shaders\\3d\\texture\\normal\\shader.frag");
-    shader[m_texture_normal].use();
-    shader[m_texture_normal].uniform("diffuse1", 0);
-
-    shader[m_texture_normal_instance].load("shaders\\3d\\texture\\normal\\instance\\shader.vert", "shaders\\3d\\texture\\normal\\instance\\shader.frag");
-    shader[m_texture_normal_instance].use();
-    shader[m_texture_normal_instance].uniform("diffuse1", 0);
-    //light
-    shader[m_light_layout_color].load("shaders\\3d\\light\\color\\layout\\shader.vert", "shaders\\3d\\light\\color\\layout\\shader.frag");
-
-    shader[m_light_uniform_color].load("shaders\\3d\\light\\color\\uniform\\shader.vert", "shaders\\3d\\light\\color\\uniform\\shader.frag");
-
-    shader[m_light_uniform_color_instance].load("shaders\\3d\\light\\color\\uniform\\instance\\shader.vert", "shaders\\3d\\light\\color\\uniform\\instance\\shader.frag");
-
-    shader[m_light_texture].load("shaders\\3d\\light\\texture\\shader.vert", "shaders\\3d\\light\\texture\\shader.frag");
-    shader[m_light_texture].use();
-    shader[m_light_texture].uniform("diffuse1", 0);
-
-    shader[gb_texturable].loadDirectory("shaders\\framebuffer\\gbuffer\\object\\texturable\\");
-    shader[gb_texturable].use();
-    shader[gb_texturable].uniform("diffuse1", 0);
-
-    shader[gb_texture_animation].loadDirectory("shaders\\framebuffer\\gbuffer\\object\\texturable\\animatable\\");
-    shader[gb_texture_animation].use();
-    shader[gb_texture_animation].uniform("diffuse1", 0);
-
-    shader[gb_color_uniform].loadDirectory("shaders\\framebuffer\\gbuffer\\object\\colorable\\uniform\\");
-
-    shader[gb_color_uniform_animation].loadDirectory("shaders\\framebuffer\\gbuffer\\object\\colorable\\uniform\\animatable\\");
-
+    shader[gb_render].loadDirectory("shaders\\light\\gBuffer\\render\\default\\");
+    setGBuffer(shader[gb_render]);
     //frame
     setup(frame_exposure, "shaders\\framebuffer\\exposure\\", 0, Uniform<int>("image", 0));
-    setup(red, "shaders\\framebuffer\\gbuffer\\shadow\\red\\", 0, Uniform<int>("image", 0));
-    setup(red_array, "shaders\\framebuffer\\gbuffer\\shadow\\red\\array_texture\\", 0, Uniform<int>("image", 0));
-    setup(red_font, "shaders\\2d\\text\\red\\", 0, Uniform<int>("image", 0));
+    setup(red, "shaders\\light\\shadow\\display\\default\\", 0, Uniform<int>("image", 0));
+    setup(red_array, "shaders\\light\\shadow\\display\\array_texture\\", 0, Uniform<int>("image", 0));
+    setup(font, "shaders\\framebuffer\\font\\", 0, Uniform<int>("glyph", 0));
 
-
-    shader[gb_light].loadDirectory("shaders\\framebuffer\\gbuffer\\light\\cascade_shadow\\");
-    setGBuffer(shader[gb_light]);
-
-    shader[shadow_depth].loadDirectory("shaders\\framebuffer\\gbuffer\\shadow\\depth\\");
-    shader[cascades_shadow_depth].loadDirectory("shaders\\framebuffer\\gbuffer\\shadow\\depth\\cascades\\", 1);
-    shader[cube_depth].loadDirectory("shaders\\framebuffer\\gbuffer\\shadow\\depth\\cube\\", 1);
+    shader[depth].loadDirectory("shaders\\light\\shadow\\render\\default\\");
+    shader[depth_cascaded].loadDirectory("shaders\\light\\shadow\\render\\cascaded\\", 1);
+    shader[depth_cube].loadDirectory("shaders\\light\\shadow\\render\\cube\\", 1);
 }
     std::vector<Shader> glShader::shader;

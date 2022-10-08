@@ -24,7 +24,7 @@ void RenderTextureDepth::create(const glm::ivec2& Size)
     glReadBuffer(GL_NONE);
 
     if (GlRender::checkFramebufferStatus()) {
-        LOG("(!)ERROR::FRAMEBUFFER::NON-COMPLETE\n");
+        LOG(LogError, "FRAMEBUFFER::RenderTextureDepth::NON-COMPLETE\n");
     }
     GlRender::unbind();
 }
@@ -49,7 +49,7 @@ bool RenderCascadedDepth::create(size_t cascadeLevels, const glm::ivec2& size)
     glReadBuffer(GL_NONE);
 
     if (GlRender::checkFramebufferStatus()) {
-        LOG("(!)ERROR::FRAMEBUFFER::RenderCascadedDepth::NON-COMPLETE\n");
+        LOG(LogError, "FRAMEBUFFER::RenderCascadedDepth::NON-COMPLETE\n");
         return 0;
     }
 
@@ -58,8 +58,9 @@ bool RenderCascadedDepth::create(size_t cascadeLevels, const glm::ivec2& size)
     return 1;
 }
 
+//RenderDepthCubeMap-------------------------------------------------
 /// <summary>
-/// RenderCascadedDepth
+/// RenderDepthCubeMap
 /// </summary>
 
 bool RenderDepthCubeMap::create(const glm::ivec2& size,float far_plane)
@@ -71,7 +72,6 @@ bool RenderDepthCubeMap::create(const glm::ivec2& size,float far_plane)
     constexpr float near_plane = 1.f;
     proj_matrix_.set((float)size.x / (float)size.y, 90.f, near_plane, far_plane);
     needUpTransforms = 1;
-
     map_.create(size, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT);
     map_.filter(TextureFilter::Nearest);
     map_.wrap(TextureWrap::ClampToEdge);
@@ -82,7 +82,7 @@ bool RenderDepthCubeMap::create(const glm::ivec2& size,float far_plane)
     glReadBuffer(GL_NONE);
 
     if (GlRender::checkFramebufferStatus()) {
-        LOG("(!)ERROR::FRAMEBUFFER::RenderDepthCubeMap::NON-COMPLETE\n");
+        LOG(LogError,"FRAMEBUFFER::RenderDepthCubeMap::NON-COMPLETE\n");
         return 0;
     }
     GlRender::unbind();
@@ -117,10 +117,9 @@ void RenderDepthCubeMap::render(const View3D& view_player,const glm::vec3& light
     upLightPos(lightPos);
     // ѕрив€зываем и очищаем текущий каскад
     GlRender::bind(*this);
-    // glFramebufferTexture(GL_FRAMEBUFFER, GL_TEXTURE_2D_ARRAY, fbo.getTexture().getId().get(), 0);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    const Shader& shader = glShader::get(glShader::cube_depth);
+    const Shader& shader = glShader::get(glShader::depth_cube);
     shader.use();
     std::vector<glm::mat4> mats(6);
     for (size_t i = 0; i < 6; i++) {
@@ -129,6 +128,6 @@ void RenderDepthCubeMap::render(const View3D& view_player,const glm::vec3& light
     shader.uniform("shadowMatrices", mats);
     shader.uniform("lightPos", lastLightPos);
     shader.uniform("far_plane", proj_matrix_.getData().persp.far);
-    render.inShadowMap(*this, glShader::cube_depth);
+    render.inShadowMap(*this, glShader::depth_cube);
 }
 

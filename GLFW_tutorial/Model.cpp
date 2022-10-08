@@ -185,8 +185,7 @@ std::string ModelLoader::directory;
 // Отрисовываем модель, а значит и все её меши
 void Model::load(const std::string& path, bool gamma, bool info) {
     ModelLoader::load(path, this, gamma, info);
-    if (meshes[0].haveTexture()) id_obj = glShader::gb_texturable;
-    else id_obj = glShader::gb_color_uniform;
+    shaderHint = glShader::any;
 }
 void Model::draw(View* view, const Shader& shader) {
     shader.use();
@@ -204,7 +203,7 @@ void InstanceModel::setObject(Model& _model, glShader::Object shader_configuraio
     target.resize(_model.size());
     for (size_t i = 0; i < _model.size(); i++)
         target[i].setObject(&_model[i], shader_configuraion);
-    id_obj = shader_configuraion;
+    shaderHint = shader_configuraion;
 }
 
 void InstanceModel::draw(View* view, const Shader& shader) {
@@ -232,9 +231,9 @@ void InstanceModel::create(const std::vector<glm::mat4>& matrix) {
 /// 
 void bModel::load(const std::string& path, bool gamma, bool info) {
     ModelLoader::load(path, this, gamma, info);
-    if (meshes[0].haveTexture()) id_obj = glShader::gb_texture_animation;
-    else id_obj = glShader::gb_color_uniform_animation;
-    infoNode(node, "");
+    shaderHint = glShader::any_skeletal_animation;
+    if(info)
+        infoNode(node, "");
 }
 
 void bModel::draw(View* view, const Shader& shader) {

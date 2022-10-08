@@ -21,7 +21,7 @@ inline void LOG(TypeLog typeLog,
 
 inline void LOG( const char* strFormat, ...)noexcept
 {
-	printf("%s%s", LOG_attribute[LogInfo], strFormat);
+	printf(strFormat);
 }
 
 inline void LOG(const std::string& notice)

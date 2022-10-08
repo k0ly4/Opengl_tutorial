@@ -6,37 +6,45 @@
 /// <summary>
 /// GraphicPipeline
 /// </summary>
+/// 
 inline void display(const Texture2D& texture) {
     Debugger::display(texture);
 }
+
 void GraphicPipeline::initialize(RenderWindow& window) {
+
     frame.create(window.getSize(), TextureData(GL_RGBA16F, GL_RGBA, GL_NEAREST));
     gBuffer.create(window.getSize());
     ui.create(window.getSize(), TextureData(GL_RGBA, GL_RGBA, GL_NEAREST));
+
 }
 
 void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& event) {
 
-    //shadow
+    //Shadow ------------------
+    ImageLoader::flipVerticallyOnLoad(0);
     scene.light.upShadowMap(scene, scene.camera);
-    //gbuffer
+
+    //gBuffer-------------------
+    // in gbuffer
+    window.setDefaultHintShader(glShader::gb_texture);
     gBuffer.render(window, scene);
-    //in the frame
+    //out gbuffer
     GlRender::bind(frame);
     glClear(GL_COLOR_BUFFER_BIT);
-    // GbufferRender
     gBuffer.display(scene.light, scene.camera);
-    //Simple pipeline
+
+    //Forward render ----------------------
+    window.setDefaultHintShader(glShader::light_texture);
     gBuffer.implementDepth(frame);
-
-    window.draw(scene.light);
-
+    scene.inForward(window);
+    //UI----------------------
     GlRender::bind(ui);
     GlRender::setClearColor(0.f,0.f,0.f,0.f);
     glClear(GL_COLOR_BUFFER_BIT);
     scene.inUI(ui);
 
-    //exposure
+    //Mix----------------------
     GlRender::unbind();
     Blend::Enable(true);
     Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);

@@ -8,9 +8,7 @@ class Plane :public Texturable, public Transformable3D {
 public:
    
     Plane() 
-    {
-        id_obj = glShader::main_texture;
-    }
+    {}
 
     void draw(const View* view, const Shader& shader) {
         shader.use();
@@ -23,19 +21,17 @@ public:
 private:
 
 };
-class gbPlane :public gbMateriable, public Transformable3D {
+class gbPlane :public Materiable, public Transformable3D {
    
 public:
 
-    gbPlane() {
-        id_obj = glShader::gb_color_uniform;
-    }
+    gbPlane() {}
 
     void draw(const View* view, const Shader& shader) {
         shader.use();
         view->use(shader);
-        uniformMaterial(shader);
         uniformTransform(shader);
+        uniformMaterial(shader);
         sBuffer::plane.getVAO_gb().draw();
     }
 

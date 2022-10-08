@@ -1,21 +1,26 @@
 #ifndef QUAD_H
 #define QUAD_H
+
 #include "PrimitiveEntity.h"
 
+///Quad-------------------------------
+/// <summary>
+/// 
+/// </summary>
 class Quad :public Drawable {
 
 public:
 
     Quad() { 
-        id_obj = glShader::frame_exposure;
+        shaderHint = glShader::frame_exposure;
     }
     void setTexture(const Texture2D& texture) {
-        this->texture = &texture;
+        texture_ = &texture;
     }
     void draw(const View* view, const Shader& shader) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        texture->use(0);
+        texture_->use(0);
         shader.use();
         shader.uniform("exposure", exposure);
 
@@ -25,18 +30,21 @@ public:
 
 private:
 
-    const Texture2D* texture =0 ;
+    const Texture2D* texture_ =0 ;
     float exposure = 2.2f;
 };
 
-
+///Quad2D-------------------------------
+/// <summary>
+/// 
+/// </summary>
 class Quad2D :public Drawable {
     
 public:
     Quad2D():
         texture_(0) 
     {
-        id_obj = glShader::frame_exposure;
+        shaderHint = glShader::frame_exposure;
 
     }
     void setTexture(const Texture2D& texture) {

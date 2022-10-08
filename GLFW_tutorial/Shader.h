@@ -7,15 +7,20 @@
 #include "Resource_manager.h"
 #include"Buffer.h"
 
+class Shader;
 
-/// <summary>
+
 /// GeneralShader
-/// </summary>
-
 struct GeneralShader {
     unsigned int ID;
 };
+//////Uniformable
+class Uniformable {
+    virtual void uniform(const Shader& shader)const = 0;
+    friend class Shader;
+};
 
+/// Shader-----------------------------------------------
 /// <summary>
 /// Shader
 /// </summary>
@@ -41,13 +46,16 @@ public:
     void uniform(const std::string& name, int value) const;
     void uniform(const std::string& name, unsigned int value) const;
     void uniform(const std::string& name, float value) const;
-    void uniform(const std::string& name, const std::vector<glm::vec3>& data) const;
+   
     void uniform(const std::string& name, const glm::mat4& mat) const;
     void uniform(const std::string& name, const std::vector<glm::mat4>& matrix) const;
-    void uniform(const std::string& name, const glm::vec4& vec) const;
+    void uniform(const std::string& name, const std::vector<glm::vec3>& data) const;
+
     void uniform(const std::string& name, const Color& color) const;
+    void uniform(const std::string& name, const glm::vec4& vec) const;
     void uniform(const std::string& name, const glm::vec3& vec) const;
     void uniform(const std::string& name, const glm::vec2& vec) const;
+
     template<typename type_array>
     void uniform(const std::string& name, size_t size_element,const type_array* data)const {
         for (size_t i = 0; i < size_element; i++)
@@ -58,7 +66,9 @@ public:
         for (size_t i = 0; i < data.size(); i++)
             uniform(name + '[' + std::to_string(i) + ']', data[i]);
     }
-
+    void uniform(const Uniformable& object)const {
+        object.uniform(*this);
+    }
   
 
 private:
@@ -80,12 +90,12 @@ struct Uniform {
     Uniform(const std::string& _name, type_value _value) :name(_name), value(_value) {}
 };
 
+/// glShader-----------------------------------------------
 /// <summary>
 /// glShader
 /// </summary>
 class glShader {
-   
-   
+  
 public:
 
     enum Object :size_t
@@ -95,32 +105,33 @@ public:
         shape,
         skybox,
         billboard,
-        m_uniform_color, 
-        m_layout_color, 
-        m_light_layout_color, 
-        m_light_uniform_color, 
-        m_light_uniform_color_instance,
-        main_texture,
-        m_texture_instance, 
-        m_texture_normal, 
-        m_texture_normal_instance, 
-        m_light_texture, 
-        gb_texturable, 
+
+        color_layout,
+
+        texture,
+        texture_loc2,
+        texture_instance,
+        texture_instance_loc2,
+
+        //forward render
+        light_texture, 
+        //gBuffer
+        gb_texture, 
         gb_texture_animation,
-        gb_color_uniform, 
-        gb_color_uniform_animation, 
-        gb_light,
+        gb_render,
+        //posEffects
         frame_exposure,
         //Render in shadow map
-        shadow_depth,
-        cascades_shadow_depth,
-        cube_depth,
+        depth,
+        depth_cascaded,
+        depth_cube,
         //Debug frame in one channel
         red,
         red_array,
-        red_font,
         //Total size
-        shader_size
+        shader_size,
+        any,
+        any_skeletal_animation,
     };
 
     static inline const Shader& get(Object index) {
@@ -141,18 +152,7 @@ private:
 
     static std::vector<Shader> shader;
 
-    static void setGBuffer(Shader& shader) {
-        shader.use();
-        shader.uniform("gPosition", 0);
-        shader.uniform("gNormal", 1);
-        shader.uniform("gAlbedoSpec", 2);
-        //shadow-maps
-        shader.uniform("d_light.shadow_map", 3);
-        shader.uniform("p_light[0].map", 4);
-        /*shader.uniform("d_light.shadow_map[1]", 4);
-        shader.uniform("d_light.shadow_map[2]", 5);
-        shader.uniform("d_light.shadow_map[3]", 6);*/
-    }
+    
 
     template<typename type_value>
     static void setup(size_t index, const std::string& directory, bool geoShader, const Uniform<type_value>& uniform) {

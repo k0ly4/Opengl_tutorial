@@ -117,8 +117,20 @@ private:
 /// </summary>
 class Depth {
 public:
+	enum FuncEnum:GLenum
+	{
+		Always =	GL_ALWAYS, 		//Тест на глубину всегда проходит.
+		Never =		GL_NEVER, 		//Тест на глубину никогда не проходит.
+		Less =		GL_LESS, 		//Проходит, если значение глубины фрагмента меньше сохраненного значения глубины.
+		Equal =		GL_EQUAL, 		//Проходит, если значение глубины фрагмента равно сохраненному значению глубины.
+		Lequal =	GL_LEQUAL, 		//Проходит, если значение глубины фрагмента меньше или равно сохраненному значению глубины.
+		Greater =	GL_GREATER, 	//Проходит, если значение глубины фрагмента больше сохраненного значения глубины.
+		NotEqual =	GL_NOTEQUAL,	//	Проходит, если значение глубины фрагмента не равно сохраненному значению глубины.
+		Gequal =	GL_GEQUAL, 		//Проходит, если значение глубины фрагмента больше или равно сохраненному значению глубины.
+	};
 	static void Enable(bool new_state);
-	static void Test(bool new_state);
+	static void Mask(bool new_state);
+	static void Func(GLenum func);
 private:
 	
 	Depth() {}
@@ -126,7 +138,7 @@ private:
 
 	static bool isEnableTest;
 	static bool isEnable;
-
+	static GLenum func_;
 };
 
 /// GlRender------------------------------------------------------------

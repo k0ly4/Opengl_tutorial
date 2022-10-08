@@ -52,7 +52,7 @@ public:
 		return object;
 	}
 	virtual void setObject(Instancable* Object, glShader::Object shader_configuraion) {
-		id_obj = shader_configuraion;
+		shaderHint = shader_configuraion;
 		object = Object;
 		VAO = object->getDrawBuffer();
 	}

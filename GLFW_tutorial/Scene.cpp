@@ -6,10 +6,10 @@
 void Scene::initialize3DScene(RenderWindow& window) {
 	wall.setPosition(glm::vec3(6.f));
 	wall.setScale(glm::vec3(1.f, 3.f, 3.f));
-	wall.setColor(Color::RED);
+	wall.setBaseColor(Color::RED);
 
 	cube.setPosition(glm::vec3(10.f));
-	cube.setColor(glm::vec3(1.f));
+	cube.setBaseColor(glm::vec3(1.f));
 	cube.setTexture(filin);
 	cube.setRotate(AngleAxis(20.f, glm::vec3(1.f, 0.5f, 0.5f)));
 
@@ -18,17 +18,15 @@ void Scene::initialize3DScene(RenderWindow& window) {
 
 	plane.setPosition(glm::vec3(5.f));
 	plane.setScale(glm::vec3(20.f, 0.5f, 20.f));
-	plane.setColor(glm::vec3(0.9f));
-	/// <attenuation>
-	/// glm::vec2(0.032f, 0.09f))
-	/// </summary>
+	plane.setBaseColor(glm::vec3(0.9f));
 
 	light.add(PointLight(glm::vec3(0.5f), glm::vec3(5.f, 13.f, 5.f), glm::vec2(0.032f, 0.09f)), &camera);
 	light.getDirLight().setColor(glm::vec3(0.2f));
 	light.getDirLight().setDirection(glm::vec3(1.f, 1.f, 0.f));
 	light.getDirLight().setSizeMap(glm::ivec2(1024));
 	light.setAmbientFactor(0.01f);
-	plane2.setColor(Color::GREEN);
+
+	plane2.setBaseColor(Color::GREEN);
 	plane2.setPosition(glm::vec3(15.f, 7.f, 10.f));
 	plane2.setScale(glm::vec3(5.f));
 
@@ -38,11 +36,12 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	ImageLoader::flipVerticallyOnLoad(1);
 	filin.getPath("asset\\image\\favor.jpg");
 
-	//gBufferObjects.push_back(&plane2);
-	gBufferObjects.push_back(&plane);
-	gBufferObjects.push_back(&wall);
-	gBufferObjects.push_back(&cube);
-	gBufferObjects.push_back(&cube2);
+	gBufferObjects.resize(3);
+	gBufferObjects[0] = (&plane);
+	gBufferObjects[1] = (&wall);
+	gBufferObjects[2] = (&cube);
+	LOG("this is%d exams\n",100u);
+	//gBufferObjects[3] = (&cube2);
 }
 
 void Scene::initializeUI(RenderWindow& window) {
@@ -71,6 +70,8 @@ void Scene::initializeUI(RenderWindow& window) {
 	text2.setSizeFont(20);
 	text2.setScale(glm::vec2(7.f));
 	text2.setColor(Color::YELLOW);
+
+	
 }
 
 
@@ -87,10 +88,24 @@ void Scene::inGBuffer(RenderTarget& target) {
 
 	CullFace::Enable(true);
 	CullFace::Mode(CullFace::Back);
-	for (size_t i = 0; i < gBufferObjects.size(); i++) {
+	/*for (size_t i = 0; i < gBufferObjects.size(); i++) {
 		target.draw(*gBufferObjects[i]);
-	}
+	}*/
 }
+
+void Scene::inForward(RenderTarget& target) {
+	Blend::Enable(true);
+	Depth::Enable(true);
+
+	CullFace::Enable(true);
+	CullFace::Mode(CullFace::Back);
+	target.draw(light);
+	for (size_t i = 0; i < gBufferObjects.size(); i++) {
+		light.draw(target, camera, *gBufferObjects[i]);
+	}
+	light.draw(target,camera,cube2);
+}
+
 
 void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
 
@@ -105,7 +120,7 @@ void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
 	for (size_t i = 0; i < gBufferObjects.size(); i++) {
 		target.draw(*gBufferObjects[i], shader);
 	}
-	
+	target.draw(cube2, shader);
 }
 
 void Scene::inUI(RenderTarget& target) {

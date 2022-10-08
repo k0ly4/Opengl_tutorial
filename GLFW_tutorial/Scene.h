@@ -18,12 +18,13 @@
 class Scene :public RenderScene {
 public:
 
-	Scene() {}
+	Scene() {	}
 	void initialize(RenderWindow& window) {
 		initialize3DScene(window);
 		initializeUI(window);
 	}
 	void inGBuffer(RenderTarget& target);
+	void inForward(RenderTarget& target);
 	void inUI(RenderTarget& target);
 	void inShadowMap(RenderTarget& target, glShader::Object shader);
 	void upSizeViews(const glm::ivec2& size) {
@@ -44,6 +45,7 @@ public:
 	gbCube cube2;
 	gbCube wall;
 	gbPlane plane2;
+	
 	std::vector<Drawable*>gBufferObjects;
 	//Object2D
 	Sprite sCowBoy;
@@ -53,6 +55,9 @@ public:
 	//Views
 	Camera camera;
 	View2D view2D;
+	
+	std::vector<Drawable*>shadowObjects;
+	std::vector<Drawable*>forwardObjects;
 private:
 
 	void initialize3DScene(RenderWindow& window);

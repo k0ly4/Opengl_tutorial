@@ -12,7 +12,7 @@ class Billboard :public Drawable
 public:
 
     Billboard() :size_(1.f) {
-        id_obj = glShader::billboard;
+        shaderHint = glShader::billboard;
         VAO_.data_draw = DataDraw(DataDraw::DrawArrays, GL_POINTS, 1);
         VBO_.setMode(GL_DYNAMIC_DRAW);
 

@@ -127,7 +127,7 @@ private:
     std::string name;
 
     void init_data_draw() {
-        id_obj = glShader::m_texture_normal;
+        shaderHint = glShader::any;
         VAO.data_draw = DataDraw(DataDraw::DrawElements, GL_TRIANGLES, indices.size());
     }  
 }; 

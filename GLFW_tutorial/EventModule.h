@@ -31,7 +31,7 @@ public:
 
 private:
     void inputNormalCursor(Event& event, Scene& scene);
-    void inputDisabledCursor(Event& event, Scene& scene);
+    void inputDisabledCursor(Event& event, Scene& scene, GraphicPipeline& graphic);
     void move_camera(float time, Scene& scene);
 	Event event;
 };

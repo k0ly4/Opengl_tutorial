@@ -17,5 +17,5 @@ void ShadowMap::render(RenderScene* render)
 {
     GlRender::bind(map);
     glClear(GL_DEPTH_BUFFER_BIT);
-    render->inShadowMap(map, glShader::shadow_depth);
+    render->inShadowMap(map, glShader::depth);
 }
