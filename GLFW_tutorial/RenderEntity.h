@@ -31,6 +31,9 @@ public:
 	inline void setView(const View& view) {
 		view_ = &view;
 	}
+	inline const View* getView()const {
+		return view_;
+	}
 
 	inline void draw(Drawable& object) {
 		object.draw(view_, glShader::get(getHint(object.getShaderHint())));

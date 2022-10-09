@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW_tutorial", "GLFW_tutorial\GLFW_tutorial.vcxproj", "{45AE5249-7224-45B9-9341-E56561BCD26E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Surv", "GLFW_tutorial\GLFW_tutorial.vcxproj", "{45AE5249-7224-45B9-9341-E56561BCD26E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

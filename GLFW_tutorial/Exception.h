@@ -1,6 +1,8 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
+#include <stdio.h>
+#include <stdarg.h>
 #include <stdexcept>
 #include <string>
 ////LOG-----------------------------------------------
@@ -18,10 +20,12 @@ inline void LOG(TypeLog typeLog,
 	printf("%s%s", LOG_attribute[typeLog],strFormat);
 }
 
-
 inline void LOG( const char* strFormat, ...)noexcept
 {
-	printf(strFormat);
+	va_list factor;
+	va_start(factor, strFormat);
+	vprintf(strFormat, factor);
+	va_end(factor); // завершаем обработку параметров
 }
 
 inline void LOG(const std::string& notice)

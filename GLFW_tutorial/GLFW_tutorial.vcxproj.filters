@@ -174,9 +174,6 @@
     <ClCompile Include="Quad.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="Cube.cpp">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
-    </ClCompile>
     <ClCompile Include="Skybox.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
@@ -228,9 +225,6 @@
     <ClCompile Include="ImageLoader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GBuffer.cpp">
-      <Filter>Исходные файлы\Graphics\Render</Filter>
-    </ClCompile>
     <ClCompile Include="EventModule.cpp">
       <Filter>Исходные файлы\Input</Filter>
     </ClCompile>
@@ -251,6 +245,9 @@
     </ClCompile>
     <ClCompile Include="Text.cpp">
       <Filter>Исходные файлы\Scene\Objects\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -463,6 +460,9 @@
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Исходные файлы\Scene\Objects\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -177,17 +177,22 @@ unsigned int Shader::last_use_shader = -1;
 /// </summary>
 /// 
 /// 
-void setGBuffer(Shader& shader) {
+void setGBufferPointLights(Shader& shader) {
+    shader.use();
+    shader.uniform("gPosition", 0);
+    shader.uniform("gNormal", 1);
+    shader.uniform("gAlbedoSpec", 2);
+    //shadow-maps
+    shader.uniform("p_light[0].map", 3);
+}
+
+void setGbufferDirLights(Shader& shader) {
     shader.use();
     shader.uniform("gPosition", 0);
     shader.uniform("gNormal", 1);
     shader.uniform("gAlbedoSpec", 2);
     //shadow-maps
     shader.uniform("d_light.map", 3);
-    shader.uniform("p_light[0].map", 4);
-    /*shader.uniform("d_light.shadow_map[1]", 4);
-    shader.uniform("d_light.shadow_map[2]", 5);
-    shader.uniform("d_light.shadow_map[3]", 6);*/
 }
 
 void setLightForward(Shader& shader) {
@@ -226,8 +231,12 @@ void glShader::init() {
     setup(gb_texture, "shaders\\light\\gbuffer\\object\\default\\", 0, Uniform<int>("diffuse", 0));
     setup(gb_texture_animation, "shaders\\light\\gbuffer\\object\\animatable\\", 0, Uniform<int>("diffuse", 0));
 
-    shader[gb_render].loadDirectory("shaders\\light\\gBuffer\\render\\default\\");
-    setGBuffer(shader[gb_render]);
+    shader[gb_render_point_lights].loadDirectory("shaders\\light\\gBuffer\\render\\pointLight\\");
+    setGBufferPointLights(shader[gb_render_point_lights]);
+
+    shader[gb_render_dir_lights].loadDirectory("shaders\\light\\gBuffer\\render\\directionLight\\");
+    setGbufferDirLights(shader[gb_render_dir_lights]);
+
     //frame
     setup(frame_exposure, "shaders\\framebuffer\\exposure\\", 0, Uniform<int>("image", 0));
     setup(red, "shaders\\light\\shadow\\display\\default\\", 0, Uniform<int>("image", 0));

@@ -60,6 +60,38 @@ GLenum Depth::func_ = Depth::Less;
 bool Depth::isEnable = 0;
 bool Depth::isEnableTest =1;
 
+/// Stencil------------------------------------------------------------
+ /// <summary>
+ /// Depth
+ /// </summary>
+void Stencil::Enable(bool enable) {
+	if (isEnable == enable) return;
+	isEnable = enable;
+	if (enable)glEnable(GL_STENCIL_TEST);
+	else glDisable(GL_STENCIL_TEST);
+}
+
+void Stencil::Mask(GLuint mask) {
+	if (mask_ == mask) return;
+	mask_ = mask;
+	glStencilMask(mask_);
+}
+
+void Stencil::Func(GLenum func,GLint ref,GLuint mask) {
+	glStencilFunc(func, ref, mask);
+}
+
+void Stencil::Op(GLenum sfail, GLenum dpfail, GLenum dppass) {
+	if (action_.sfail == sfail && action_.dpfail == dpfail && action_.dppass == dppass)
+		return;
+	action_ = ActionPass(sfail, dpfail, dppass);
+	action_.implementContext();
+}
+
+bool Stencil::isEnable = 0;
+GLuint Stencil::mask_ = Stencil::One;
+Stencil::ActionPass Stencil::action_;
+
 /// GlRender------------------------------------------------------------
  /// <summary>
  /// GlRender

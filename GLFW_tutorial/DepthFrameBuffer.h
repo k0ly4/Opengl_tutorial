@@ -20,7 +20,7 @@ public:
         create(glm::ivec2(width, height));
     }
 
-    Texture2D getTexture() {
+    inline Texture2D getTexture() {
         return Texture2D(texture, size_);
     }
 

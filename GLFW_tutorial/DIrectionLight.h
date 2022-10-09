@@ -27,6 +27,10 @@ public:
     void setActive(bool enable) {
         active = enable;
     }
+    bool isActive()const {
+        return active;
+    }
+
     inline void setSizeMap(const glm::ivec2& size) {
         shadow_maps_.setSize(size);
     }

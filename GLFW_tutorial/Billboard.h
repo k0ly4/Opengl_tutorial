@@ -26,8 +26,7 @@ public:
             position.resize(index + 1);
             VAO_.setCountVertexDraw(position.size());
         }
-        else if (position[index] == new_pos)
-            return;
+        else if (position[index] == new_pos) return;
 
         position[index] = new_pos;
         VBO_.begin();
@@ -35,16 +34,14 @@ public:
     }
 
     void setSize(const glm::vec2& size) {
-
         size_ = size;
-
     }
 
     void setEye(const View3D* eye_) {
         eye = eye_;
     }
 
-    void setTexture(Texture2D& texture) { 
+    void setTexture(const Texture2D& texture) { 
         texture_ = &texture;
     }
 
@@ -56,7 +53,9 @@ public:
             shader.uniform("right", eye->getBasis().right);
             shader.uniform("up", eye->getBasis().up);
             shader.uniform("size", size_);
-            texture_->use(0);
+
+            if(texture_) 
+                texture_->use(0);
             VAO_.draw();
 
         }
@@ -70,8 +69,9 @@ private:
     DrawBuffer VAO_;
     VertexBufferObject VBO_;
 
-    const Texture2D* texture_;
+    const Texture2D* texture_ =0 ;
     const View3D* eye = 0;
+
     std::vector< glm::vec3>position;
     glm::vec2 size_;
 

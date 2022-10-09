@@ -11,12 +11,72 @@
 /// </summary>
 class Drawable {
 public:
+
 	virtual void draw(const View * view, const Shader & shader) = 0;
+
 	inline glShader::Object getShaderHint()const {
 		return shaderHint;
 	}
+
 protected:
+
 	glShader::Object shaderHint;
+};
+
+///---------------------------------------------
+/// <summary>
+/// Texturable
+/// </summary>
+class BasisMaterial :public Uniformable {
+
+public:
+
+	BasisMaterial() :
+		texture_(0),
+		color_(1.f)
+	{}
+
+	BasisMaterial(const Texture2D& texture,const Color& color):
+		texture_(&texture),
+		color_(1.f)
+	{}
+	BasisMaterial(const Color& color) :
+		texture_(0),
+		color_(color)
+	{}
+
+	void setColor(const Color& color) {
+		color_ = color;
+	}
+
+	const Color& getColor(const Color& color)const {
+		return color_;
+	}
+
+	void setTexture(const Texture2D& texture) {
+		texture_ = &texture;
+	}
+	const Texture2D* getTexture() {
+		return texture_;
+	}
+protected:
+
+	const Texture2D* texture_;
+	Color color_;
+
+	void uniform(const Shader& shader)const {
+
+		shader.uniform("baseColor", color_);
+		if (texture_)
+		{
+			texture_->use(0);
+			shader.uniform("configMaterial", 1);
+		}
+		else
+			shader.uniform("configMaterial", 0);
+
+	}
+
 };
 
 ///Texturable---------------------------------------------
@@ -26,43 +86,36 @@ protected:
 class Texturable :public Drawable {
 public:
 
-	Texturable() :
-		texture_(0),
-		color_(1.f) 
+	Texturable() 
 	{
 		shaderHint = glShader::texture;
 	}
 
+	Texturable(glShader::Object shaderHint_) {
+		shaderHint = shaderHint_;
+	}
+
 	virtual void setColor(const Color& color) {
-		color_ = color;
+		material_.setColor(color);
 	}
 	const Color& getColor(const Color& color)const {
-		return color_;
+		return material_.getColor(color);
 	}
 
 	virtual void setTexture(const Texture2D& texture) {
-		texture_ = &texture;
+		material_.setTexture(texture);
 	}
 
 protected:
-	
-	const Texture2D* texture_ = 0;
-	Color color_;
 
-	void uniformMaterial(const Shader& shader)const {
+	BasisMaterial material_;
 
-		shader.uniform("baseColor", color_);
-		if (texture_)
-		{
-			texture_->use(0);
-			shader.uniform("configMaterial", 1);
-		}
-		else 
-			shader.uniform("configMaterial",0);
-		
+	inline void uniformMaterial(const Shader& shader)const {
+		shader.uniform(material_);
 	}
 
 };
+
 ///Material---------------------------------------------
 class Material:public Uniformable {
 

@@ -12,6 +12,10 @@ LightSystem::LightSystem() {
     isShadow = 1;
     ambient_ = 0.1f;
 
+    lightPointSphere_.setRadius(1.f);
+    lightPointSphere_.setCountSector(6);
+    lightPointSphere_.setCountStack(6);
+
     ImageLoader::flipVerticallyOnLoad(1);
     textureLamp_.getPath("asset\\image\\lamp.png");
 
@@ -50,10 +54,38 @@ void LightSystem::uniform(const Shader& shader,const Camera& camera,size_t unit_
 
 }
 
+void LightSystem::renderDirLights(const Shader& shader, const Camera& camera, size_t unitMap) {
+    if (dirLightGlobal_.isActive() == 0) 
+        return;
+    shader.uniform("ambientFactor", ambient_);
+
+    dirLightGlobal_.uniform(SHADER_D_LIGHT, shader);
+    if (isShadow) dirLightGlobal_.uniformShadow(SHADER_D_LIGHT, shader, unitMap);
+
+    sBuffer::quad.getVAO().draw();
+}
+
+void LightSystem::renderPointLights(const Shader& shader, const Camera& camera, size_t unitMap) {
+
+    shader.uniform("ambientFactor", ambient_);
+
+    for (size_t i = 0; i < pLights_.size(); i++) {
+
+        pLights_[i].uniform(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader);
+        if(isShadow) pLights_[i].uniformShadow(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader, unitMap + i);
+        
+        lightPointSphere_.setScale(glm::vec3(pLights_[i].getRadius()));
+        lightPointSphere_.setPosition(pLights_[i].getPosition());
+        lightPointSphere_.draw(&camera, shader);;
+
+    }
+
+}
+
 void LightSystem::uniformShadow(const Shader& shader, const Camera& camera,size_t unitMap) { 
     dirLightGlobal_.uniformShadow(SHADER_D_LIGHT, shader, unitMap);
     unitMap++;
     for (size_t i = 0; i < pLights_.size(); i++) {
-        pLights_[i].uniformShadow(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader, unitMap +i);
+        pLights_[i].uniformShadow(SHADER_P_LIGHT + "[" + std::to_string(i) + "]", shader, unitMap + i);
     }
 }

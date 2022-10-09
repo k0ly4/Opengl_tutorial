@@ -140,6 +140,99 @@ private:
 	static bool isEnable;
 	static GLenum func_;
 };
+/// GlRender------------------------------------------------------------
+/// <summary>
+/// Depth
+/// </summary>
+class Stencil {
+public:
+
+	enum StandartMask :GLuint
+	{
+		Null = 0x00,		// каждый бит в буфере трафарета становится нулем (отключение записи)
+		One = 0xFF,			// каждый бит записывается в буфер трафарета как есть
+	};
+
+	enum FuncEnum :GLenum
+	{
+		Always = GL_ALWAYS, 
+		Never = GL_NEVER, 	
+		Less = GL_LESS, 	
+		Equal = GL_EQUAL, 	
+		Lequal = GL_LEQUAL, 
+		Greater = GL_GREATER, 
+		NotEqual = GL_NOTEQUAL,
+		Gequal = GL_GEQUAL, 
+	};
+
+	struct FuncPass {
+		GLenum func;
+		GLint ref;
+		GLuint mask;
+		FuncPass() :
+			mask(One),
+			ref()
+		{}
+	};
+
+	enum Action:GLenum
+	{
+		Keep = GL_KEEP,				//Сохраняется текущее значение трафарета.
+		Zero = GL_ZERO,				//Значение трафарета устанавливается равным 0.
+		Replace = GL_REPLACE,		//Значение трафарета заменяется значением ref, установленным с помощью функции glStencilFunc().
+		Incr = GL_INCR,				//Значение трафарета увеличивается на 1, если оно меньше максимального значения.
+		IncrWrap = GL_INCR_WRAP,	//То же, что и GL_INCR, с той лишь разницей, что, при превышении максимального значения, значение сбрасывается в 0.
+		Decr = GL_DECR,				//Значение трафарета уменьшается на 1, если оно превышает минимальное значение.
+		DecrWrap = GL_DECR_WRAP,	//То же, что и GL_DECR, но значение становится максимальным, если оно оказывается ниже 0.
+		Invert = GL_INVERT,			//Побитовое инвертирование текущего значения буфера трафарета.
+	};
+
+	struct ActionPass {
+		GLenum sfail;
+		GLenum dpfail;
+		GLenum dppass;
+
+		ActionPass() :
+			sfail(Keep),
+			dpfail(Keep),
+			dppass(Keep)
+		{}
+
+		ActionPass(GLenum sfail_, GLenum dpfail_, GLenum dppass_):
+			sfail(sfail_),
+			dpfail(dpfail_),
+			dppass(dppass_)
+		{}
+
+		void implementContext() {
+			glStencilOp(sfail, dpfail, dppass);
+		}
+
+	};
+	static void Enable(bool new_state);
+
+	static void Mask(GLuint mask);
+	//func — задает функцию, используемую при тесте трафарета==
+	// Функция применяется к сохраненному значению трафарета и ref - значению функции glStencilFunc().
+	//ref — cодержимое буфера трафарета сравнивается с данным значением.
+	//mask — указывает маску, которая сопоставляется в операции побитового 
+	//И как с эталонным значением, так и с сохраненным значением трафарета перед их сравнением.
+	static void Func(GLenum func, GLint ref, GLuint mask);
+	//sfail — действие, которое нужно выполнить, если тест трафарета не пройден.
+	//dpfail — действие, которое нужно выполнить, если тест трафарета пройден, но тест глубины — нет.
+	//dppass — действие, которое нужно предпринять, если пройдены и тест трафарета, и тест глубины.
+	static void Op(GLenum sfail, GLenum dpfail, GLenum dppass);
+
+private:
+
+	Stencil() {}
+	~Stencil() {}
+
+	static bool isEnable;
+	static GLuint mask_;
+	//FuncPass func_;
+	static ActionPass action_;
+};
 
 /// GlRender------------------------------------------------------------
 /// <summary>

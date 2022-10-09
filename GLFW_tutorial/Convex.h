@@ -22,7 +22,7 @@ struct UvVertex {
         uv(uv_) {}
 
 };
-
+#define SIZE_UV_VERTEX sizeof(UvVertex)
 /// <summary>
 /// Convex
 /// </summary>

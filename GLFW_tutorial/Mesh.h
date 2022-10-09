@@ -7,19 +7,6 @@
 #include <string>
 #include <vector>
 
-struct Vertex {
-
-    // Позиция
-    glm::vec3 position;
-
-    // Нормаль
-    glm::vec3 normal;
-
-    // Текстурные координаты
-    glm::vec2 texCoord;
-};
-#define SIZE_VERTEX sizeof(Vertex)
-
 /// <summary>
 /// Asset
 /// </summary>

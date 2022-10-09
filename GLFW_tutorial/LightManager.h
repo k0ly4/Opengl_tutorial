@@ -4,6 +4,7 @@
 #include "DirectionLight.h"
 #include"PointLight.h"
 #include"Billboard.h"
+#include "Sphere.h"
 
 class LightSystem :public Drawable {
    
@@ -28,6 +29,7 @@ public:
     inline void setAmbientFactor(float ambient) {
         ambient_ = ambient;
     }
+
     inline void draw(const View* view, const Shader& shader) {
         size_t index = 0;
         for (auto l = pLights_.begin(); l != pLights_.end(); l++, index++) {
@@ -35,16 +37,23 @@ public:
         }
         billboardLamp_.draw(view, shader);
     }
+
     PointLight& getPoint(size_t id) {
         return pLights_[id];
     }
+
+    void renderPointLights(const Shader& shader, const Camera& camera, size_t unitFree);
+    void renderDirLights(const Shader& shader, const Camera& camera, size_t unitFree);
+
     void uniform(const Shader& shader, const Camera& camera, size_t unit_free);
+
     void draw(RenderTarget& target,const Camera& camera, Drawable& object) {
         const Shader& shader = glShader::get(target.getHintShader(object));
         shader.use();
         uniform(shader, camera, 1);
         target.draw(object, shader);
     }
+
 private:
 
     bool isShadow;
@@ -54,8 +63,8 @@ private:
 
     Texture2D textureLamp_;
     Billboard billboardLamp_;
+    LightSphere lightPointSphere_;
 
     void uniformShadow(const Shader& shader, const Camera& camera, size_t unitMap);
-
 };
 #endif

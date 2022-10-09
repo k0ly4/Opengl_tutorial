@@ -85,7 +85,7 @@ private:
     void calcRadius()const {
         need_up_radius = 0;
         constexpr float dark = 4.f/ 256.f;
-        radius_ = getLimitPropagation(std::max(std::max(color_.x, color_.y), color_.z), dark, glm::vec3(attenuation_, 1.f));
+        radius_ = getLimitPropagation(std::fmax(std::fmax(color_.x, color_.y), color_.z), dark, glm::vec3(attenuation_, 1.f));
 ;    }
 };
 #endif

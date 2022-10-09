@@ -118,7 +118,8 @@ public:
         //gBuffer
         gb_texture, 
         gb_texture_animation,
-        gb_render,
+        gb_render_dir_lights,
+        gb_render_point_lights,
         //posEffects
         frame_exposure,
         //Render in shadow map

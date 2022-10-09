@@ -6,12 +6,11 @@
 #include "Shape.h"
 #include "RenderWindow.h"
 #include"Sprite.h"
-#include "GBuffer.h"
 #include "Quad.h"
 #include "GameModules.h"
-#include "Font.h"
 #include "Text.h"
-
+#include "Sphere.h"
+#include "LightManager.h"
 /// <summary>
 /// Scene
 /// </summary>
@@ -45,7 +44,7 @@ public:
 	gbCube cube2;
 	gbCube wall;
 	gbPlane plane2;
-	
+	Sphere sphere;
 	std::vector<Drawable*>gBufferObjects;
 	//Object2D
 	Sprite sCowBoy;

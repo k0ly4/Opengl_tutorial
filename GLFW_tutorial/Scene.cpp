@@ -1,9 +1,17 @@
 #include "Scene.h"
-
 #include "GraphicModule.h"
 #include "EventModule.h"
 
 void Scene::initialize3DScene(RenderWindow& window) {
+
+
+	sphere.setRadius(3.0f);
+	sphere.setCountSector(8);
+	sphere.setCountStack(8);
+
+	sphere.setPosition(glm::vec3(10.f, 10.f, 10.f));
+	sphere.setTexture(filin);
+
 	wall.setPosition(glm::vec3(6.f));
 	wall.setScale(glm::vec3(1.f, 3.f, 3.f));
 	wall.setBaseColor(Color::RED);
@@ -40,8 +48,7 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	gBufferObjects[0] = (&plane);
 	gBufferObjects[1] = (&wall);
 	gBufferObjects[2] = (&cube);
-	LOG("this is%d exams\n",100u);
-	//gBufferObjects[3] = (&cube2);
+	//LOG("this is%d exams\n",100u);
 }
 
 void Scene::initializeUI(RenderWindow& window) {
@@ -82,27 +89,28 @@ void Scene::initializeUI(RenderWindow& window) {
 void Scene::inGBuffer(RenderTarget& target) {
 	Blend::Enable(false);
 	Depth::Enable(true);
+	CullFace::Mode(CullFace::Back);
 
 	CullFace::Enable(false);
 	target.draw(plane2);
 
 	CullFace::Enable(true);
-	CullFace::Mode(CullFace::Back);
-	/*for (size_t i = 0; i < gBufferObjects.size(); i++) {
-		target.draw(*gBufferObjects[i]);
-	}*/
-}
-
-void Scene::inForward(RenderTarget& target) {
-	Blend::Enable(true);
-	Depth::Enable(true);
-
-	CullFace::Enable(true);
-	CullFace::Mode(CullFace::Back);
-	target.draw(light);
 	for (size_t i = 0; i < gBufferObjects.size(); i++) {
 		light.draw(target, camera, *gBufferObjects[i]);
 	}
+}
+
+void Scene::inForward(RenderTarget& target) {
+	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
+	Blend::Enable(true);
+	Depth::Enable(true);
+	CullFace::Mode(CullFace::Back);
+
+	CullFace::Enable(false);
+	sphere.displayLine(target);
+	CullFace::Enable(true);
+	target.draw(light);
+	light.draw(target, camera, sphere);
 	light.draw(target,camera,cube2);
 }
 
@@ -111,15 +119,17 @@ void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
 
 	Blend::Enable(false);
 	Depth::Enable(true);
+	CullFace::Mode(CullFace::Front);
 
 	CullFace::Enable(false);
 	target.draw(plane2, shader);
 	
 	CullFace::Enable(true);
-	CullFace::Mode(CullFace::Front);
 	for (size_t i = 0; i < gBufferObjects.size(); i++) {
 		target.draw(*gBufferObjects[i], shader);
 	}
+
+	target.draw(sphere, shader);
 	target.draw(cube2, shader);
 }
 

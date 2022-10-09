@@ -40,6 +40,29 @@ type getSum(size_t size, const type* data) {
 /// <returns></returns>
 inline float getLimitPropagation(float power,float min,const glm::vec3& c) {
     return (-c.y + std::sqrtf(c.y * c.y - 4 * c.x * (c.z - power / min))) / (2 * c.x);
+    /*return (-c.y + sqrtf(c.y * c.y -
+        4 * c.x * (c.x - 256 * power * Light.DiffuseIntensity)))
+        /
+        (2 * c.x);*/
 }
+
+struct Vertex {
+
+    // Позиция
+    glm::vec3 position;
+
+    // Нормаль
+    glm::vec3 normal;
+
+    // Текстурные координаты
+    glm::vec2 texCoord;
+    Vertex(const glm::vec3& Position,const glm::vec3& Normal,const glm::vec2& TexCoord):
+    position(Position),
+    normal(Normal),
+    texCoord(TexCoord)
+    {}
+    Vertex() {}
+};
+#define SIZE_VERTEX sizeof(Vertex)
 
 #endif
