@@ -85,12 +85,12 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
 
         else if (event.key.code == Keyboard::U) {
             f.zMult -= 1.f;
-            scene.light.getDirLight().setMultShadow(f.zMult);
+            scene.light.getDirs().setMultShadow(f.zMult);
         }
 
         else if (event.key.code == Keyboard::Y) {
             f.zMult += 1.f;
-            scene.light.getDirLight().setMultShadow(f.zMult);
+            scene.light.getDirs().setMultShadow(f.zMult);
         }
 
         else if (event.key.code == Keyboard::F) {
@@ -105,8 +105,8 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
 
         else if (event.key.code == Keyboard::N) {
             f.shadow_level++;
-            if (f.shadow_level >= scene.light.getDirLight().getShadowMap().getCount())
-                f.shadow_level = scene.light.getDirLight().getShadowMap().getCount() - 1;
+            if (f.shadow_level >= scene.light.getDirs().getShadowMap().getCount())
+                f.shadow_level = scene.light.getDirs().getShadowMap().getCount() - 1;
             printf("Shadow_Level:%d\n", f.shadow_level);
         }
 
@@ -128,8 +128,9 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
             scene.camera.cur_pos_mouse = Mouse::getPosition();
         }
         else if (event.mouseButton.button == Mouse::Middle) {
-            scene.light.getDirLight().setDirection(-scene.camera.getBasis().front);
-            scene.light.getPoint(0).setPosition(scene.camera.getPosition());
+            scene.light.getDirs().setDirection(-scene.camera.getBasis().front);
+            scene.light.getPoints()[0].setPosition(scene.camera.getPosition());
+            scene.light.lightTest.setDirection(scene.camera);
         }
     }
 }

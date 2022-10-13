@@ -28,11 +28,16 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	plane.setScale(glm::vec3(20.f, 0.5f, 20.f));
 	plane.setBaseColor(glm::vec3(0.9f));
 
-	light.add(PointLight(glm::vec3(0.5f), glm::vec3(5.f, 13.f, 5.f), glm::vec2(0.032f, 0.09f)), &camera);
-	light.getDirLight().setColor(glm::vec3(0.2f));
-	light.getDirLight().setDirection(glm::vec3(1.f, 1.f, 0.f));
-	light.getDirLight().setSizeMap(glm::ivec2(1024));
+	auto& points = light.getPoints();
+	points.push_back(PointLight(glm::vec3(0.5f), glm::vec3(5.f, 13.f, 5.f), glm::vec2(0.032f, 0.09f)), &camera);
+	points[0].setActive(0);
+	light.getDirs().setColor(glm::vec3(0.1f));
+	light.getDirs().setDirection(glm::vec3(1.f, 1.f, 0.f));
+	light.getDirs().setSizeMap(glm::ivec2(1024));
 	light.setAmbientFactor(0.01f);
+
+	light.lightTest.setColor(glm::vec3(0.5f));
+	//light.getDirs().setActive(false);
 
 	plane2.setBaseColor(Color::GREEN);
 	plane2.setPosition(glm::vec3(15.f, 7.f, 10.f));
@@ -77,7 +82,6 @@ void Scene::initializeUI(RenderWindow& window) {
 	text2.setSizeFont(20);
 	text2.setScale(glm::vec2(7.f));
 	text2.setColor(Color::YELLOW);
-
 	
 }
 
@@ -92,11 +96,10 @@ void Scene::inGBuffer(RenderTarget& target) {
 	CullFace::Mode(CullFace::Back);
 
 	CullFace::Enable(false);
-	target.draw(plane2);
 
 	CullFace::Enable(true);
 	for (size_t i = 0; i < gBufferObjects.size(); i++) {
-		light.draw(target, camera, *gBufferObjects[i]);
+		target.draw(*gBufferObjects[i]);
 	}
 }
 
@@ -104,14 +107,20 @@ void Scene::inForward(RenderTarget& target) {
 	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 	Blend::Enable(true);
 	Depth::Enable(true);
+
 	CullFace::Mode(CullFace::Back);
 
 	CullFace::Enable(false);
+	
 	sphere.displayLine(target);
+	light.draw(target, camera, plane2);
+
 	CullFace::Enable(true);
-	target.draw(light);
+	target.draw(light.getPoints());
 	light.draw(target, camera, sphere);
+	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 	light.draw(target,camera,cube2);
+	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 }
 
 
@@ -119,15 +128,15 @@ void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
 
 	Blend::Enable(false);
 	Depth::Enable(true);
-	CullFace::Mode(CullFace::Front);
+	CullFace::Mode(CullFace::Back);
 
 	CullFace::Enable(false);
 	target.draw(plane2, shader);
+	target.draw(plane, shader);
+	CullFace::Enable(true); 
+	target.draw(cube, shader);
 	
-	CullFace::Enable(true);
-	for (size_t i = 0; i < gBufferObjects.size(); i++) {
-		target.draw(*gBufferObjects[i], shader);
-	}
+	target.draw(wall, shader);
 
 	target.draw(sphere, shader);
 	target.draw(cube2, shader);
@@ -136,6 +145,7 @@ void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
 void Scene::inUI(RenderTarget& target) {
 	target.setView(view2D);
 
+	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 	CullFace::Enable(false);
 	Depth::Enable(false);
 	Blend::Enable(true);

@@ -1,17 +1,21 @@
 #version 330 core
 
 out vec4 FragColor;
+
+in vec3 FragPos;
+in vec3 Normal;
 in vec2 TexCoord;
-//GBuffer
-uniform sampler2D gPosition;//0
-uniform sampler2D gNormal;//1
-uniform sampler2D gAlbedoSpec;//2
-//uniform
+in vec4 FragPosView;
+//Uniform------------------------------------------------
 uniform vec3 viewPos;
 uniform float ambientFactor;
-uniform mat4 gWVP;
 uniform int debugMode;
-
+const float shininess = 16.0;
+//Material------------------------------------------------
+uniform int configMaterial;
+uniform vec4 baseColor;
+uniform sampler2D diffuse;
+uniform float specularMaterial;
 //DirectionLight----------------------------------------------------------
 const int NUM_CASCADES= 5;
 struct DirLight{
@@ -20,9 +24,9 @@ struct DirLight{
     mat4 spaceMatrix[NUM_CASCADES];
     sampler2DArray map;
     float cascadePlaneDistances[NUM_CASCADES+1];
+    int enable;
 };
 uniform DirLight d_light;
-
 //Get cascade level from cascade planes distance and cur frag position
 int cascadeLevel(vec4 fragPosViewSpace){
 
@@ -38,24 +42,10 @@ int cascadeLevel(vec4 fragPosViewSpace){
     return NUM_CASCADES-1;
 }
 int cascade_level;
-
-//If debug mode
-vec3 debugColorCascade(int level){
-    const vec3 color_shadow[NUM_CASCADES+1] = {
-            vec3(1.f,0.f,0.f),
-            vec3(1.f,1.f,0.f),
-            vec3(0.f,1.f,0.f),
-            vec3(0.f,1.f,1.f),
-            vec3(0.f,0.f,1.f),
-            vec3(0.f,0.f,0.f)
-       };
-    return color_shadow[level];
-}
-
 //Calculate float factor of cascade shadow for direction light
 //angle =dot(normal, lightDir)
 float factorCascadeShadow(vec4 FragPos,float angle){
-    cascade_level = cascadeLevel(gWVP * FragPos);
+    cascade_level = cascadeLevel(FragPosView);
 
     vec4 fragPosLightSpace  = d_light.spaceMatrix[cascade_level] * FragPos;
     // perform perspective divide
@@ -93,29 +83,24 @@ float factorCascadeShadow(vec4 FragPos,float angle){
     return shadow;
 }
 
-
 void main()
-{     
-    //GBuffer values
-    vec3 FragPos = texture(gPosition, TexCoord).rgb;
-    vec3 Normal = texture(gNormal, TexCoord).rgb;
-    vec3 Albedo = texture(gAlbedoSpec, TexCoord).rgb;
-    float Specular = texture(gAlbedoSpec, TexCoord).a; 
-    //Final color without alpha channel
+{        
+    vec4 materialColor = configMaterial == 1 ? texture(diffuse, TexCoord) * baseColor : baseColor;
+    vec3 Albedo = materialColor.rgb;
+    vec3 viewDir = normalize(viewPos - FragPos);
     vec3 lighting = Albedo * ambientFactor; // фоновая составляющая
     //DirectionLight-----------------------------------
-        float dotNormal_Dir = dot(Normal, d_light.direction);
-        //Направленный свет
-        vec3 diffuse = max(dotNormal_Dir, 0.0) * Albedo * d_light.color;
-        // Отраженная составляющая
-        vec3 viewDir = normalize(viewPos - FragPos);
-        float spec = pow(max(dot(Normal, normalize(d_light.direction + viewDir)), 0.0), 16.0);
-        //Shadow factor
-        float shadow =factorCascadeShadow(vec4(FragPos,1.f), dot(Normal, d_light.direction));                    
-        
-        lighting +=  (1.0 - shadow)*(diffuse + vec3(Specular*spec)) *(debugMode ==1 ? debugColorCascade(cascade_level): vec3(1.f)); //debug
+    float dotNormal_Dir = dot(Normal, d_light.direction);
+    // Диффузная составляющая
+    vec3 diffuseFactor = max(dotNormal_Dir, 0.0) * Albedo * d_light.color;
+    // Отраженная составляющая
+    float specularFactor = specularMaterial * pow(max(dot(Normal, normalize(d_light.direction + viewDir)), 0.0), shininess);
+    ////Shadow factor
+    float shadow =factorCascadeShadow(vec4(FragPos,1.f), dotNormal_Dir);
+    //Final factor 
+    lighting += (1.0 - shadow) *(diffuseFactor+ vec3(specularFactor));
 
-    FragColor = vec4(lighting, 1.0);
+    FragColor = vec4(lighting, materialColor.a);
 }
 
 

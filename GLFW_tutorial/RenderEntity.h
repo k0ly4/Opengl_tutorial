@@ -61,7 +61,7 @@ protected:
 		}
 		else if (objectHint == glShader::any_skeletal_animation) 
 		{
-			return defaultHintShader_ == glShader::gb_texture ? glShader::gb_texture_animation : glShader::light_texture;
+			return defaultHintShader_ == glShader::gb_texture ? glShader::gb_texture_animation : glShader::any_light_texture;
 		}
 		else 
 		{

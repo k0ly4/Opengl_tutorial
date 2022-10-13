@@ -207,9 +207,6 @@
     <ClCompile Include="AssimpLib.cpp">
       <Filter>Файлы ресурсов\assimp</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowMap.cpp">
-      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
-    </ClCompile>
     <ClCompile Include="DepthFrameBuffer.cpp">
       <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClCompile>
@@ -248,6 +245,12 @@
     </ClCompile>
     <ClCompile Include="Sphere.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

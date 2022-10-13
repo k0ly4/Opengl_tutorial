@@ -1,16 +1,19 @@
 #version 330 core
 
 out vec4 FragColor;
+
+in vec3 FragPos;
+in vec3 Normal;
 in vec2 TexCoord;
-//GBuffer
-uniform sampler2D gPosition;//0
-uniform sampler2D gNormal;//1
-uniform sampler2D gAlbedoSpec;//2
-//uniform
+//Uniform------------------------------------------------
 uniform vec3 viewPos;
 uniform float ambientFactor;
-uniform int debugMode;
-
+const float shininess = 16.0;
+//Material------------------------------------------------
+uniform int configMaterial;
+uniform vec4 baseColor;
+uniform sampler2D diffuse;
+uniform float specularMaterial;
 //PointLight-------------------------------------------------------
 const int MAX_POINT_LIGHT = 1;
 
@@ -23,9 +26,9 @@ struct PointLight{
 };
 uniform PointLight p_light[MAX_POINT_LIGHT];
 /////factorCubeShadow---------------------
-float factorCubeShadow(PointLight light,vec3 FragPos,float angle){
-
-    vec3 fragToLight = FragPos - light.position;
+float factorCubeShadow(PointLight light,float angle)
+{
+  vec3 fragToLight = FragPos - light.position;
     float currentDepth = length(fragToLight);
 
     const int samples  = 20;
@@ -51,48 +54,39 @@ float factorCubeShadow(PointLight light,vec3 FragPos,float angle){
     shadow /= float(samples);
     return shadow;
 }
-/////debugCubeShadow---------------------
-float debugCubeShadow(PointLight light,vec3 FragPos){
-    vec3 fragToLight = FragPos - light.position;
-    float closestDepth = texture(light.map, fragToLight).r;
-    return closestDepth;
-}
-/////main-------------------------------------------------
+
 void main()
-{     
-    //GBuffer values
-    vec3 FragPos = texture(gPosition, TexCoord).rgb;
-    vec3 Normal = texture(gNormal, TexCoord).rgb;
-    vec3 Albedo = texture(gAlbedoSpec, TexCoord).rgb;
-    float Specular = texture(gAlbedoSpec, TexCoord).a; 
-    //Final color without alpha channel
+{        
+    vec4 materialColor = configMaterial == 1 ? texture(diffuse, TexCoord) * baseColor : baseColor;
+    vec3 Albedo = materialColor.rgb;
+
+    
+    vec3 viewDir = normalize(viewPos - FragPos);
+
     vec3 lighting = Albedo * ambientFactor; // фоновая составляющая
-    vec3 viewDir = normalize(viewPos - FragPos);   
-    //PointLights-----------------------------------------
-    for(int i = 0; i < MAX_POINT_LIGHT; i++)
+    //attenuation
+      for(int i = 0; i < MAX_POINT_LIGHT; i++)
     {    
         //Затухание
         float distance = length(p_light[i].position-FragPos);
         float attenuation = 1.f /(distance*distance*p_light[i].attenuation.x + distance*p_light[i].attenuation.y+ 1.f);
+
         // Диффузная составляющая
         vec3 lightDir = normalize(p_light[i].position - FragPos);
-        float dotNormal_Dir = dot( lightDir,Normal);
+        float dotNormal_Dir = dot(Normal, lightDir);
 
-        vec3 diffuse = max(dotNormal_Dir, 0.0) * Albedo * p_light[i].color;
+        vec3 diffuseFactor = max(dotNormal_Dir, 0.0) * Albedo * p_light[i].color;
        // Отраженная составляющая
-        float spec = pow(max(dot(Normal, normalize(lightDir + viewDir)), 0.0), 16.0);
-        //Shadow factor
-        float shadow =factorCubeShadow(p_light[i], FragPos, dotNormal_Dir);      
+        float specularFactor = specularMaterial * pow(max(dot(Normal, normalize(lightDir + viewDir)), 0.0), shininess);
+
+        ////Shadow factor
+        float shadow =factorCubeShadow(p_light[i],dotNormal_Dir);
+             
         //Final factor 
-        lighting += (1.f-shadow)*(diffuse+ vec3(Specular*spec))*attenuation;
+        lighting += (1.0 - shadow) *(diffuseFactor+ vec3(specularFactor))*attenuation;
     }
-    //output color
-    FragColor = vec4(lighting, 1.0);
-    //if(debugMode ==1)
-      //  FragColor = vec4(vec3(debugCubeShadow(p_light[0],FragPos)), 1.0);  
+
+    FragColor = vec4(lighting,materialColor.a);
 }
-
-
-
 
 

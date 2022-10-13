@@ -22,9 +22,7 @@ void GraphicPipeline::initialize(RenderWindow& window) {
 void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& event) {
 
     //Shadow ------------------
-    ImageLoader::flipVerticallyOnLoad(0);
     scene.light.upShadowMap(scene, scene.camera);
-
     //gBuffer-------------------
     // in gbuffer
     window.setDefaultHintShader(glShader::gb_texture);
@@ -35,7 +33,7 @@ void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& ev
     gBuffer.display(scene.light, scene.camera);
 
     //Forward render ----------------------
-    window.setDefaultHintShader(glShader::light_texture);
+    window.setDefaultHintShader(glShader::any_light_texture);
     gBuffer.implementDepth(frame);
     scene.inForward(window);
     //UI----------------------
@@ -51,9 +49,11 @@ void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& ev
     Depth::Enable(false);
     glClear(GL_COLOR_BUFFER_BIT);
 
-   // if (event.f.shadow_view) filter.displayRed(scene.light.getDirLight().getShadowMap(), event.f.shadow_level);
-    //else 
-    if (event.f.debugGbuffer)display(gBuffer.getTexture(0));
+    //if (event.f.shadow_view) filter.displayRed(scene.light.getDirLight().getShadowMap(), event.f.shadow_level);
+    ////else 
+    if (event.f.debugGbuffer) {
+        filter.displayRed(scene.light.lightTest.map_.getTexture());
+    }
     else filter.drawExposure(frame.getTexture());
    
     if (event.f.shadow_view) 

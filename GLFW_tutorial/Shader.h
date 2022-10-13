@@ -101,7 +101,7 @@ public:
     enum Object :size_t
     {
         font,
-        text, 
+        text,
         shape,
         skybox,
         billboard,
@@ -114,11 +114,13 @@ public:
         texture_instance_loc2,
 
         //forward render
-        light_texture, 
+        texture_pointLight,
+        texture_dirLight,
         //gBuffer
-        gb_texture, 
+        gb_texture,
         gb_texture_animation,
         gb_render_dir_lights,
+        gb_render_dir_lights_test,
         gb_render_point_lights,
         //posEffects
         frame_exposure,
@@ -133,6 +135,7 @@ public:
         shader_size,
         any,
         any_skeletal_animation,
+        any_light_texture,
     };
 
     static inline const Shader& get(Object index) {

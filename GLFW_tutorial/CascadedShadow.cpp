@@ -133,9 +133,10 @@ void CascadeShadow::render(const View3D & view_player, const glm::vec3& dirLight
 
     glEnable(GL_DEPTH_CLAMP);
     glClear(GL_DEPTH_BUFFER_BIT);
-    glShader::get(glShader::depth_cascaded).use();
+    const Shader& shader = glShader::get(glShader::depth_cascaded);
+    shader.use();
     for (size_t i = 0; i < NUM_CASCADES; i++)
-        glShader::get(glShader::depth_cascaded).uniform("lightSpaceMatrices[" + std::to_string(i) + "]", views[i].getVP());
+        shader.uniform("lightSpaceMatrices[" + std::to_string(i) + "]", views[i].getVP());
     render.inShadowMap(fbo, glShader::depth_cascaded);
     glDisable(GL_DEPTH_CLAMP);
 }

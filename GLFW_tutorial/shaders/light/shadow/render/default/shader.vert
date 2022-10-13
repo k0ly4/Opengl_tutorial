@@ -1,10 +1,9 @@
 #version 330 core
 layout (location = 0) in vec3 in_pos;
 
-uniform  mat4 projection;
-uniform mat4 camera;
+uniform mat4 lightSpaceMatrix;
 uniform mat4 model;
 void main()
 {  
-   gl_Position = projection*camera*model*vec4(in_pos,1.f);
+   gl_Position = lightSpaceMatrix*model*vec4(in_pos,1.f);
 }

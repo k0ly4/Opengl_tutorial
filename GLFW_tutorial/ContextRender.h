@@ -170,6 +170,7 @@ public:
 		GLint ref;
 		GLuint mask;
 		FuncPass() :
+			func(Always),
 			mask(One),
 			ref()
 		{}
@@ -209,6 +210,7 @@ public:
 		}
 
 	};
+
 	static void Enable(bool new_state);
 
 	static void Mask(GLuint mask);

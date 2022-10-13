@@ -51,41 +51,43 @@ public:
     void display(LightSystem& lights,const Camera& camera) {
 
         Blend::Enable(true);
-        Blend::Equation(Blend::Add);
-        Blend::Func(Blend::One, Blend::One);
-
+       
+        Depth::Enable(false);
         glClear(GL_COLOR_BUFFER_BIT);
         usePositionMap(0);
         useNormalMap(1);
         useDiffuseMap(2);
-        CullFace::Enable(true);
-        CullFace::Mode(CullFace::ModeEnum::Front);
-        displayPointLight(lights,glShader::get(glShader::gb_render_point_lights), camera);
-        //displayDirLight(lights,glShader::get(glShader::gb_render_dir_lights), camera);
-     
-        //lights.uniform(shader, camera,3);
-        //sBuffer::quad.getVAO().draw();
+       
+        Blend::Equation(Blend::Add);
+        Blend::Func(Blend::One, Blend::One); 
+        renderDirLights(lights, glShader::get(glShader::gb_render_dir_lights), camera);
+       //renderDirLightsTest(lights, glShader::get(glShader::gb_render_dir_lights_test), camera);
+        renderPointLights(  lights, glShader::get(glShader::gb_render_point_lights),    camera);  
+      
     }
    
 private:
-
-    void displayPointLight(LightSystem& lights, const Shader& shader, const Camera& camera) {
-        
+    void renderPointLights(LightSystem& lights, const Shader& shader, const Camera& camera) {
         shader.use();
-        shader.uniform("viewPos", camera.getPosition());
-        shader.uniform("debugMode", debugMode);
-        shader.uniform("gScreenSize", glm::vec2(size_.x,size_.y));
-        lights.renderPointLights(shader, camera,3);
+        globalUniform(shader, camera);
+        lights.renderPointInGBuffer(shader, camera,3);
 
     }
-    void displayDirLight(LightSystem& lights, const Shader& shader,const Camera& camera) {
-      
+    void renderDirLights(LightSystem& lights, const Shader& shader,const Camera& camera) {
         shader.use();
+        globalUniform(shader,camera);
+        shader.uniform("gWVP", camera.getVP());
+        lights.renderDirLightsInGBuffer(shader, camera, 3);
+    }
+    void renderDirLightsTest(LightSystem& lights, const Shader& shader, const Camera& camera) {
+        shader.use();
+        globalUniform(shader, camera);
+        lights.renderSimpleLight(shader, camera, 3);
+    }
+
+    void globalUniform(const Shader& shader, const Camera& camera) {
         shader.uniform("viewPos", camera.getPosition());
         shader.uniform("debugMode", debugMode);
-        shader.uniform("gWVP", camera.getVP());
-        lights.renderDirLights(shader, camera, 3);
-
     }
 
     int debugMode = 0;

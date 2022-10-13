@@ -195,15 +195,21 @@ void setGbufferDirLights(Shader& shader) {
     shader.uniform("d_light.map", 3);
 }
 
-void setLightForward(Shader& shader) {
+void setLightForwardPointLight(Shader& shader) {
+    shader.use();
+    //shadow-maps
+    //material neccessery
+    shader.uniform("diffuse", 0);
+    //light
+    shader.uniform("p_light[0].map", 1);
+}
+void setLightForwardDirLight(Shader& shader) {
     shader.use();
     //shadow-maps
     //material neccessery
     shader.uniform("diffuse", 0);
     //light
     shader.uniform("d_light.map", 1);
-    shader.uniform("p_light[0].map", 2);
-
 }
 
 void glShader::init() {
@@ -225,8 +231,11 @@ void glShader::init() {
     setup(texture_instance, "shaders\\3d\\texture\\location1\\instance\\", 0, Uniform<int>("diffuse", 0));
     setup(texture_instance_loc2, "shaders\\3d\\texture\\location2\\instance\\", 0, Uniform<int>("diffuse", 0));
     //forward
-    setup(light_texture, "shaders\\light\\forward\\default\\", 0, Uniform<int>("diffuse", 0));
-    setLightForward(shader[light_texture]);
+    shader[texture_pointLight].loadDirectory("shaders\\light\\forward\\default\\pointLight\\");
+    setLightForwardPointLight(shader[texture_pointLight]);
+
+    shader[texture_dirLight].loadDirectory("shaders\\light\\forward\\default\\dirLight\\");
+    setLightForwardDirLight(shader[texture_dirLight]);
     //gBuffer
     setup(gb_texture, "shaders\\light\\gbuffer\\object\\default\\", 0, Uniform<int>("diffuse", 0));
     setup(gb_texture_animation, "shaders\\light\\gbuffer\\object\\animatable\\", 0, Uniform<int>("diffuse", 0));
@@ -236,6 +245,9 @@ void glShader::init() {
 
     shader[gb_render_dir_lights].loadDirectory("shaders\\light\\gBuffer\\render\\directionLight\\");
     setGbufferDirLights(shader[gb_render_dir_lights]);
+
+    shader[gb_render_dir_lights_test].loadDirectory("shaders\\light\\gBuffer\\render\\simpleDirLight\\");
+    setGbufferDirLights(shader[gb_render_dir_lights_test]);
 
     //frame
     setup(frame_exposure, "shaders\\framebuffer\\exposure\\", 0, Uniform<int>("image", 0));

@@ -236,6 +236,7 @@
     <ClCompile Include="EventModule.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="FontLoader.cpp" />
+    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="PostEffects.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Framebuffer.cpp" />

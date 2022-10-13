@@ -117,7 +117,7 @@ public:
     }
 
     inline const MatrixShell& getProjection()const {
-        return view.getMatrixShell();
+        return proj.getMatrixShell();
     }
     inline const MatrixShell& getView() const {
          return view.getMatrixShell();
