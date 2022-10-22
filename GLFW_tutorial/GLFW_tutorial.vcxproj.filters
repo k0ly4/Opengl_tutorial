@@ -46,9 +46,6 @@
     <Filter Include="Исходные файлы\Scene\Primitives">
       <UniqueIdentifier>{9e3c50c0-d270-43d6-b44e-48f76bc20d01}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Scene\Objects\Text">
-      <UniqueIdentifier>{056ad88a-fe03-459f-91c8-20751e37a15e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы ресурсов\assimp">
       <UniqueIdentifier>{d191ca78-17c6-4705-a139-f59d1db20f19}</UniqueIdentifier>
     </Filter>
@@ -66,406 +63,397 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="glad.c">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_image.cpp">
+    <ClCompile Include="lib\stb_image.cpp">
       <Filter>Файлы ресурсов\stb</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="source\Game\main.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Color.cpp">
+    <ClCompile Include="source\Math\Color.cpp">
       <Filter>Исходные файлы\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Rects.cpp">
+    <ClCompile Include="source\Math\Rects.cpp">
       <Filter>Исходные файлы\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Perspective.cpp">
+    <ClCompile Include="source\Math\Perspective.cpp">
       <Filter>Исходные файлы\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Vectors.cpp">
-      <Filter>Исходные файлы\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="GLFW.cpp">
+    <ClCompile Include="source\Game\GLFW.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="source\System\Clock.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Clock.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceTypes.cpp">
+    <ClCompile Include="source\Resource\ResourceTypes.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Resource_manager.cpp">
+    <ClCompile Include="source\Resource\Resource_manager.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
+    <ClCompile Include="source\Resource\Shader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer.cpp">
+    <ClCompile Include="source\Resource\Buffer.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
+    <ClCompile Include="source\Graphic\Texture.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Transformable.cpp">
+    <ClCompile Include="source\Scene\Transformable.cpp">
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Transform.cpp">
+    <ClCompile Include="source\Math\Transform.cpp">
       <Filter>Исходные файлы\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Drawable.cpp">
+    <ClCompile Include="source\Graphic\Drawable.cpp">
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Instancable.cpp">
+    <ClCompile Include="source\Scene\Camera.cpp">
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Исходные файлы\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Event.cpp">
+    <ClCompile Include="source\Input\Event.cpp">
       <Filter>Исходные файлы\Input</Filter>
     </ClCompile>
-    <ClCompile Include="EventEntites.h">
+    <ClCompile Include="source\Input\Keyboard.cpp">
       <Filter>Исходные файлы\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Keyboard.cpp">
+    <ClCompile Include="source\Input\Mouse.cpp">
       <Filter>Исходные файлы\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Mouse.cpp">
+    <ClCompile Include="source\Input\Clipboard.cpp">
       <Filter>Исходные файлы\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Clipboard.cpp">
+    <ClCompile Include="source\Input\Cursor.cpp">
       <Filter>Исходные файлы\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Cursor.cpp">
-      <Filter>Исходные файлы\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderWindow.cpp">
+    <ClCompile Include="source\Graphic\RenderWindow.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
-    <ClCompile Include="ContextRender.cpp">
+    <ClCompile Include="source\Graphic\ContextRender.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
-    <ClCompile Include="ContextWindow.cpp">
+    <ClCompile Include="source\Graphic\ContextWindow.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Framebuffer.cpp">
+    <ClCompile Include="source\Graphic\Framebuffer.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Render.cpp">
+    <ClCompile Include="source\Graphic\Render.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
-    <ClCompile Include="RenderEntity.cpp">
+    <ClCompile Include="source\Graphic\RenderEntity.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
-    <ClCompile Include="ContextTexture.cpp">
+    <ClCompile Include="source\Graphic\ContextTexture.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Exception.cpp">
+    <ClCompile Include="source\System\Exception.cpp">
       <Filter>Исходные файлы\System</Filter>
     </ClCompile>
-    <ClCompile Include="PrimitiveEntity.cpp">
+    <ClCompile Include="source\Scene\PrimitiveEntity.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="Quad.cpp">
+    <ClCompile Include="source\Scene\Quad.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="Skybox.cpp">
+    <ClCompile Include="source\Scene\Skybox.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="Glyph.cpp">
-      <Filter>Исходные файлы\Scene\Objects\Text</Filter>
-    </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Исходные файлы\Scene\Objects\Text</Filter>
-    </ClCompile>
-    <ClCompile Include="Shape.cpp">
+    <ClCompile Include="source\Scene\Shape.cpp">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix.cpp">
+    <ClCompile Include="source\Math\Matrix.cpp">
       <Filter>Исходные файлы\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
+    <ClCompile Include="source\UI\Sprite.cpp">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
+    <ClCompile Include="source\Graphic\Mesh.cpp">
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
     </ClCompile>
-    <ClCompile Include="bMesh.cpp">
+    <ClCompile Include="source\Resource\bMesh.cpp">
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
+    <ClCompile Include="source\Scene\Model.cpp">
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
     </ClCompile>
-    <ClCompile Include="Assimp.cpp">
+    <ClCompile Include="source\Resource\Assimp.cpp">
       <Filter>Файлы ресурсов\assimp</Filter>
     </ClCompile>
-    <ClCompile Include="AssimpLib.cpp">
+    <ClCompile Include="source\Resource\AssimpLib.cpp">
       <Filter>Файлы ресурсов\assimp</Filter>
     </ClCompile>
-    <ClCompile Include="DepthFrameBuffer.cpp">
+    <ClCompile Include="source\Graphic\DepthFrameBuffer.cpp">
       <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClCompile>
-    <ClCompile Include="CascadedShadow.cpp">
+    <ClCompile Include="source\Scene\CascadedShadow.cpp">
       <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClCompile>
-    <ClCompile Include="LightManager.cpp">
+    <ClCompile Include="source\Scene\LightManager.cpp">
       <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
+    <ClCompile Include="source\Scene\Light.cpp">
       <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClCompile>
-    <ClCompile Include="ImageLoader.cpp">
+    <ClCompile Include="source\Resource\ImageLoader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="EventModule.cpp">
+    <ClCompile Include="source\Input\EventModule.cpp">
       <Filter>Исходные файлы\Input</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicModule.cpp">
+    <ClCompile Include="source\Graphic\GraphicModule.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="source\Scene\Scene.cpp">
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="PostEffects.cpp">
+    <ClCompile Include="source\Graphic\PostEffects.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Convex.cpp">
+    <ClCompile Include="source\Scene\Convex.cpp">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="FontLoader.cpp">
+    <ClCompile Include="source\Resource\FontLoader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Исходные файлы\Scene\Objects\Text</Filter>
-    </ClCompile>
-    <ClCompile Include="Sphere.cpp">
+    <ClCompile Include="source\Scene\Sphere.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowMap.cpp">
+    <ClCompile Include="source\Scene\ShadowMap.cpp">
       <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClCompile>
-    <ClCompile Include="GBuffer.cpp">
+    <ClCompile Include="source\Graphic\GBuffer.cpp">
       <Filter>Исходные файлы\Graphics\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Game\World.cpp">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Game\Chunk.cpp">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\glad.c">
+      <Filter>Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Game\Player.cpp">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Game\Game.cpp">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Scene\Text.cpp">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Resource\Font.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Resource\Glyph.cpp">
+      <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="lib\stb_image.h">
       <Filter>Файлы ресурсов\stb</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="source\Scene\Model.h">
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClInclude>
-    <ClInclude Include="CascadedShadow.h">
+    <ClInclude Include="source\Scene\CascadedShadow.h">
       <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="TypeObject.h">
+    <ClInclude Include="source\Scene\TypeObject.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Shape.h">
+    <ClInclude Include="source\Scene\Shape.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
+    <ClInclude Include="source\UI\Sprite.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="RenderWindow.h">
-      <Filter>Исходные файлы\Graphics\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionLight.h">
+    <ClInclude Include="source\Scene\DirectionLight.h">
       <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
-    <ClInclude Include="LightManager.h">
+    <ClInclude Include="source\Scene\LightManager.h">
       <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
-    <ClInclude Include="PointLight.h">
+    <ClInclude Include="source\Scene\PointLight.h">
       <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowMap.h">
+    <ClInclude Include="source\Scene\ShadowMap.h">
       <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="Buffer.h">
+    <ClInclude Include="source\Resource\Buffer.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="source\Graphic\Texture.h">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Resource_manager.h">
+    <ClInclude Include="source\Math\Math.h">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Math\Color.h">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Math\Rects.h">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Math\Perspective.h">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Math\Vectors.h">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Game\GLFW.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>Исходные файлы\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>Исходные файлы\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Rects.h">
-      <Filter>Исходные файлы\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Perspective.h">
-      <Filter>Исходные файлы\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vectors.h">
-      <Filter>Исходные файлы\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="GLM.h">
-      <Filter>Исходные файлы\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="GLFW.h">
-      <Filter>Исходные файлы\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="source\Game\Game.h">
       <Filter>Исходные файлы\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Clock.h">
+    <ClInclude Include="source\System\Clock.h">
       <Filter>Исходные файлы\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
+    <ClInclude Include="source\Resource\Shader.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceTypes.h">
+    <ClInclude Include="source\Resource\ResourceTypes.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Transformable.h">
+    <ClInclude Include="source\Scene\Transformable.h">
       <Filter>Исходные файлы\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
+    <ClInclude Include="source\Math\Transform.h">
       <Filter>Исходные файлы\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Drawable.h">
+    <ClInclude Include="source\Graphic\Drawable.h">
       <Filter>Исходные файлы\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Instancable.h">
+    <ClInclude Include="source\Scene\Camera.h">
       <Filter>Исходные файлы\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Исходные файлы\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Event.h">
+    <ClInclude Include="source\Input\Event.h">
       <Filter>Исходные файлы\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Keyboard.h">
+    <ClInclude Include="source\Input\Keyboard.h">
       <Filter>Исходные файлы\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Mouse.h">
+    <ClInclude Include="source\Input\Mouse.h">
       <Filter>Исходные файлы\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Clipboard.h">
+    <ClInclude Include="source\Input\Clipboard.h">
       <Filter>Исходные файлы\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
+    <ClInclude Include="source\Input\Input.h">
       <Filter>Исходные файлы\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Cursor.h">
+    <ClInclude Include="source\Input\Cursor.h">
       <Filter>Исходные файлы\Input</Filter>
     </ClInclude>
-    <ClInclude Include="ContextRender.h">
+    <ClInclude Include="source\Graphic\ContextRender.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
-    <ClInclude Include="ContextWindow.h">
+    <ClInclude Include="source\Graphic\ContextWindow.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Framebuffer.h">
+    <ClInclude Include="source\Graphic\Framebuffer.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Render.h">
+    <ClInclude Include="source\Graphic\Render.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
-    <ClInclude Include="RenderEntity.h">
+    <ClInclude Include="source\Graphic\RenderEntity.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
-    <ClInclude Include="ContextTexture.h">
+    <ClInclude Include="source\Graphic\ContextTexture.h">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Exception.h">
+    <ClInclude Include="source\System\Exception.h">
       <Filter>Исходные файлы\System</Filter>
     </ClInclude>
-    <ClInclude Include="PrimitiveEntity.h">
+    <ClInclude Include="source\Scene\PrimitiveEntity.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Quad.h">
+    <ClInclude Include="source\Scene\Quad.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Cube.h">
+    <ClInclude Include="source\Scene\Cube.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Plane.h">
+    <ClInclude Include="source\Scene\Plane.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="DeclaredObjects.h">
+    <ClInclude Include="source\Scene\DeclaredObjects.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Skybox.h">
+    <ClInclude Include="source\Scene\Skybox.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Billboard.h">
+    <ClInclude Include="source\Scene\Billboard.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Glyph.h">
-      <Filter>Исходные файлы\Scene\Objects\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Исходные файлы\Scene\Objects\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix.h">
+    <ClInclude Include="source\Math\Matrix.h">
       <Filter>Исходные файлы\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Convex.h">
+    <ClInclude Include="source\Scene\Convex.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="bMesh.h">
+    <ClInclude Include="source\Resource\bMesh.h">
       <Filter>Исходные файлы\Resources\ModelLoading</Filter>
     </ClInclude>
-    <ClInclude Include="Assimp.h">
+    <ClInclude Include="source\Resource\Assimp.h">
       <Filter>Файлы ресурсов\assimp</Filter>
     </ClInclude>
-    <ClInclude Include="DepthFrameBuffer.h">
+    <ClInclude Include="source\Graphic\DepthFrameBuffer.h">
       <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
+    <ClInclude Include="source\Scene\Light.h">
       <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
-    <ClInclude Include="ImageLoader.h">
+    <ClInclude Include="source\Resource\ImageLoader.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="GBuffer.h">
+    <ClInclude Include="source\Graphic\GBuffer.h">
       <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PostEffects.h">
+    <ClInclude Include="source\Graphic\PostEffects.h">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicModule.h">
+    <ClInclude Include="source\Graphic\GraphicModule.h">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="EventModule.h">
+    <ClInclude Include="source\Input\EventModule.h">
       <Filter>Исходные файлы\Input</Filter>
     </ClInclude>
-    <ClInclude Include="GameModules.h">
+    <ClInclude Include="source\Game\GameModules.h">
       <Filter>Исходные файлы\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
+    <ClInclude Include="source\Scene\Scene.h">
       <Filter>Исходные файлы\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="TextureEntity.h">
+    <ClInclude Include="source\Graphic\TextureEntity.h">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="FontLoader.h">
+    <ClInclude Include="source\Resource\FontLoader.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Исходные файлы\Scene\Objects\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
+    <ClInclude Include="source\Scene\Sphere.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Game\World.h">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Game\Chunk.h">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Game\Player.h">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scene\Text.h">
+      <Filter>Исходные файлы\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Resource\Font.h">
+      <Filter>Исходные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Resource\Glyph.h">
+      <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -112,7 +112,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\Code\GLFW\projects\Libreries\include\GLAD;D:\Code\GLFW\projects\Libreries\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Code\GLFW\projects\Libreries\include\GLAD;D:\Code\GLFW\projects\Libreries\include;D:\Code\GLFW\projects\GLFW_tutorial\GLFW_tutorial\source;D:\Code\GLFW\projects\GLFW_tutorial\GLFW_tutorial\lib;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Code\GLFW\projects\Libreries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug2|Win32'">
@@ -121,7 +121,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>D:\Code\GLFW\projects\Libreries\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>D:\Code\GLFW\projects\Libreries\include\GLAD;D:\Code\GLFW\projects\Libreries\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Code\GLFW\projects\Libreries\include\GLAD;D:\Code\GLFW\projects\Libreries\include;D:\Code\GLFW\projects\GLFW_tutorial\GLFW_tutorial\source;D:\Code\GLFW\projects\GLFW_tutorial\GLFW_tutorial\lib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -129,7 +129,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Code\GLFW\projects\Libreries\include\GLAD;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Code\GLFW\projects\GLFW_tutorial\GLFW_tutorial\lib;D:\Code\GLFW\projects\Libreries\include\GLAD;%(AdditionalIncludeDirectories);D:\Code\GLFW\projects\GLFW_tutorial\GLFW_tutorial\source</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -162,6 +162,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Code\GLFW\projects\GLFW_tutorial\GLFW_tutorial\lib;D:\Code\GLFW\projects\GLFW_tutorial\GLFW_tutorial\source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -215,141 +216,141 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Assimp.cpp" />
-    <ClCompile Include="AssimpLib.cpp" />
-    <ClCompile Include="bMesh.cpp" />
-    <ClCompile Include="Buffer.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CascadedShadow.cpp" />
-    <ClCompile Include="Clipboard.cpp" />
-    <ClCompile Include="Clock.cpp" />
-    <ClCompile Include="Color.cpp" />
-    <ClCompile Include="ContextRender.cpp" />
-    <ClCompile Include="ContextTexture.cpp" />
-    <ClCompile Include="ContextWindow.cpp" />
-    <ClCompile Include="Convex.cpp" />
-    <ClCompile Include="Cursor.cpp" />
-    <ClCompile Include="DepthFrameBuffer.cpp" />
-    <ClCompile Include="Drawable.cpp" />
-    <ClCompile Include="EventEntites.h" />
-    <ClCompile Include="Event.cpp" />
-    <ClCompile Include="EventModule.cpp" />
-    <ClCompile Include="Exception.cpp" />
-    <ClCompile Include="FontLoader.cpp" />
-    <ClCompile Include="GBuffer.cpp" />
-    <ClCompile Include="PostEffects.cpp" />
-    <ClCompile Include="Font.cpp" />
-    <ClCompile Include="Framebuffer.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="GLFW.cpp" />
-    <ClCompile Include="Glyph.cpp" />
-    <ClCompile Include="GraphicModule.cpp" />
-    <ClCompile Include="ImageLoader.cpp" />
-    <ClCompile Include="Instancable.cpp" />
-    <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="Light.cpp" />
-    <ClCompile Include="LightManager.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Mouse.cpp" />
-    <ClCompile Include="Perspective.cpp" />
-    <ClCompile Include="PrimitiveEntity.cpp" />
-    <ClCompile Include="Quad.cpp" />
-    <ClCompile Include="Rects.cpp" />
-    <ClCompile Include="Render.cpp" />
-    <ClCompile Include="RenderEntity.cpp" />
-    <ClCompile Include="RenderWindow.cpp" />
-    <ClCompile Include="ResourceTypes.cpp" />
-    <ClCompile Include="Resource_manager.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShadowMap.cpp" />
-    <ClCompile Include="Shape.cpp" />
-    <ClCompile Include="Skybox.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="stb_image.cpp" />
-    <ClCompile Include="Text.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="Transformable.cpp" />
-    <ClCompile Include="Vectors.cpp" />
+    <ClCompile Include="source\Game\Game.cpp" />
+    <ClCompile Include="source\Resource\Assimp.cpp" />
+    <ClCompile Include="source\Resource\AssimpLib.cpp" />
+    <ClCompile Include="source\Resource\bMesh.cpp" />
+    <ClCompile Include="source\Resource\Buffer.cpp" />
+    <ClCompile Include="source\Resource\Glyph.cpp" />
+    <ClCompile Include="source\Scene\Camera.cpp" />
+    <ClCompile Include="source\Scene\CascadedShadow.cpp" />
+    <ClCompile Include="source\Game\Chunk.cpp" />
+    <ClCompile Include="source\Input\Clipboard.cpp" />
+    <ClCompile Include="source\System\Clock.cpp" />
+    <ClCompile Include="source\Math\Color.cpp" />
+    <ClCompile Include="source\Graphic\ContextRender.cpp" />
+    <ClCompile Include="source\Graphic\ContextTexture.cpp" />
+    <ClCompile Include="source\Graphic\ContextWindow.cpp" />
+    <ClCompile Include="source\Scene\Convex.cpp" />
+    <ClCompile Include="source\Input\Cursor.cpp" />
+    <ClCompile Include="source\Graphic\DepthFrameBuffer.cpp" />
+    <ClCompile Include="source\Graphic\Drawable.cpp" />
+    <ClCompile Include="source\Input\Event.cpp" />
+    <ClCompile Include="source\Input\EventModule.cpp" />
+    <ClCompile Include="source\System\Exception.cpp" />
+    <ClCompile Include="source\Resource\FontLoader.cpp" />
+    <ClCompile Include="source\Graphic\GBuffer.cpp" />
+    <ClCompile Include="source\Graphic\PostEffects.cpp" />
+    <ClCompile Include="source\Resource\Font.cpp" />
+    <ClCompile Include="source\Graphic\Framebuffer.cpp" />
+    <ClCompile Include="lib\glad.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <FileType>CppCode</FileType>
+    </ClCompile>
+    <ClCompile Include="source\Game\GLFW.cpp" />
+    <ClCompile Include="source\Graphic\GraphicModule.cpp" />
+    <ClCompile Include="source\Resource\ImageLoader.cpp" />
+    <ClCompile Include="source\Input\Keyboard.cpp" />
+    <ClCompile Include="source\Scene\Light.cpp" />
+    <ClCompile Include="source\Scene\LightManager.cpp" />
+    <ClCompile Include="source\Game\main.cpp" />
+    <ClCompile Include="source\Math\Matrix.cpp" />
+    <ClCompile Include="source\Graphic\Mesh.cpp" />
+    <ClCompile Include="source\Scene\Model.cpp" />
+    <ClCompile Include="source\Input\Mouse.cpp" />
+    <ClCompile Include="source\Math\Perspective.cpp" />
+    <ClCompile Include="source\Scene\PrimitiveEntity.cpp" />
+    <ClCompile Include="source\Scene\Quad.cpp" />
+    <ClCompile Include="source\Math\Rects.cpp" />
+    <ClCompile Include="source\Graphic\Render.cpp" />
+    <ClCompile Include="source\Graphic\RenderEntity.cpp" />
+    <ClCompile Include="source\Graphic\RenderWindow.cpp" />
+    <ClCompile Include="source\Resource\ResourceTypes.cpp" />
+    <ClCompile Include="source\Resource\Resource_manager.cpp" />
+    <ClCompile Include="source\Scene\Scene.cpp" />
+    <ClCompile Include="source\Resource\Shader.cpp" />
+    <ClCompile Include="source\Scene\ShadowMap.cpp" />
+    <ClCompile Include="source\Scene\Shape.cpp" />
+    <ClCompile Include="source\Scene\Skybox.cpp" />
+    <ClCompile Include="source\Game\Player.cpp" />
+    <ClCompile Include="source\Scene\Sphere.cpp" />
+    <ClCompile Include="source\UI\Sprite.cpp" />
+    <ClCompile Include="lib\stb_image.cpp" />
+    <ClCompile Include="source\Scene\Text.cpp" />
+    <ClCompile Include="source\Graphic\Texture.cpp" />
+    <ClCompile Include="source\Math\Transform.cpp" />
+    <ClCompile Include="source\Scene\Transformable.cpp" />
+    <ClCompile Include="source\Game\World.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Assimp.h" />
-    <ClInclude Include="Billboard.h" />
-    <ClInclude Include="bMesh.h" />
-    <ClInclude Include="Clipboard.h" />
-    <ClInclude Include="Clock.h" />
-    <ClInclude Include="Color.h" />
-    <ClInclude Include="ContextRender.h" />
-    <ClInclude Include="ContextTexture.h" />
-    <ClInclude Include="ContextWindow.h" />
-    <ClInclude Include="Convex.h" />
-    <ClInclude Include="Cube.h" />
-    <ClInclude Include="Cursor.h" />
-    <ClInclude Include="DeclaredObjects.h" />
-    <ClInclude Include="DepthFrameBuffer.h" />
-    <ClInclude Include="Drawable.h" />
-    <ClInclude Include="Engine.h" />
-    <ClInclude Include="Event.h" />
-    <ClInclude Include="EventModule.h" />
-    <ClInclude Include="Exception.h" />
-    <ClInclude Include="FontLoader.h" />
-    <ClInclude Include="PostEffects.h" />
-    <ClInclude Include="Font.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameModules.h" />
-    <ClInclude Include="GBuffer.h" />
-    <ClInclude Include="GLM.h" />
-    <ClInclude Include="Glyph.h" />
-    <ClInclude Include="GraphicModule.h" />
-    <ClInclude Include="ImageLoader.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="Instancable.h" />
-    <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="Math.h" />
-    <ClInclude Include="Buffer.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="CascadedShadow.h" />
-    <ClInclude Include="DirectionLight.h" />
-    <ClInclude Include="Framebuffer.h" />
-    <ClInclude Include="GLFW.h" />
-    <ClInclude Include="LightManager.h" />
-    <ClInclude Include="Matrix.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="Mouse.h" />
-    <ClInclude Include="Perspective.h" />
-    <ClInclude Include="Plane.h" />
-    <ClInclude Include="PointLight.h" />
-    <ClInclude Include="PrimitiveEntity.h" />
-    <ClInclude Include="Quad.h" />
-    <ClInclude Include="Rects.h" />
-    <ClInclude Include="Render.h" />
-    <ClInclude Include="RenderEntity.h" />
-    <ClInclude Include="RenderWindow.h" />
-    <ClInclude Include="ResourceTypes.h" />
-    <ClInclude Include="Resource_manager.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShadowMap.h" />
-    <ClInclude Include="Shape.h" />
-    <ClInclude Include="Skybox.h" />
-    <ClInclude Include="Sphere.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="Text.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureEntity.h" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="Transformable.h" />
-    <ClInclude Include="TypeObject.h" />
-    <ClInclude Include="Vectors.h" />
+    <ClInclude Include="source\Resource\Assimp.h" />
+    <ClInclude Include="source\Resource\Glyph.h" />
+    <ClInclude Include="source\Scene\Billboard.h" />
+    <ClInclude Include="source\Resource\bMesh.h" />
+    <ClInclude Include="source\Game\Chunk.h" />
+    <ClInclude Include="source\Input\Clipboard.h" />
+    <ClInclude Include="source\System\Clock.h" />
+    <ClInclude Include="source\Math\Color.h" />
+    <ClInclude Include="source\Graphic\ContextRender.h" />
+    <ClInclude Include="source\Graphic\ContextTexture.h" />
+    <ClInclude Include="source\Graphic\ContextWindow.h" />
+    <ClInclude Include="source\Scene\Convex.h" />
+    <ClInclude Include="source\Scene\Cube.h" />
+    <ClInclude Include="source\Input\Cursor.h" />
+    <ClInclude Include="source\Scene\DeclaredObjects.h" />
+    <ClInclude Include="source\Graphic\DepthFrameBuffer.h" />
+    <ClInclude Include="source\Graphic\Drawable.h" />
+    <ClInclude Include="source\Input\Event.h" />
+    <ClInclude Include="source\Input\EventModule.h" />
+    <ClInclude Include="source\System\Exception.h" />
+    <ClInclude Include="source\Resource\FontLoader.h" />
+    <ClInclude Include="source\Graphic\PostEffects.h" />
+    <ClInclude Include="source\Resource\Font.h" />
+    <ClInclude Include="source\Game\Game.h" />
+    <ClInclude Include="source\Game\GameModules.h" />
+    <ClInclude Include="source\Graphic\GBuffer.h" />
+    <ClInclude Include="source\Graphic\GraphicModule.h" />
+    <ClInclude Include="source\Resource\ImageLoader.h" />
+    <ClInclude Include="source\Input\Input.h" />
+    <ClInclude Include="source\Input\Keyboard.h" />
+    <ClInclude Include="source\Scene\Light.h" />
+    <ClInclude Include="source\Math\Math.h" />
+    <ClInclude Include="source\Resource\Buffer.h" />
+    <ClInclude Include="source\Scene\Camera.h" />
+    <ClInclude Include="source\Scene\CascadedShadow.h" />
+    <ClInclude Include="source\Scene\DirectionLight.h" />
+    <ClInclude Include="source\Graphic\Framebuffer.h" />
+    <ClInclude Include="source\Game\GLFW.h" />
+    <ClInclude Include="source\Scene\LightManager.h" />
+    <ClInclude Include="source\Math\Matrix.h" />
+    <ClInclude Include="source\Scene\Model.h" />
+    <ClInclude Include="source\Input\Mouse.h" />
+    <ClInclude Include="source\Math\Perspective.h" />
+    <ClInclude Include="source\Scene\Plane.h" />
+    <ClInclude Include="source\Scene\PointLight.h" />
+    <ClInclude Include="source\Scene\PrimitiveEntity.h" />
+    <ClInclude Include="source\Scene\Quad.h" />
+    <ClInclude Include="source\Math\Rects.h" />
+    <ClInclude Include="source\Graphic\Render.h" />
+    <ClInclude Include="source\Graphic\RenderEntity.h" />
+    <ClInclude Include="source\Resource\ResourceTypes.h" />
+    <ClInclude Include="source\Scene\Scene.h" />
+    <ClInclude Include="source\Resource\Shader.h" />
+    <ClInclude Include="source\Scene\ShadowMap.h" />
+    <ClInclude Include="source\Scene\Shape.h" />
+    <ClInclude Include="source\Scene\Skybox.h" />
+    <ClInclude Include="source\Game\Player.h" />
+    <ClInclude Include="source\Scene\Sphere.h" />
+    <ClInclude Include="source\UI\Sprite.h" />
+    <ClInclude Include="lib\stb_image.h" />
+    <ClInclude Include="source\Scene\Text.h" />
+    <ClInclude Include="source\Graphic\Texture.h" />
+    <ClInclude Include="source\Graphic\TextureEntity.h" />
+    <ClInclude Include="source\Math\Transform.h" />
+    <ClInclude Include="source\Scene\Transformable.h" />
+    <ClInclude Include="source\Scene\TypeObject.h" />
+    <ClInclude Include="source\Math\Vectors.h" />
+    <ClInclude Include="source\Game\World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
