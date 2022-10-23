@@ -54,32 +54,35 @@
     /// <summary>
     /// Texture2D
     /// </summary>
-    bool Texture2D::getPath(const std::string& path, bool generateMipmap, bool gammaMod) {
+    bool Texture2D::getPath(const std::string& path, int sizeMipmaps, bool gammaMod) {
         const TextureResource* resource = ImageLoader::getTexture(path, gammaMod);
         if(resource == 0) return 0;
 
         id_ = resource->getId();
         size_ = resource->getSize();
-        isGenerateMipmap_ = generateMipmap;
+        sizeMipmaps_ = sizeMipmaps;
 
         glTexture::bind2D(id_);
         wrap_.setup(GL_TEXTURE_2D);
         filter_.setup(GL_TEXTURE_2D);
-        if (isGenerateMipmap_) {
+        if (sizeMipmaps_ != 0) {
+            if (sizeMipmaps_ != -1) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, sizeMipmaps_);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         return 1;
     }
 
-    void Texture2D::create(const glm::ivec2& size, const TextureFormat& format, const void* data, bool generateMipmap) {
+    void Texture2D::create(const glm::ivec2& size, const TextureFormat& format, const void* data, int sizeMipmaps) {
 
         detach();
         size_ = size;
-        isGenerateMipmap_ = generateMipmap;
+        sizeMipmaps_ = sizeMipmaps;
         format.setDataTexture2D(size, data);
 
-        if (isGenerateMipmap_)
+        if (sizeMipmaps_ != 0) {
+            if (sizeMipmaps_ != -1) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, sizeMipmaps_);
             glGenerateMipmap(GL_TEXTURE_2D);
+        }
     }
     
     /// <summary>

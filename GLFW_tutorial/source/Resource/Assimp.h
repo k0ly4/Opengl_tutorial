@@ -4,7 +4,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "Math.h"
+#include "Math/Math.h"
 
 void aiMatrix4x4_to_mat4(const aiMatrix4x4& mat1, glm::mat4& mat2);
 

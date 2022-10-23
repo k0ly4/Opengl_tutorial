@@ -178,7 +178,7 @@ protected:
 class Sizeable {
 public:
 
-	Sizeable() :size_(0.f) {}
+	Sizeable() :size_(0) {}
 	Sizeable(const glm::ivec2& size) :size_(size) {}
 
 	const glm::ivec2& getSize()const {

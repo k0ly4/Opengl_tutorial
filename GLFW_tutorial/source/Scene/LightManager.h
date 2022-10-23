@@ -16,10 +16,6 @@ class ManagerPointLight: public Drawable {
 public:
 
     ManagerPointLight() {
-        lightPointSphere_.setRadius(1.f);
-        lightPointSphere_.setCountSector(6);
-        lightPointSphere_.setCountStack(6);
-
         ImageLoader::flipVerticallyOnLoad(1);
         textureLamp_.getPath("asset\\image\\lamp.png");
 
@@ -58,14 +54,6 @@ public:
         return pLights_.size();
     }
 
-    inline void drawSphere(size_t index, const Shader& shader, const Camera& camera) {
-
-        lightPointSphere_.setScale(glm::vec3(pLights_[index].getRadius()));
-        lightPointSphere_.setPosition(pLights_[index].getPosition());
-        lightPointSphere_.draw(&camera, shader);
-
-    }
-
     inline void draw(const View* view, const Shader& shader) {
         size_t index = 0;
         for (auto l = pLights_.begin(); l != pLights_.end(); l++, index++) {
@@ -78,8 +66,6 @@ private:
 
     Texture2D textureLamp_;
     Billboard billboardLamp_;
-    LightSphere lightPointSphere_;
-
     std::vector<PointLight>pLights_;
 };
 

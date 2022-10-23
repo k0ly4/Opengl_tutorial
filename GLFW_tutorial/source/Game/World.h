@@ -6,8 +6,9 @@ class World {
 public:
 
     World() {
-        chunks.create(glm::uvec3(6,1,6));
-        atlas.load("asset\\image\\voxel_atlas.png", 32);       
+        chunks.create(glm::uvec3(6,6,6));
+        atlas.load("asset\\image\\voxel_atlas.png", 32); 
+        
         chunks.setAtlas(atlas);
     }
     //Generation

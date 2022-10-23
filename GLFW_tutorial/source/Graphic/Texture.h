@@ -95,14 +95,14 @@ class Texture2D:public GeneralTexture2D,public Sizeable {
 public:
 
     Texture2D():
-        isGenerateMipmap_(0),
+        sizeMipmaps_(0),
         Sizeable()
     {}
 
     Texture2D(const TexturePointer& textureId, const glm::ivec2& size):
         Sizeable(size),
         GeneralTexture2D(textureId),
-        isGenerateMipmap_(0)
+        sizeMipmaps_(0)
     {}
 
     Texture2D(const TextureResource&resource):
@@ -113,12 +113,12 @@ public:
         Texture2D(textureId, glm::ivec2(width, height))
     {}
 
-    bool getPath(const std::string& path_to_image, bool generateMipmap = 1, bool gammaMod = 1);
+    bool getPath(const std::string& path_to_image, int sizeMipmaps = -1, bool gammaMod = 1);
 
-    void create(const glm::ivec2& size,const TextureFormat& format, const void* data = nullptr, bool generateMipmap = 1);
+    void create(const glm::ivec2& size,const TextureFormat& format, const void* data = nullptr, int sizeMipmaps = -1);
 
-    inline void create(const glm::ivec2& size, GLint internal_format, GLint format, const void* data = nullptr, bool generateMipmap = 1) {
-        create(size, TextureFormat(internal_format, format), data, generateMipmap);
+    inline void create(const glm::ivec2& size, GLint internal_format, GLint format, const void* data = nullptr, int sizeMipmaps = -1) {
+        create(size, TextureFormat(internal_format, format), data, sizeMipmaps);
     }
 
     void wrap(GLint S, GLint T) {
@@ -147,8 +147,8 @@ public:
         filter(filterMinMax.getMax(), filterMinMax.getMin());
     }
 
-    inline bool haveMipmaps()const  {
-        return isGenerateMipmap_;
+    inline int getSizeMipmaps()const  {
+        return sizeMipmaps_;
     }
 
     inline void bindToFramebuffer(size_t unit) {
@@ -167,7 +167,7 @@ private:
         return 0;  
     }
 
-    bool isGenerateMipmap_;
+    int sizeMipmaps_;
     TextureFilter filter_;
     TextureWrap2D wrap_;
 };

@@ -1,6 +1,51 @@
 #include "Sphere.h"
-
-///////SphereCreator--------------------------------------------
+///////CubeCreator-------------------------------------------
+void CubeCreator::generate(std::vector<Vertex>& vertices, float size_) {
+    vertices.resize(36);
+    // back face
+    vertices[0] = Vertex(glm::vec3(-size_, -size_, -size_),    glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2( 0.0f, 0.0f));
+    vertices[1] = Vertex(glm::vec3( size_,  size_, -size_),    glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2( 1.0f, 1.0f));
+    vertices[2] = Vertex(glm::vec3( size_, -size_, -size_),    glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2( 1.0f, 0.0f));
+    vertices[3] = Vertex(glm::vec3( size_,  size_, -size_),    glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2( 1.0f, 1.0f));
+    vertices[4] = Vertex(glm::vec3(-size_, -size_, -size_),    glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2( 0.0f, 0.0f));
+    vertices[5] = Vertex(glm::vec3(-size_,  size_, -size_),    glm::vec3(0.0f,  0.0f, -1.0f), glm::vec2( 0.0f, 1.0f));
+    // front face
+    vertices[6] =  Vertex(glm::vec3(-size_, -size_,  size_),    glm::vec3(0.0f,  0.0f,  1.0f), glm::vec2(0.0f, 0.0f));
+    vertices[7] =  Vertex(glm::vec3( size_, -size_,  size_),    glm::vec3(0.0f,  0.0f,  1.0f), glm::vec2(1.0f, 0.0f));
+    vertices[8] =  Vertex(glm::vec3( size_,  size_,  size_),    glm::vec3(0.0f,  0.0f,  1.0f), glm::vec2(1.0f, 1.0f));
+    vertices[9] =  Vertex(glm::vec3( size_,  size_,  size_),    glm::vec3(0.0f,  0.0f,  1.0f), glm::vec2(1.0f, 1.0f));
+    vertices[10] = Vertex(glm::vec3(-size_,  size_,  size_),    glm::vec3(0.0f,  0.0f,  1.0f), glm::vec2(0.0f, 1.0f));
+    vertices[11] = Vertex(glm::vec3(-size_, -size_,  size_),    glm::vec3(0.0f,  0.0f,  1.0f), glm::vec2(0.0f, 0.0f));
+    // left face
+    vertices[12] = Vertex(glm::vec3(-size_,  size_,  size_),    glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 0.0f));
+    vertices[13] = Vertex(glm::vec3(-size_,  size_, -size_),    glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 1.0f));
+    vertices[14] = Vertex(glm::vec3(-size_, -size_, -size_),    glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 1.0f));
+    vertices[15] = Vertex(glm::vec3(-size_, -size_, -size_),    glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 1.0f));
+    vertices[16] = Vertex(glm::vec3(-size_, -size_,  size_),    glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(0.0f, 0.0f));
+    vertices[17] = Vertex(glm::vec3(-size_,  size_,  size_),    glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2(1.0f, 0.0f));
+    // right face
+    vertices[18] = Vertex(glm::vec3(size_,  size_,  size_),     glm::vec3(1.0f,  0.0f,  0.0f),  glm::vec2(1.0f, 0.0f));
+    vertices[19] = Vertex(glm::vec3(size_, -size_, -size_),     glm::vec3(1.0f,  0.0f,  0.0f),  glm::vec2(0.0f, 1.0f));
+    vertices[20] = Vertex(glm::vec3(size_,  size_, -size_),     glm::vec3(1.0f,  0.0f,  0.0f),  glm::vec2(1.0f, 1.0f));
+    vertices[21] = Vertex(glm::vec3(size_, -size_, -size_),     glm::vec3(1.0f,  0.0f,  0.0f),  glm::vec2(0.0f, 1.0f));
+    vertices[22] = Vertex(glm::vec3(size_,  size_,  size_),     glm::vec3(1.0f,  0.0f,  0.0f),  glm::vec2(1.0f, 0.0f));
+    vertices[23] = Vertex(glm::vec3(size_, -size_,  size_),     glm::vec3(1.0f,  0.0f,  0.0f),  glm::vec2(0.0f, 0.0f));
+    // bottom face
+    vertices[24] = Vertex(glm::vec3( -size_, -size_, -size_),    glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2( 0.0f, 1.0f));
+    vertices[25] = Vertex(glm::vec3(  size_, -size_, -size_),    glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2( 1.0f, 1.0f));
+    vertices[26] = Vertex(glm::vec3(  size_, -size_,  size_),    glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2( 1.0f, 0.0f));
+    vertices[27] = Vertex(glm::vec3(  size_, -size_,  size_),    glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2( 1.0f, 0.0f));
+    vertices[28] = Vertex(glm::vec3( -size_, -size_,  size_),    glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2( 0.0f, 0.0f));
+    vertices[29] = Vertex(glm::vec3( -size_, -size_, -size_),    glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2( 0.0f, 1.0f));
+    // top face                     
+    vertices[30] = Vertex(glm::vec3( -size_,  size_, -size_),    glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec2(0.0f, 1.0f));
+    vertices[31] = Vertex(glm::vec3(  size_,  size_ , size_),    glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec2(1.0f, 0.0f));
+    vertices[32] = Vertex(glm::vec3(  size_,  size_, -size_),    glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec2(1.0f, 1.0f));
+    vertices[33] = Vertex(glm::vec3(  size_,  size_,  size_),    glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec2(1.0f, 0.0f));
+    vertices[34] = Vertex(glm::vec3( -size_,  size_, -size_),    glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec2(0.0f, 1.0f));
+    vertices[35] = Vertex(glm::vec3( -size_,  size_,  size_),    glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec2(0.0f, 0.0f));
+}
+///////SphereCreator-------------------------------------------
 void SphereCreator::getVertices(std::vector<glm::vec3>& vertices, float radius_, size_t sectorCount, size_t stackCount) {
 
     vertices.resize((stackCount + 1) * (sectorCount + 1));
@@ -154,85 +199,4 @@ void SphereCreator::getIndices(std::vector<unsigned>& indices, size_t sectorCoun
         }
     }
 }
-
-///////TextureSphere--------------------------------------------
-TextureSphere::TextureSphere() 
-{
-
-    VAO.begin();
-    VBO.begin();
-    EBO.begin();
-
-    VAO.attrib(0, 3, SIZE_UV_VERTEX, 0);
-    VAO.attrib(1, 2, SIZE_UV_VERTEX, sizeof(glm::vec3));
-
-    VAO.end();
-    VBO.end();
-    EBO.end();
-}
-
-void TextureSphere::draw(const View* view, const Shader& shader) {
-    shader.use();
-    view->use(shader);
-
-    uniformTransform(shader);
-    uniformMaterial(shader);
-
-    if (needUpBuffers) upBuffers();
-
-    VAO.begin();
-    glDrawElements(GlRender::TRIANGLES, countVertex, GL_UNSIGNED_INT, 0);
-}
-
-///////Sphere--------------------------------------------
-
-Sphere::Sphere()
-{
-    VAO.begin();
-    VBO.begin();
-    EBO.begin();
-
-    VAO.attrib(0, 3, SIZE_VERTEX, 0);
-    VAO.attrib(1, 3, SIZE_VERTEX, 3 * sizeof(float));
-    VAO.attrib(2, 2, SIZE_VERTEX, 6 * sizeof(float));
-
-    VAO.end();
-    VBO.end();
-    EBO.end();
-}
-
-void Sphere::draw(const View* view, const Shader& shader) {
-    shader.use();
-    view->use(shader);
-
-    uniformTransform(shader);
-    uniformMaterial(shader);
-
-    if (needUpBuffers) {
-        upBuffers();
-    }
-    VAO.begin();
-    glDrawElements(GlRender::TRIANGLES, countVertex, GL_UNSIGNED_INT, 0);
-}
-
-void Sphere::upBuffers() {
-
-    std::vector<unsigned> indices;
-    std::vector<Vertex>vertices;
-
-    SphereCreator::getVertices(vertices, radius_, sectorCount, stackCount);
-    VBO.begin();
-    VBO.data(vertices);
-    VBO.end();
-
-    SphereCreator::getIndices(indices, sectorCount, stackCount);
-    EBO.begin();
-    EBO.data(indices);
-    EBO.end();
-
-    countVertex = indices.size();
-
-    needUpBuffers = 0;
-}
-
 

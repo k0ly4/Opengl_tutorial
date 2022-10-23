@@ -1,11 +1,13 @@
 #include "Chunk.h"
+#include <glm/gtc/noise.hpp>
+#include <glm/glm.hpp>
 //VoxelAtlas-------------------------------------
 /// <summary>
 /// 
 /// </summary>
 void VoxelAtlas::load(const std::string& path, size_t sizeVoxelUV) {
-	texture_.getPath(path);
-	texture_.filter(TextureFilter::Nearest, TextureFilter::Nearest);
+	texture_.getPath(path,4);
+	texture_.filter(TextureFilter::Nearest, TextureFilter::NearestMipmapNearest);
 	sizeVoxel_ = sizeVoxelUV;
 	uvSize_ = (float)sizeVoxel_ / (float)texture_.getSize().x;
 	
@@ -37,11 +39,9 @@ void Chunk::generate(size_t size,const glm::ivec3& global) {
 				for (size_t x = 0; x < size; x++)
 				{
 					glm::ivec3 real_coord = glm::ivec3(x,y,z) + global_;
-					int sinY = real_coord.y<= int((sinf(real_coord.x * 0.3f) * 0.5f + 0.5f)*12.f);
-					int id;
-					if (real_coord.y <= 4) id = 1;
-					else id = sinY-1;
-					
+					int id = (glm::perlin(glm::vec3(real_coord) * 0.0125f) > 0.1f)-1;//real_y <= (height) * 60 + 30;
+					if (real_coord.y <= 2)
+						id = 1;
 					getLocal(x, y, z).id = id;
 				}
 			}
@@ -61,18 +61,6 @@ void Chunk::setCloses(const std::vector<Chunk>& chunks) {
 			continue;
 		closes[getSide(dist)] = &chunks[i];
 	}
-	/*if (closes[right] == 0)
-		LOG("right%d", (int)(closes[right] != 0));
-	if (closes[left] == 0)
-		LOG("left%d", (int)(closes[left] != 0));
-	if(closes[back] == 0)
-	LOG("back%d", (int)(closes[back] != 0));
-	if (closes[front] == 0)
-	LOG("Front%d", (int)(closes[front] != 0));
-	if (closes[top] == 0)
-	LOG("Top%d", (int)(closes[top] != 0));
-	if (closes[bottom] == 0)
-	LOG("Bottom%d\n", (int)(closes[bottom] != 0));*/
 }
 
 bool Chunk::setVoxel(const Voxel& voxel, const glm::uvec3& coord) {
@@ -82,117 +70,102 @@ bool Chunk::setVoxel(const Voxel& voxel, const glm::uvec3& coord) {
 
 	*voxel_ = voxel;
 	modified = 1;
-	for (size_t i = 0; i < 6; i++) {
-		if (closes[i] == nullptr)continue;
-		closes[i]->modified = 1;
-	}
+	modifiedCloses(coord - glm::uvec3(global_));
 	return 1;
 }
 
-inline void pushBack(ConvexUV& buffer,const UvVertex* face,const glm::vec3& pos,float hSize,const glm::vec2& uv,float uvSize)
-{
-	for (size_t i = 0; i < 6; i++) {
-		buffer.push_back(UvVertex(
-			pos + face[i].pos * hSize,
-			uv + face[i].uv * uvSize
-		));
-	}
+void Chunk::modifiedCloses(const glm::uvec3& local) {
+
+	if (local.x == size_ - 1) setModifiedCloses(right);
+	else if (local.x == 0) setModifiedCloses(left);
+
+	if (local.y == size_ - 1) setModifiedCloses(top);
+	else if (local.y == 0) setModifiedCloses(bottom);
+
+	if (local.z == size_ - 1) setModifiedCloses(front);
+	else if (local.z == 0) setModifiedCloses(back);
 }
 
-void Chunk::upMesh() {
+inline void push_back(std::vector<unsigned>& indices,size_t begin) {
+	indices.push_back(begin);
+	indices.push_back(begin + 1);
+	indices.push_back(begin + 2);
+	indices.push_back(begin);
+	indices.push_back(begin + 2);
+	indices.push_back(begin + 3);
+}
 
-	static const UvVertex topFace[] = {
-		//position							//uv
-		{glm::vec3(-1.f, 1.f,-1.f),		glm::vec2(1.f,  0)},
-		{glm::vec3(-1.f, 1.f, 1.f),		glm::vec2(1.f, 1.f)},
-		{glm::vec3( 1.f, 1.f, 1.f),		glm::vec2(0,   1.f)},
-		{glm::vec3(-1.f, 1.f,-1.f),		glm::vec2(1.f, 0 )},
-		{glm::vec3( 1.f, 1.f, 1.f),		glm::vec2(0,   1.f)},
-		{glm::vec3( 1.f, 1.f,-1.f),		glm::vec2(0.f, 0.f)}
-	};
-
-	static const UvVertex bottomFace[] = {
-		//position							//uv
-		{glm::vec3(-1.f,-1.f,-1.f),		glm::vec2(0.f, 0)},
-		{glm::vec3( 1.f,-1.f, 1.f),		glm::vec2(1.f, 1.f)},
-		{glm::vec3(-1.f,-1.f, 1.f),		glm::vec2(0.f, 1.f)},
-		{glm::vec3(-1.f,-1.f,-1.f),		glm::vec2(0.f, 0)},
-		{glm::vec3( 1.f,-1.f,-1.f),		glm::vec2(1.f, 0.f)},
-		{glm::vec3( 1.f,-1.f, 1.f),		glm::vec2(1.f, 1.f)}
-	};
-
-	static const UvVertex rightFace[] = {
-		//position							//uv		   
-		{glm::vec3( 1.f, -1.f, -1.f),		glm::vec2(1.f,  0)},
-		{glm::vec3( 1.f,  1.f, -1.f),		glm::vec2(1.f,  1.f)},
-		{glm::vec3( 1.f,  1.f,  1.f),		glm::vec2(0.f, 1.f)},
-		{glm::vec3( 1.f, -1.f, -1.f),		glm::vec2(1.f, 0)},
-		{glm::vec3( 1.f,  1.f,  1.f),		glm::vec2(0,   1.f)},
-		{glm::vec3( 1.f, -1.f,  1.f),		glm::vec2(0.f, 0.f)}
-	};
-
-	static const UvVertex leftFace[] = {
-		//position							//uv
-		{glm::vec3(-1.f, -1.f, -1.f),		glm::vec2(0.f, 0)},
-		{glm::vec3(-1.f,  1.f,  1.f),		glm::vec2(1.f, 1.f)},
-		{glm::vec3(-1.f,  1.f, -1.f),		glm::vec2(0.f, 1.f)},
-		{glm::vec3(-1.f, -1.f, -1.f),		glm::vec2(0.f, 0)},
-		{glm::vec3(-1.f, -1.f,  1.f),		glm::vec2(1.f, 0.f)},
-		{glm::vec3(-1.f,  1.f,  1.f),		glm::vec2(1.f, 1.f)}
-	};
-
-	static const UvVertex frontFace[] = {
-		//position							//uv
-		{glm::vec3(-1.f, -1.f,  1.f),		glm::vec2(0.f, 0)},
-		{glm::vec3( 1.f,  1.f,  1.f),		glm::vec2(1.f, 1.f)},
-		{glm::vec3(-1.f,  1.f,  1.f),		glm::vec2(0.f, 1.f)},
-		{glm::vec3(-1.f, -1.f,  1.f),		glm::vec2(0.f, 0)},
-		{glm::vec3( 1.f, -1.f,  1.f),		glm::vec2(1.f, 0.f)},
-		{glm::vec3( 1.f,  1.f,  1.f),		glm::vec2(1.f, 1.f)}
-	};
-
-	static const UvVertex backFace[] = {
-		//position							//uv
-		{glm::vec3(-1.f, -1.f,  -1.f),		glm::vec2(1.f, 0)},
-		{glm::vec3(-1.f,  1.f,  -1.f),		glm::vec2(1.f, 1.f)},
-		{glm::vec3( 1.f,  1.f,  -1.f),		glm::vec2(0.f, 1.f)},
-		{glm::vec3(-1.f, -1.f,  -1.f),		glm::vec2(1.f, 0)},
-		{glm::vec3( 1.f,  1.f,  -1.f),		glm::vec2(0.f, 1.f)},
-		{glm::vec3( 1.f, -1.f,  -1.f),		glm::vec2(0.f, 0.f)}
-	};						   
-
+void Chunk::upMesh() {					   
 	buffer.clear();
-
-	for (int y = 0; y < size_; y++) {
-		for (int z = 0; z < size_; z++) {
-			for (int x = 0; x < size_; x++) {
+	indices.clear();
+	for (size_t y = 0; y < size_; y++) {
+		for (size_t z = 0; z < size_; z++) {
+			for (size_t x = 0; x < size_; x++) {
 				const Voxel& voxel = getLocal(x, y, z);
 
 				if (isRender(voxel) == 0) {
 					continue;
 				}
-				float vSize =0.5f;
-				;
 				float uvsize = atlas_->getVoxelSize();
+				//top
 				if (global_isUnVisible(x, y + 1, z)) {
-					pushBack(buffer, topFace,	 glm::vec3(x, y, z), vSize, atlas_->get(voxel, ::top), uvsize);
-				}								 					 
-				if (global_isUnVisible(x, y - 1, z)) {
-					pushBack(buffer, bottomFace, glm::vec3(x, y, z), vSize, atlas_->get(voxel, ::bottom), uvsize);
-				}								 					 
-				if (global_isUnVisible(x + 1, y, z)) {
-					pushBack(buffer, rightFace,  glm::vec3(x, y, z), vSize, atlas_->get(voxel, ::right), uvsize);
-				}								 					 
-				if (global_isUnVisible(x - 1, y, z)) {
-					pushBack(buffer, leftFace,	 glm::vec3(x, y, z), vSize, atlas_->get(voxel, ::left), uvsize);
-				}								 					 
-				if (global_isUnVisible(x, y, z + 1)) {
-					pushBack(buffer, frontFace,  glm::vec3(x, y, z), vSize, atlas_->get(voxel, ::front), uvsize);
-				}								 					 
-				if (global_isUnVisible(x, y, z - 1)) {
-					pushBack(buffer, backFace,	 glm::vec3(x, y, z), vSize, atlas_->get(voxel, back), uvsize);
+					const glm::vec2& uv = atlas_->get(voxel, ::top);
+
+					push_back(indices, buffer.size());
+					buffer.push_back(glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y));
+					buffer.push_back(glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize));
+					buffer.push_back(glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x,			uv.y + uvsize));
+					buffer.push_back(glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x,			uv.y));
 				}
 
+				if (global_isUnVisible(x, y - 1, z)) {
+					const glm::vec2& uv = atlas_->get(voxel, ::bottom);
+
+					push_back(indices, buffer.size());
+					buffer.push_back(glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y));
+					buffer.push_back(glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y));
+					buffer.push_back(glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize));
+					buffer.push_back(glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize));
+				}
+
+				if (global_isUnVisible(x + 1, y, z)) {
+					const glm::vec2& uv = atlas_->get(voxel, ::right);
+
+					push_back(indices, buffer.size());
+					buffer.push_back(glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y));
+					buffer.push_back(glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize));
+					buffer.push_back(glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize));
+					buffer.push_back(glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y));
+				}
+
+				if (global_isUnVisible(x - 1, y, z)) {
+					const glm::vec2& uv = atlas_->get(voxel, ::left);
+
+					push_back(indices, buffer.size());
+					buffer.push_back(glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y));
+					buffer.push_back(glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y));
+					buffer.push_back(glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize));
+					buffer.push_back(glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize));
+				}
+
+				if (global_isUnVisible(x, y, z + 1)) {
+					const glm::vec2& uv = atlas_->get(voxel, ::front);
+
+					push_back(indices, buffer.size());
+					buffer.push_back(glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y));
+					buffer.push_back(glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y));
+					buffer.push_back(glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize));
+					buffer.push_back(glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize));
+				}
+				if (global_isUnVisible(x, y, z - 1)) {
+					const glm::vec2& uv = atlas_->get(voxel, ::back);
+
+					push_back(indices, buffer.size());
+					buffer.push_back(glm::vec3( x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y));
+					buffer.push_back(glm::vec3( x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize));
+					buffer.push_back(glm::vec3( x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize));
+					buffer.push_back(glm::vec3( x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y));
+				}							 					 		
 			}
 		}
 	}
@@ -205,8 +178,9 @@ void Chunk:: draw(const View* view, const Shader& shader) {
 	shader.use();
 	view->use(shader);
 	atlas_->use(shader);
-	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_)+0.5f));
-	buffer.draw();
+	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_)+glm::vec3(0.5f)  ));
+	buffer.getVAO().begin();
+	glDrawElements(GlRender::TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
 }
 
 ///ChunkHandle---------------------------------------------
@@ -313,7 +287,7 @@ const Voxel* ChunkHandle::rayCast(const glm::vec3& a, const glm::vec3& dir, floa
 
 	while (t <= maxDist) {
 		const Voxel* voxel = getVoxel(glm::ivec3(ix, iy, iz));
-		if (voxel == nullptr || !isValid(*voxel)) {
+		if (voxel != nullptr && isValid(*voxel)) {
 			end.x = px + t * dx;
 			end.y = py + t * dy;
 			end.z = pz + t * dz;

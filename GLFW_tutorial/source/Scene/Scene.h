@@ -20,7 +20,13 @@
 class Scene :public RenderScene {
 public:
 
-	Scene() {	}
+	Scene():
+		cube(glShader::any),
+		cube2(glShader::any),
+		wall(glShader::any),
+		player(texCowBoy) {
+		
+	}
 	void initialize(RenderWindow& window) {
 		initialize3DScene(window);
 		initializeUI(window);
@@ -42,9 +48,9 @@ public:
 	Texture2D filin;
 	//Object3D
 	LightSystem light;
-	gbCube cube; 
-	gbCube cube2;
-	gbCube wall;
+	Cube cube;
+	Cube cube2;
+	Cube wall;
 	Sphere sphere;
 	std::vector<Drawable*>gBufferObjects;
 	World world;

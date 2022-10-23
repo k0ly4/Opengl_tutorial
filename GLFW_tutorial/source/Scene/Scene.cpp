@@ -4,8 +4,6 @@
 #include "Input/EventModule.h"
 
 void Scene::initialize3DScene(RenderWindow& window) {
-
-
 	sphere.setRadius(3.0f);
 	sphere.setCountSector(8);
 	sphere.setCountStack(8);
@@ -13,19 +11,19 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	sphere.setPosition(glm::vec3(10.f, 10.f, 10.f));
 	sphere.setTexture(filin);
 
+	wall.genMesh(1.f);
 	wall.setPosition(glm::vec3(6.f));
 	wall.setScale(glm::vec3(1.f, 3.f, 3.f));
-	wall.setBaseColor(Color::RED);
+	wall.getGraphic()->material.setBaseColor(Color::RED);
 
+	cube.genMesh(1.f);
 	cube.setPosition(glm::vec3(10.f));
-	cube.setBaseColor(glm::vec3(1.f));
-	cube.setTexture(filin);
+	cube.getGraphic()->material.setBaseColor(glm::vec3(1.f));
+	cube.getGraphic()->material.setTexture(filin);
 	cube.setRotate(AngleAxis(20.f, glm::vec3(1.f, 0.5f, 0.5f)));
-
+	cube2.genMesh(1.f);
 	cube2.setPosition(glm::vec3(11.f, 6.6f, 13.f));
-	cube2.setTexture(filin);
-
-	
+	cube2.getGraphic()->material.setTexture(filin);
 
 	auto& points = light.getPoints();
 	points.push_back(PointLight(glm::vec3(0.5f), glm::vec3(5.f, 13.f, 5.f), glm::vec2(0.032f, 0.09f)), &camera);
@@ -45,7 +43,7 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	gBufferObjects[0] = (&wall);
 	gBufferObjects[1] = (&cube);
 	//LOG("this is%d exams\n",100u)
-
+	player.setCamera(camera);
 }
 
 void Scene::initializeUI(RenderWindow& window) {
@@ -74,7 +72,6 @@ void Scene::initializeUI(RenderWindow& window) {
 	text2.setSizeFont(20);
 	text2.setScale(glm::vec2(7.f));
 	text2.setColor(Color::YELLOW);
-	
 }
 
 
@@ -105,8 +102,7 @@ void Scene::inForward(RenderTarget& target) {
 	CullFace::Enable(false);
 	target.draw(world.chunks);
 	sphere.displayLine(target);
-
-	
+	player.draw(target);
 	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 
 	CullFace::Enable(true);
@@ -123,25 +119,22 @@ void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
 	Blend::Enable(false);
 	Depth::Enable(true);
 	CullFace::Mode(CullFace::Back);
-
 	CullFace::Enable(false);
 	
 	CullFace::Enable(true); 
 	target.draw(cube, shader);
-	
 	target.draw(wall, shader);
-
 	target.draw(sphere, shader);
 	target.draw(cube2, shader);
 }
 
 void Scene::inUI(RenderTarget& target) {
 	target.setView(view2D);
-
 	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 	CullFace::Enable(false);
 	Depth::Enable(false);
 	Blend::Enable(true);
+
 	target.draw(text2);
 	target.draw(sCowBoy);
 

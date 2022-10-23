@@ -1,9 +1,9 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Assimp.h"
-#include "Render.h"
-#include "Texture.h"
+#include "Resource/Assimp.h"
+#include "Graphic/Render.h"
+#include "Graphic/Texture.h"
 #include <string>
 #include <vector>
 
@@ -58,7 +58,7 @@ private:
 /// <summary>
 /// VertexMesh
 /// </summary>
-class VertexMesh:public MaterialMesh {
+class VertexMesh:public MaterialMesh,public Drawable {
 
 protected:
     // Данные для рендеринга 
@@ -82,7 +82,7 @@ private:
 /// <summary>
 /// Mesh
 /// </summary>
-class Mesh :public VertexMesh, public Instancable {
+class Mesh :public VertexMesh,public Transformable3D {
    
 public:
 

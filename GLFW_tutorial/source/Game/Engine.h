@@ -1,11 +1,11 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include"GameModules.h"
-#include "EventModule.h"
-#include "GraphicModule.h"
-#include "Scene.h"
-#include "Clock.h"
+#include "Game/GameModules.h"
+#include "Input/EventModule.h"
+#include "Graphic/GraphicModule.h"
+#include "Scene/Scene.h"
+#include "System/Clock.h"
 RenderWindow window;
 
 class Engine  {

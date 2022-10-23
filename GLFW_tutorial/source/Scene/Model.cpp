@@ -195,37 +195,6 @@ void Model::draw(View* view, const Shader& shader) {
         meshes[i].draw(shader);
 }
 /// <summary>
-/// InstanceModel
-/// </summary>
-
-void InstanceModel::setObject(Model& _model, glShader::Object shader_configuraion) {
-    setTransform(_model.getTransform());
-    target.resize(_model.size());
-    for (size_t i = 0; i < _model.size(); i++)
-        target[i].setObject(&_model[i], shader_configuraion);
-    shaderHint = shader_configuraion;
-}
-
-void InstanceModel::draw(View* view, const Shader& shader) {
-    for (size_t i = 0; i < target.size(); i++)
-        target[i].draw(view, shader);
-}
-
-void InstanceModel::create(const std::vector<glm::mat4>& matrix) {
-    this->matrix = matrix;
-    std::cout << matrix.size();
-    ArrayBufferObject::end();
-    m_VBO.begin();
-    m_VBO.setMode(GL_DYNAMIC_DRAW);
-    m_VBO.data(matrix);
-
-    for (size_t i = 0; i < target.size(); i++)
-        target[i].create(m_VBO, matrix.size());
-    ArrayBufferObject::end();
-    m_VBO.end();
-}
-
-/// <summary>
 /// bModel
 /// </summary>
 /// 

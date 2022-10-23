@@ -23,6 +23,17 @@ struct UvVertex {
 
 };
 #define SIZE_UV_VERTEX sizeof(UvVertex)
+struct SquareUV {
+    UvVertex vertices[4];
+    SquareUV(const UvVertex& lt, const UvVertex& ld, const UvVertex& rt, const UvVertex& rd) 
+        //:vertices{ lt, ld, rt, rd } 
+    {
+        vertices[0] = lt;
+        vertices[1] = ld;
+        vertices[2] = rt;
+        vertices[3] = rd;
+    }
+};
 /// <summary>
 /// Convex
 /// </summary>
@@ -185,5 +196,4 @@ private:
     }
 
 };
-
 #endif

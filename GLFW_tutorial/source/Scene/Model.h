@@ -1,7 +1,7 @@
 #ifndef MODEL_H
 #define MODEL_H
-#include "bMesh.h"
-#include "Convex.h"
+#include "Resource/bMesh.h"
+#include "Scene/Convex.h"
 //структура дл€ манипул€ции мешами
 
 /// <summary>
@@ -115,29 +115,7 @@ public:
 
     void draw(View* view, const Shader& shader);
 };
-/// <summary>
-/// InstanceModel
-/// </summary>
-class InstanceModel :public Drawable, public Transformable3D {
 
-public:
-
-    inline size_t size() {
-        return target.size();
-    }
-
-    virtual void setObject(Model& _model, glShader::Object shader_configuraion);
-
-    virtual void draw(View* view, const Shader& shader);
-
-    virtual void create(const std::vector<glm::mat4>& matrix);
-
-private:
-    std::vector<InstanceObject> target;
-    VertexBufferObject m_VBO;
-    std::vector<glm::mat4> matrix;
-    //»нтерпритаци€ матриц
-};
 /// <summary>
 /// bModel
 /// </summary>

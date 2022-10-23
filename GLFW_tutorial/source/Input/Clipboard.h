@@ -1,7 +1,7 @@
 #ifndef CLIPBOARD_H
 #define CLIPBOARD_H
 
-#include "GLFW.h"
+#include "Game/GLFW.h"
 #include <codecvt>
 
 class Clipboard {

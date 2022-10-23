@@ -6,6 +6,7 @@
 #include "Math/Math.h"
 #include "Graphic/Texture.h"
 #include "Scene/Convex.h"
+
 inline size_t getIndex(size_t x, size_t y, size_t z, size_t size) {
 	return ((y * size + z) * size + x);
 }
@@ -180,11 +181,11 @@ public:
 	//Global
 	inline const Voxel* getGlobal(const glm::uvec3& coord) const{
 		auto local = coord - glm::uvec3(global_);
-		return isIn(local.x, local.y, local.z) ? &voxels[getIndex(local, size_)] : 0;
+		return isIn(local) ? &voxels[getIndex(local, size_)] : 0;
 	}
 
 	inline Voxel* getGlobal(const glm::uvec3& coord) {
-		auto local = coord - glm::uvec3(global_);
+		glm::uvec3 local = coord - glm::uvec3(global_);
 		return isIn(local.x, local.y, local.z) ? &voxels[getIndex(local, size_)] : 0;
 	}
 
@@ -194,6 +195,11 @@ public:
 	bool setVoxel(const Voxel& voxel, const glm::uvec3& coord);
 
 private:
+	void setModifiedCloses(size_t index) {
+		if (closes[index] == nullptr)return;
+		closes[index]->modified = 1;
+	}
+	void modifiedCloses(const glm::uvec3& local);
 	//Local
 	inline Voxel& getLocal(size_t x, size_t y, size_t z) {
 		return voxels[getIndex(x, y, z, size_)];
@@ -205,13 +211,15 @@ private:
 	//Global
 
 	inline int normalize(int coord) {
-		return coord >= size_ ? 1 : coord < 0 ? -1 : 0;
+		return coord >= (int)size_ ? 1 : coord < 0 ? -1 : 0;
 	}
+
+	inline void pushBack(const UvVertex* face, const glm::vec3& pos, float hSize, const glm::vec2& uv, float uvSize);
 
 	inline bool global_isUnVisible(int x, int y, int z) {
 		///Local test
 		if (isIn(x, y, z)) return !isRender(getLocal(x, y, z));
-		return 1;
+		//return 1;
 		//Global
 		const Chunk* chunk = closes[getSide(normalize(x),normalize(y), normalize(z))];
 		if (chunk == nullptr) return 0;
@@ -224,6 +232,7 @@ private:
 
 	ConvexUV buffer;
 	std::vector<Voxel>voxels;
+	std::vector<unsigned int> indices;
 	const Chunk *closes[6];
 
 	size_t size_;
@@ -263,8 +272,6 @@ public:
 		}	
 	}
 	bool setVoxel(const Voxel&, const glm::vec3& start_ray, const glm::vec3& direction_ray, float maxDistance, bool adMode);
-private:
-
 	/// <summary>
 	/// 
 	/// </summary>
@@ -283,7 +290,18 @@ private:
 		glm::vec3& norm,
 		glm::ivec3& iend);
 
+	inline const Voxel* rayCast(
+		const Basis& basis,
+		float maxDistance,
+		glm::vec3& end,
+		glm::vec3& norm,
+		glm::ivec3& iend) {
+		return rayCast(basis.position, basis.front,maxDistance, end, norm, iend);
+	}
+private:
+
 	const size_t CHUNK_SIZE = 16;
+	
 	std::vector<Chunk> chunks_;
 	glm::uvec3 volume_;
 

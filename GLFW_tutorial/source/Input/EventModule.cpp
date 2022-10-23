@@ -52,8 +52,7 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
     }
     else if (event.type == Event::MouseButtonPressed) {
         if (event.mouseButton.button == Mouse::Right) {
-            Camera& player = scene.camera;
-            scene.world.chunks.setVoxel(Voxel(1), player.getPosition(), -player.getBasis().front, 10.f, 1);
+            scene.player.setVoxel(scene.world.chunks, 1);
         }
         else if (event.mouseButton.button == Mouse::Middle) {
             scene.light.getDirs().setDirection(-scene.camera.getBasis().front);
@@ -61,8 +60,7 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
             scene.light.lightTest.setDirection(scene.camera);
         }
         else if (event.mouseButton.button == Mouse::Left) {
-            Camera& player = scene.camera;
-            scene.world.chunks.setVoxel(Voxel(-1), player.getPosition(), -player.getBasis().front, 10.f, 0);
+            scene.player.setVoxel(scene.world.chunks,0);
         }
     }
 }
@@ -88,6 +86,7 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
     //Camera
     scene.camera.mouse_move(Mouse::getPosition());
     move_camera(time, scene);
+    scene.player.upVoxelCursor(scene.world.chunks);
 }
 
 /// <summary>

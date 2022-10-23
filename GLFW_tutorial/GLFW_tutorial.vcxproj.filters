@@ -61,6 +61,9 @@
     <Filter Include="Исходные файлы\Input">
       <UniqueIdentifier>{4fb5886e-28dd-4ee9-a853-d9d124cbab40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Modules">
+      <UniqueIdentifier>{1bbbc03e-6dea-4f5d-a21d-17f597347d95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib\stb_image.cpp">
@@ -198,15 +201,6 @@
     <ClCompile Include="source\Resource\ImageLoader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="source\Input\EventModule.cpp">
-      <Filter>Исходные файлы\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Graphic\GraphicModule.cpp">
-      <Filter>Исходные файлы\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\Scene.cpp">
-      <Filter>Исходные файлы\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="source\Graphic\PostEffects.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
@@ -248,6 +242,18 @@
     </ClCompile>
     <ClCompile Include="source\Resource\Glyph.cpp">
       <Filter>Исходные файлы\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Graphic\GraphicModule.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Scene\Scene.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Input\EventModule.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Primitive.cpp">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -374,9 +380,6 @@
     <ClInclude Include="source\Scene\Quad.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="source\Scene\Cube.h">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
-    </ClInclude>
     <ClInclude Include="source\Scene\Plane.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
@@ -416,17 +419,8 @@
     <ClInclude Include="source\Graphic\PostEffects.h">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="source\Graphic\GraphicModule.h">
-      <Filter>Исходные файлы\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Input\EventModule.h">
-      <Filter>Исходные файлы\Input</Filter>
-    </ClInclude>
     <ClInclude Include="source\Game\GameModules.h">
       <Filter>Исходные файлы\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\Scene.h">
-      <Filter>Исходные файлы\Scene</Filter>
     </ClInclude>
     <ClInclude Include="source\Graphic\TextureEntity.h">
       <Filter>Исходные файлы\Graphics</Filter>
@@ -454,6 +448,18 @@
     </ClInclude>
     <ClInclude Include="source\Resource\Glyph.h">
       <Filter>Исходные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Graphic\GraphicModule.h">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scene\Scene.h">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Input\EventModule.h">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scene\Primitive.h">
+      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

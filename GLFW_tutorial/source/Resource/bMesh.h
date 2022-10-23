@@ -1,7 +1,7 @@
 #ifndef BONE_MESH_H
 #define BONE_MESH_H
 
-#include "Mesh.h"
+#include "Graphic/Mesh.h"
 
 /// <summary>
 /// bVertex
@@ -313,7 +313,7 @@ private:
 /// <summary>
 /// bMesh
 /// </summary>
-class bMesh :public bVertexMesh, public Instancable {
+class bMesh :public bVertexMesh, public Drawable,public Transformable3D {
 
 public:
     // Конструктор

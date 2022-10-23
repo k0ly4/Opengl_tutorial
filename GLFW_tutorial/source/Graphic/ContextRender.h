@@ -364,5 +364,35 @@ private:
 }; 
 
 
+///Graphic---------------------------------------------
+/// <summary>
+///
+/// </summary>
+class Graphic {
+public:
+	Graphic() {
+		VAO.data_draw = DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES, 0);
+	}
+	void setMesh(const std::vector<Vertex>& vertices) {
+		VAO.data_draw.data.count_vertex = vertices.size();
+		VAO.begin();
+		VBO.begin();
+		VBO.data(vertices);
+
+		VAO.attrib(0, 3, SIZE_VERTEX, 0);
+		VAO.attrib(1, 3, SIZE_VERTEX, 3 * sizeof(float));
+		VAO.attrib(2, 2, SIZE_VERTEX, 6 * sizeof(float));
+
+	}
+
+	void draw(const Shader& shader) {
+		shader.uniform(material);
+		VAO.draw();
+	}
+
+	Material material;
+	DrawBuffer VAO;
+	VertexBufferObject VBO;
+};
 
 #endif

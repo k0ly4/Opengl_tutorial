@@ -216,6 +216,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="source\Game\Game.cpp" />
     <ClCompile Include="source\Resource\Assimp.cpp" />
     <ClCompile Include="source\Resource\AssimpLib.cpp" />
@@ -283,6 +284,7 @@
     <ClCompile Include="source\Game\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Scene\Primitive.h" />
     <ClInclude Include="source\Resource\Assimp.h" />
     <ClInclude Include="source\Resource\Glyph.h" />
     <ClInclude Include="source\Scene\Billboard.h" />
@@ -295,7 +297,6 @@
     <ClInclude Include="source\Graphic\ContextTexture.h" />
     <ClInclude Include="source\Graphic\ContextWindow.h" />
     <ClInclude Include="source\Scene\Convex.h" />
-    <ClInclude Include="source\Scene\Cube.h" />
     <ClInclude Include="source\Input\Cursor.h" />
     <ClInclude Include="source\Scene\DeclaredObjects.h" />
     <ClInclude Include="source\Graphic\DepthFrameBuffer.h" />

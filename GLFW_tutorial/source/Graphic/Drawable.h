@@ -140,9 +140,11 @@ public:
 	void setBaseColor(const Color& color) {
 		baseColor_ = color;
 	}
+
 	const Color& getColor()const {
 		return baseColor_;
 	}
+
 	void setTexture(const Texture2D& texture) {
 		diffuse_ = &texture;
 	}
@@ -200,5 +202,7 @@ protected:
 	Material material;
 
 };
+
+
 #endif
 
