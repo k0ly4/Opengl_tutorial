@@ -216,8 +216,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Primitive.cpp" />
+    <ClCompile Include="source\Scene\Primitive.cpp" />
+    <ClCompile Include="source\Game\ChunkHandle.cpp" />
     <ClCompile Include="source\Game\Game.cpp" />
+    <ClCompile Include="source\Game\VoxelAtlas.cpp" />
     <ClCompile Include="source\Resource\Assimp.cpp" />
     <ClCompile Include="source\Resource\AssimpLib.cpp" />
     <ClCompile Include="source\Resource\bMesh.cpp" />
@@ -267,7 +269,7 @@
     <ClCompile Include="source\Graphic\RenderEntity.cpp" />
     <ClCompile Include="source\Graphic\RenderWindow.cpp" />
     <ClCompile Include="source\Resource\ResourceTypes.cpp" />
-    <ClCompile Include="source\Resource\Resource_manager.cpp" />
+    <ClCompile Include="source\Resource\FileManager.cpp" />
     <ClCompile Include="source\Scene\Scene.cpp" />
     <ClCompile Include="source\Resource\Shader.cpp" />
     <ClCompile Include="source\Scene\ShadowMap.cpp" />
@@ -284,6 +286,10 @@
     <ClCompile Include="source\Game\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Game\VoxelAtlas.h" />
+    <ClInclude Include="source\Game\ChunkHandle.h" />
+    <ClInclude Include="source\Game\GeneralGameEntity.h" />
+    <ClInclude Include="source\Resource\FileManager.h" />
     <ClInclude Include="source\Scene\Primitive.h" />
     <ClInclude Include="source\Resource\Assimp.h" />
     <ClInclude Include="source\Resource\Glyph.h" />

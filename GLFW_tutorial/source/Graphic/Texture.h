@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "Resource/Resource_manager.h"
+#include "Resource/FileManager.h"
 
 /// <summary>
 /// TextureCubeMap

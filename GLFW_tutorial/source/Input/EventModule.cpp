@@ -48,6 +48,10 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
         {
             f.debugGbuffer = !f.debugGbuffer;
         }
+        else if (event.key.code == Keyboard::F1)
+        {
+            scene.world.save();
+        }
     
     }
     else if (event.type == Event::MouseButtonPressed) {

@@ -16,6 +16,9 @@ public:
     virtual glm::mat4 getVP()const = 0;
     virtual glm::mat4 getInverseVP()const = 0;
     virtual void use(const Shader&) const= 0; 
+    inline void useVP(const Shader& shader) const {
+        shader.uniform("VP", getVP());
+    }
 };
 
 /// ViewMatrix------------------------------------------------------------
@@ -43,6 +46,7 @@ public:
         shader.uniform("projection", proj.get());
         shader.uniform("camera", view.get());
     }
+    
 
     void setProjection(const glm::mat4& matrix) {
         proj.set(matrix);

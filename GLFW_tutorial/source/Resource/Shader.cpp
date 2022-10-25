@@ -219,6 +219,8 @@ void glShader::init() {
 
     setup(text,"shaders\\3d\\text\\", 0, Uniform<int>("glyph", 0));
     //3d
+    setup(voxel, "shaders\\main\\voxel\\", 0, Uniform<int>("diffuse", 0));
+
     setup(skybox, "shaders\\3d\\skybox\\", 0, Uniform<int>("skybox", 0));
 
     setup(billboard, "shaders\\3d\\billboard\\", 1, Uniform<int>("diffuse", 0));

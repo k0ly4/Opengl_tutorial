@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "Resource/Resource_manager.h"
+#include "Resource/FileManager.h"
 #include"Resource/Buffer.h"
 
 class Shader;
@@ -105,7 +105,7 @@ public:
         shape,
         skybox,
         billboard,
-
+        voxel,
         color_layout,
 
         texture,

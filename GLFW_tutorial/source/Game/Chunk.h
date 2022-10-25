@@ -6,6 +6,7 @@
 #include "Math/Math.h"
 #include "Graphic/Texture.h"
 #include "Scene/Convex.h"
+#include "VoxelAtlas.h"
 
 inline size_t getIndex(size_t x, size_t y, size_t z, size_t size) {
 	return ((y * size + z) * size + x);
@@ -27,123 +28,7 @@ inline int normalize(int coord, int max) {
 	return coord >= max ? (coord - max) : coord < 0 ? (max + coord) : coord;
 }
 
-enum Side :size_t
-{
-	top, 
-	bottom, 
-	right, 
-	left, 
-	front, 
-	back
-};
 
-inline Side getSide(const glm::ivec3& dist) {
-	Side side;
-	if (	 dist.x == -1) side = left;
-	else if (dist.x == 1) side = right;
-	else if (dist.y == -1) side = bottom;
-	else if (dist.y == 1) side = top;
-	else if (dist.z == -1) side = back;
-	else if (dist.z == 1) side = front;
-	else LOG(LogError, "Exit setcloses::side not init\n");
-	return side;
-}
-
-inline Side getSide(int x, int y, int z) {
-	return getSide(glm::ivec3(x, y, z));
-}
-///Voxel----------------------------------------------
-/// <summary>
-/// 
-/// </summary>
-struct Voxel {
-	int id;
-	Voxel(int id_) :id(id_) {}
-	Voxel() {}
-};
-static bool operator==(const Voxel& left, const Voxel& right) {
-	return (right.id == left.id);
-}
-inline bool isRender(const Voxel& voxel) {
-	return (voxel.id > -1);
-}
-inline bool isValid(const Voxel& voxel) {
-	return (voxel.id != -1);
-}
-///VoxelType----------------------------------------------
-/// <summary>
-/// 
-/// </summary>
-struct UvVoxel {
-
-	void setSolid(int fill) {
-		for (size_t i = 0; i < 6; i++)
-			id[i] = fill;
-	}
-	int id[6];
-};
-
-///VoxelAtlas---------------------------
-/// <summary>
-/// 
-/// </summary>
-class VoxelAtlas {
-
-public:
-
-	enum IdUV :int
-	{
-		uv_turf = 0,
-		uv_side_turf,
-		uv_earth,
-		uv_max,
-	};
-
-	enum IdVoxel :int
-	{
-		id_air = -1,
-		id_turf = 0,
-		id_earth,
-		id_max,
-	};
-
-	
-	void load(const std::string& path, size_t sizeVoxel);
-
-	inline const glm::vec2& get(int id, int side)const {
-		return uv[scan[id].id[side]];
-	}
-
-	inline const glm::vec2& get(const Voxel& id, int side)const {
-		return get(id.id,side);
-	}
-
-	inline float getVoxelSize()const {
-		return uvSize_;
-	}
-
-	void use(const Shader& shader)const {
-		shader.uniform("configMaterial", 1);
-		shader.uniform("baseColor", glm::vec3(1.f));
-		texture_.use(0);
-	}
-
-private:
-
-	glm::vec2 getUV(int id) {
-		float u = (id % sizeVoxel_) * uvSize_;
-		float v = 1.f - ((1.f + id / sizeVoxel_) * uvSize_);
-		return glm::vec2(u, v);
-	}
-
-	std::vector<glm::vec2> uv;
-	std::vector<UvVoxel> scan;
-
-	float uvSize_;
-	size_t sizeVoxel_ = 32;
-	Texture2D texture_;
-
-};
 
 ///Chunk---------------------------------------------
 /// <summary>
@@ -155,11 +40,15 @@ public:
 	Chunk() :
 		size_(0),
 		global_(0) {
-
+		for (size_t i = 0; i < 6; i++) {
+			closes[i] = nullptr;
+		}
 		buffer.setDataDraw(DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES, 0));
-		shaderHint = glShader::texture;
+		shaderHint = glShader::voxel;
 	}
 	//init
+	bool load(size_t size, const glm::ivec3& global);
+	bool save()const;
 	void generate(size_t size, const glm::ivec3& global);
 	void setCloses(const std::vector<Chunk>& chunks);
 	void setAtlas(const VoxelAtlas& atlas) {
@@ -195,6 +84,11 @@ public:
 	bool setVoxel(const Voxel& voxel, const glm::uvec3& coord);
 
 private:
+
+	inline std::string getFilePath()const {
+		return std::string("saves\\"+std::to_string(local_.x) + '_' + std::to_string(local_.y) + '_' + std::to_string(local_.z) + ".chunk");
+	}
+
 	void setModifiedCloses(size_t index) {
 		if (closes[index] == nullptr)return;
 		closes[index]->modified = 1;
@@ -214,9 +108,7 @@ private:
 		return coord >= (int)size_ ? 1 : coord < 0 ? -1 : 0;
 	}
 
-	inline void pushBack(const UvVertex* face, const glm::vec3& pos, float hSize, const glm::vec2& uv, float uvSize);
-
-	inline bool global_isUnVisible(int x, int y, int z) {
+	inline bool isFree(int x, int y, int z) {
 		///Local test
 		if (isIn(x, y, z)) return !isRender(getLocal(x, y, z));
 		//return 1;
@@ -227,84 +119,20 @@ private:
 	}
 
 	void upMesh();
-
+	//render
 	const VoxelAtlas* atlas_ = 0;
-
-	ConvexUV buffer;
+	TypeConvex<VoxelVertex> buffer;
 	std::vector<Voxel>voxels;
 	std::vector<unsigned int> indices;
+
 	const Chunk *closes[6];
+	mutable bool modified = 1;
 
 	size_t size_;
-	mutable bool modified = 1;
 	glm::ivec3 global_;
+	glm::ivec3 local_;
 };
 
-///ChunkHandle---------------------------------------------
-/// <summary>
-/// 
-/// </summary>
-class ChunkHandle :public Drawable {
 
-public:
-
-	ChunkHandle():volume_(0,0,0) {
-		shaderHint = glShader::texture;
-	}
-	void create(const glm::uvec3& volume);
-
-	void setAtlas(const VoxelAtlas& atlas) {
-		for (size_t i = 0; i < chunks_.size(); i++) {
-			chunks_[i].setAtlas(atlas);
-		}
-	}
-	//Global voxel coord
-	const Voxel* getVoxel(const glm::ivec3& coord);
-
-	/// <summary>
-	/// coord - global chunk coordinates
-	/// </summary>
-	Chunk* get(const glm::ivec3& coord);
-	void setVoxel(const Voxel&, const glm::ivec3& coord);
-	void draw(const View* view, const Shader& shader) {
-		for (size_t i = 0; i < chunks_.size(); i++) {
-			chunks_[i].draw(view, shader);
-		}	
-	}
-	bool setVoxel(const Voxel&, const glm::vec3& start_ray, const glm::vec3& direction_ray, float maxDistance, bool adMode);
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="start_position">-начало</param>
-	/// <param name="direction">-направление</param>
-	/// <param name="maxDistance">-максимальное расстояние</param>
-	/// <param name="end">-кордината вывода конца пересеченного луча</param>
-	/// <param name="norm">-вывод нормали вокселя</param>
-	/// <param name="iend">кордината вывода в трехмерном массиве конца луча</param>
-	/// <returns></returns>
-	const Voxel* rayCast(
-		const glm::vec3& start_position,
-		const glm::vec3& direction,
-		float maxDistance,
-		glm::vec3& end,
-		glm::vec3& norm,
-		glm::ivec3& iend);
-
-	inline const Voxel* rayCast(
-		const Basis& basis,
-		float maxDistance,
-		glm::vec3& end,
-		glm::vec3& norm,
-		glm::ivec3& iend) {
-		return rayCast(basis.position, basis.front,maxDistance, end, norm, iend);
-	}
-private:
-
-	const size_t CHUNK_SIZE = 16;
-	
-	std::vector<Chunk> chunks_;
-	glm::uvec3 volume_;
-
-};
 #endif
 
