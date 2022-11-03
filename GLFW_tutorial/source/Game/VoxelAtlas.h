@@ -8,14 +8,13 @@
 
 enum Side :size_t
 {
-	top,
-	bottom,
-	right,
 	left,
+	right,
+	bottom,
+	top,
+	back,
 	front,
-	back
 };
-
 inline Side getSide(const glm::ivec3& dist) {
 	Side side;
 	if (dist.x == -1) side = left;
@@ -32,17 +31,27 @@ inline Side getSide(int x, int y, int z) {
 	return getSide(glm::ivec3(x, y, z));
 }
 
+inline int normalizeSign(int x, int max) {
+	return x >= max ? 1 : x < 0 ? -1 : 0;
+}
+
+inline Side	getSide(int x, int y, int z, const glm::uvec3& max) {
+	return getSide(normalizeSign(x,max.x),normalizeSign(y,max.y),normalizeSign(z,max.z));
+}
+inline Side	getSide(int x, int y, int z, const glm::ivec3& max) {
+	return getSide(normalizeSign(x, max.x), normalizeSign(y, max.y), normalizeSign(z, max.z));
+}
 ///VoxelType----------------------------------------------
 /// <summary>
 /// 
 /// </summary>
-struct UvVoxel {
+struct Block {
 
 	void setSolid(int fill) {
 		for (size_t i = 0; i < 6; i++)
-			id[i] = fill;
+			idSide[i] = fill;
 	}
-	int id[6];
+	int idSide[6];
 };
 
 ///VoxelAtlas---------------------------
@@ -58,6 +67,7 @@ public:
 		uv_turf = 0,
 		uv_side_turf,
 		uv_earth,
+		uv_light,
 		uv_max,
 	};
 
@@ -66,14 +76,17 @@ public:
 		id_air = -1,
 		id_turf = 0,
 		id_earth,
+		id_light,
 		id_max,
 	};
 
 
 	void load(const std::string& path, size_t sizeVoxel);
+	//path to json file
+	bool load(const std::string& directory);
 
 	inline const glm::vec2& get(int id, int side)const {
-		return uv[scan[id].id[side]];
+		return uv[blocks[id].idSide[side]];
 	}
 
 	inline const glm::vec2& get(const Voxel& id, int side)const {
@@ -99,10 +112,10 @@ private:
 	}
 
 	std::vector<glm::vec2> uv;
-	std::vector<UvVoxel> scan;
+	std::vector<Block> blocks;
 
 	float uvSize_;
-	size_t sizeVoxel_ = 32;
+	size_t sizeVoxel_;
 	Texture2D texture_;
 
 };

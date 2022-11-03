@@ -52,11 +52,17 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
         {
             scene.world.save();
         }
+        else if (event.key.code >= Keyboard::Num0 && event.key.code<=Keyboard::Num9){
+            scene.player.setCurVoxel(Voxel(event.key.code-Keyboard::Num0));
+        }
+        else if(event.key.code == Keyboard::F1) {
+            scene.world.save();
+        }
     
     }
     else if (event.type == Event::MouseButtonPressed) {
         if (event.mouseButton.button == Mouse::Right) {
-            scene.player.setVoxel(scene.world.chunks, 1);
+            scene.player.setVoxel(scene.world, 1);
         }
         else if (event.mouseButton.button == Mouse::Middle) {
             scene.light.getDirs().setDirection(-scene.camera.getBasis().front);
@@ -64,7 +70,7 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
             scene.light.lightTest.setDirection(scene.camera);
         }
         else if (event.mouseButton.button == Mouse::Left) {
-            scene.player.setVoxel(scene.world.chunks,0);
+            scene.player.setVoxel(scene.world,0);
         }
     }
 }

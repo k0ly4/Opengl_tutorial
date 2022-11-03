@@ -1,0 +1,29 @@
+{
+	"path": "voxel_atlas.png",
+	"size_uv": 32,
+	
+	"max_size_side":5,
+	"max_size_blocks":4,
+	
+	"blocks":
+	{	
+		"0":{
+			"name":"turf",
+			"side":[1,1,2,0,1,1]
+		},
+		
+		"1":{
+			"name":"earth",
+			"side":[2,2,2,2,2,2]
+		},
+		
+		"2":{
+			"name":"light",
+			"side":[3,3,3,3,3,3]
+		},
+		"3":{
+			"name":"stone",
+			"side":[4,4,4,4,4,4]
+		}
+	}
+}

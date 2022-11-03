@@ -7,29 +7,7 @@
 #include "Graphic/Texture.h"
 #include "Scene/Convex.h"
 #include "VoxelAtlas.h"
-
-inline size_t getIndex(size_t x, size_t y, size_t z, size_t size) {
-	return ((y * size + z) * size + x);
-}
-
-inline size_t getIndex(const glm::uvec3& coord, size_t size) {
-	return ((coord.y * size + coord.z) * size + coord.x);
-}
-
-inline size_t getIndex(size_t x, size_t y, size_t z, const glm::uvec3& size) {
-	return ((y * size.z + z) * size.x + x);
-}
-
-inline size_t getIndex(const glm::uvec3& coord, const glm::uvec3& size) {
-	return ((coord.y * size.z + coord.z) * size.x + coord.x);
-}
-
-inline int normalize(int coord, int max) {
-	return coord >= max ? (coord - max) : coord < 0 ? (max + coord) : coord;
-}
-
-
-
+#include "LightMap.h"
 ///Chunk---------------------------------------------
 /// <summary>
 /// 
@@ -37,98 +15,157 @@ inline int normalize(int coord, int max) {
 class Chunk:public Drawable{
 public:
 
-	Chunk() :
-		size_(0),
+	///Closes---------------------------------------------
+	class Closes {
+		public:
+			inline void clear() {
+				for (size_t i = 0; i < 6; i++) {
+					chunks[i] = nullptr;
+				}
+			}
+
+			inline void setModified(size_t index) {
+				if (chunks[index]) chunks[index]->modified = 1;
+			}
+
+			inline void setModified() {
+				for (size_t i = 0; i < 6; i++) {
+					setModified(i);
+				}
+			}
+
+			inline void setModified(const glm::uvec3& local) {
+
+				if (local.x == CHUNK_W - 1) setModified(right);
+				else if (local.x == 0) setModified(left);
+
+				if (local.y == CHUNK_H - 1) setModified(top);
+				else if (local.y == 0) setModified(bottom);
+
+				if (local.z == CHUNK_D - 1) setModified(front);
+				else if (local.z == 0) setModified(back);
+
+			}
+
+			inline Chunk* get(size_t index) {
+				return chunks[index];
+			}
+			Chunk* chunks[6];
+	private:
+			
+	};
+
+	Chunk():
 		global_(0) {
-		for (size_t i = 0; i < 6; i++) {
-			closes[i] = nullptr;
-		}
+		closes.clear();
 		buffer.setDataDraw(DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES, 0));
 		shaderHint = glShader::voxel;
 	}
+
+
 	//init
-	bool load(size_t size, const glm::ivec3& global);
+	bool load(const glm::ivec3& global);
 	bool save()const;
-	void generate(size_t size, const glm::ivec3& global);
-	void setCloses(const std::vector<Chunk>& chunks);
-	void setAtlas(const VoxelAtlas& atlas) {
+	void generate(const glm::ivec3& global);
+	void setCloses(std::vector<Chunk>& chunks);
+
+	inline void setAtlas(const VoxelAtlas& atlas) {
 		atlas_ = &atlas;
 	}
-	//render
-	void draw(const View* view, const Shader& shader);
 
+	inline void setModified(){
+		modified = 1;
+	}
+	
 	//Local
 	inline bool isUnVisible(size_t x, size_t y, size_t z)const {
-		return !(!isIn(x, y, z) || isRender(getLocal(x, y, z)));
+		return !(!isChunkBelong(x, y, z) || isRender(getFromLocalCoord(x, y, z)));
 	}
-	inline bool isIn(size_t x, size_t y, size_t z)const {
-		return (x < size_ && y < size_ && z < size_);
-	}
-	inline bool isIn(const glm::uvec3& coord)const {
-		return (coord.x < size_&& coord.y < size_&& coord.z < size_);
-	}
+	
 	//Global
-	inline const Voxel* getGlobal(const glm::uvec3& coord) const{
+	inline const Voxel* getFromGlobalCoord(const glm::uvec3& coord) const{
 		auto local = coord - glm::uvec3(global_);
-		return isIn(local) ? &voxels[getIndex(local, size_)] : 0;
+		return isChunkBelong(local) ? &voxels[getIndex(local)] : 0;
 	}
 
-	inline Voxel* getGlobal(const glm::uvec3& coord) {
+	inline Voxel* getFromGlobalCoord(const glm::uvec3& coord) {
 		glm::uvec3 local = coord - glm::uvec3(global_);
-		return isIn(local.x, local.y, local.z) ? &voxels[getIndex(local, size_)] : 0;
+		return isChunkBelong(local) ? &voxels[getIndex(local)] : 0;
 	}
 
+	inline const glm::ivec3& getGlobalPos()const {
+		return global_;
+	}
+	inline const glm::ivec3& getLocalPos()const {
+		return local_;
+	}
 	/// <summary>
 	/// »змен€ет заданный в глобальных кординатах coord воксель, устанавлива€ себе и 6 ближайшим чанкам modified в true
 	/// </summary>
 	bool setVoxel(const Voxel& voxel, const glm::uvec3& coord);
+
+	/// <summary>
+	/// Lightning----------------
+	/// </summary>
+	LightMap lightMap;
+	inline void setLightGlobal(const LightUint8& light, int channel_) {
+		modified = 1;
+		lightMap.set(
+			light.pos - global_,
+			channel_,
+			light.light);
+	}
+
+	inline unsigned char getLightGlobal(const glm::ivec3& coord,int channel_) {
+		return lightMap.get(
+			coord - global_,
+			channel_);
+	}
+	
+	//render
+	void draw(const View* view, const Shader& shader);
 
 private:
 
 	inline std::string getFilePath()const {
 		return std::string("saves\\"+std::to_string(local_.x) + '_' + std::to_string(local_.y) + '_' + std::to_string(local_.z) + ".chunk");
 	}
-
-	void setModifiedCloses(size_t index) {
-		if (closes[index] == nullptr)return;
-		closes[index]->modified = 1;
-	}
-	void modifiedCloses(const glm::uvec3& local);
 	//Local
-	inline Voxel& getLocal(size_t x, size_t y, size_t z) {
-		return voxels[getIndex(x, y, z, size_)];
+	inline Voxel& getFromLocalCoord(size_t x, size_t y, size_t z) {
+		return voxels[getIndex(x, y, z)];
 	}
-	inline const Voxel& getLocal(size_t x, size_t y, size_t z)const {
-		return voxels[getIndex(x, y, z, size_)];
-	}
-
-	//Global
-
-	inline int normalize(int coord) {
-		return coord >= (int)size_ ? 1 : coord < 0 ? -1 : 0;
+	inline const Voxel& getFromLocalCoord(size_t x, size_t y, size_t z)const {
+		return voxels[getIndex(x, y, z)];
 	}
 
 	inline bool isFree(int x, int y, int z) {
 		///Local test
-		if (isIn(x, y, z)) return !isRender(getLocal(x, y, z));
-		//return 1;
+		if (isChunkBelong(x, y, z)) return !isRender(getFromLocalCoord(x, y, z));
 		//Global
-		const Chunk* chunk = closes[getSide(normalize(x),normalize(y), normalize(z))];
+		const Chunk* chunk = closes.get(getSide(x, y, z, CHUNK_VOLUME));
 		if (chunk == nullptr) return 0;
-		return !(isRender( chunk->getLocal( ::normalize(x , size_), ::normalize(y, size_), ::normalize(z, size_)) ) );
+		return !(isRender( chunk->getFromLocalCoord( ::clip(x , CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D)) ) );
 	}
 
+	unsigned char LIGHT(int x, int y, int z,int channel) {
+		if (isChunkBelong(x, y, z)) return lightMap.get(x,y,z, channel);
+		Chunk* chunk = closes.get(getSide(x, y, z, CHUNK_VOLUME));
+		return chunk != 0 ? chunk->lightMap.get(::clip(x, CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D), channel) : 0;
+	}
+
+	glm::vec4 getFastLight(int x,int y,int z);
+	glm::vec4 getSoftLight(int x,int y,int z);
+
 	void upMesh();
+	void fastUpMesh();
 	//render
 	const VoxelAtlas* atlas_ = 0;
 	TypeConvex<VoxelVertex> buffer;
 	std::vector<Voxel>voxels;
 	std::vector<unsigned int> indices;
-
-	const Chunk *closes[6];
+	Closes closes;
 	mutable bool modified = 1;
 
-	size_t size_;
 	glm::ivec3 global_;
 	glm::ivec3 local_;
 };

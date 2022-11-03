@@ -12,14 +12,12 @@ inline void write(std::ofstream& out, T data) {
 
 bool FileManager::read(std::string& data, const std::string& path) {
 		// Этап №1: Получение исходного кода вершинного/фрагментного шейдера из переменной filePath
-		std::ifstream file;
+		std::ifstream file(path);
 		// Убеждаемся, что объекты ifstream могут выбросить исключение
 		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		try
 		{
 			std::stringstream vShaderStream;
-
-			file.open(path);
 			vShaderStream << file.rdbuf();
 			data = vShaderStream.str();
 			file.close();
@@ -46,6 +44,7 @@ bool FileManager::read(const std::string& path, std::vector<Voxel>& data) {
 	in.close(); //Закрываем файл
 	return 1;
 }
+
 bool FileManager::write(const std::string& path, const std::vector<Voxel>& data) {
 	std::ofstream out(path, std::ios::binary | std::ios::out); //Открываем файл в двоичном режиме для записи
 	if (out.is_open() == 0) {
@@ -56,5 +55,22 @@ bool FileManager::write(const std::string& path, const std::vector<Voxel>& data)
 		::write(out, data[i].id);
 	}
 	out.close(); //Закрываем файл
+	return 1;
+}
+
+bool FileManager::read(const std::string& path, JSON& json) {
+	// Этап №1: Получение исходного кода вершинного/фрагментного шейдера из переменной filePath
+	std::ifstream file(path);
+	// Убеждаемся, что объекты ifstream могут выбросить исключение
+	if (file.is_open() == 0) {
+		LOG("FILE_NOT_SUCCESFULLY_READ::%s\n", path.c_str());
+		return 0;
+	}
+	json = JSON::parse(file);
+	file.close();
+	return 1;
+}
+
+bool FileManager::write(const std::string& path, const JSON& json) {
 	return 1;
 }

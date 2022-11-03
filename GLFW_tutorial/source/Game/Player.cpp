@@ -12,12 +12,21 @@ void Player::upVoxelCursor(ChunkHandle& chunks) {
 	cube.setPosition(glm::vec3(posCursor) + glm::vec3(0.5f));
 }
 
-void Player::setVoxel(ChunkHandle& chunks, bool isModAdd) {
+void Player::setVoxel(World& world, bool isModAdd) {
+	LOG("R=%d,G=%d,B=%d,S=%d\n",
+		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 0),
+		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 1),
+		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 2),
+		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 3));
 	if (posCursor == glm::ivec3(0))return;
+
 	if (isModAdd) {
-		chunks.setVoxel(Voxel(1), posCursor + glm::ivec3(normCursor));
+		glm::ivec3 pos(posCursor + glm::ivec3(normCursor));
+		world.chunks.setVoxel(curVoxel, pos);
+		world.light.add(pos, curVoxel.id);
 	}
 	else {
-		chunks.setVoxel(Voxel(-1), posCursor );
+		world.chunks.setVoxel(Voxel(-1), posCursor );
+		world.light.remove(posCursor);
 	}
 }

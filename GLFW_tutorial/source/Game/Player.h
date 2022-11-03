@@ -32,12 +32,16 @@ public:
 	}
 
 	void upVoxelCursor(ChunkHandle& chunks);
-
-	void setVoxel(ChunkHandle& chunks, bool isModAdd);
+	void setCurVoxel(const Voxel& voxel) {
+		curVoxel = voxel;
+	}
+	void setVoxel(World& world,bool isModAdd);
 	void draw(RenderTarget& target) {
 		target.draw(cube);
 	}
 private:
+
+	Voxel curVoxel = Voxel(2);
 	Cube cube;
 	float maxDistanceCursor = 10.f;
 	glm::vec3 normCursor;

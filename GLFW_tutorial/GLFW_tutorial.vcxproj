@@ -216,6 +216,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Game\LightSystem.cpp" />
+    <ClCompile Include="source\Game\LightSolver.cpp" />
+    <ClCompile Include="source\Game\LightMap.cpp" />
     <ClCompile Include="source\Scene\Primitive.cpp" />
     <ClCompile Include="source\Game\ChunkHandle.cpp" />
     <ClCompile Include="source\Game\Game.cpp" />
@@ -286,6 +289,9 @@
     <ClCompile Include="source\Game\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Game\LightSystem.h" />
+    <ClInclude Include="source\Game\LightSolver.h" />
+    <ClInclude Include="source\Game\LightMap.h" />
     <ClInclude Include="source\Game\VoxelAtlas.h" />
     <ClInclude Include="source\Game\ChunkHandle.h" />
     <ClInclude Include="source\Game\GeneralGameEntity.h" />

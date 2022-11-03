@@ -11,8 +11,8 @@ void ChunkHandle::create(const glm::uvec3& volume) {
 	for (size_t y = 0; y < volume_.y; y++) {
 		for (size_t z = 0; z < volume_.z; z++) {
 			for (size_t x = 0; x < volume_.x; x++) {
-				if (chunks_[index].load(CHUNK_SIZE, glm::ivec3(x, y, z)) == 0) {
-					chunks_[index].generate(CHUNK_SIZE, glm::ivec3(x, y, z));
+				if (chunks_[index].load(glm::ivec3(x, y, z)) == 0) {
+					chunks_[index].generate(glm::ivec3(x, y, z));
 					LOG("Not succes load chunk\n");
 				}
 				index++;
@@ -32,31 +32,21 @@ void ChunkHandle::save()const {
 }
 
 const Voxel* ChunkHandle::getVoxel(const glm::ivec3& coord) {
-
-	auto local = coord / (int)CHUNK_SIZE;
-	if (coord.x < 0) local.x--;
-	if (coord.y < 0) local.y--;
-	if (coord.z < 0) local.z--;
-
-	Chunk* chunk = get(local);
+	Chunk* chunk = get(toLocal(coord));
 	if (chunk == 0)return 0;
-	return chunk->getGlobal(coord);
+	return chunk->getFromGlobalCoord(coord);
 }
 
 void ChunkHandle::setVoxel(const Voxel& voxel, const glm::ivec3& coord) {
 
-	auto local = coord / (int)CHUNK_SIZE;
-	if (coord.x < 0) local.x--;
-	if (coord.y < 0) local.y--;
-	if (coord.z < 0) local.z--;
-
-	Chunk* chunk = get(local);
-	if (chunk == 0 || chunk->getGlobal(coord) == 0)return;
+	Chunk* chunk = get(toLocal(coord));
+	if (chunk == 0 || chunk->getFromGlobalCoord(coord) == 0)return;
 	chunk->setVoxel(voxel, coord);
 }
 
 Chunk* ChunkHandle::get(const glm::ivec3& coord) {
-	if (coord.x < 0 || coord.z < 0 || coord.y < 0 || coord.x >= volume_.x || coord.y >= volume_.y || coord.z >= volume_.z) return 0;
+	
+	if (isIn(coord) == 0) return 0;
 	return &chunks_[getIndex(coord, volume_)];
 
 }
@@ -169,4 +159,10 @@ const Voxel* ChunkHandle::rayCast(const glm::vec3& a, const glm::vec3& dir, floa
 	end.z = pz + t * dz;
 	norm.x = norm.y = norm.z = 0.0f;
 	return nullptr;
+}
+
+unsigned char ChunkHandle::getChannelLight(const glm::ivec3& coord, int channel) {
+	auto local = toLocal(coord);
+	if (isIn(local) == 0) return 0;
+	return chunks_[getIndex(local, volume_)].lightMap.get(coord - local*CHUNK_VOLUME, channel);
 }
