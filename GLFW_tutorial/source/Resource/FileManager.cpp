@@ -1,14 +1,24 @@
 #include "FileManager.h"
 
-template<typename T>
-inline void read(std::ifstream& in,T& data) {
-	in.read((char*)&data, sizeof(data));
+
+
+void Reader::read(std::vector<Voxel>& data) {
+	int size;
+	read(size);
+	data.resize(size);
+	for (size_t i = 0; i < size; i++) {
+		read(data[i].id);
+	}
 }
 
-template<typename T>
-inline void write(std::ofstream& out, T data) {
-	out.write((char*)&data, sizeof(data));
+void Writer::write(const std::vector<Voxel>& data) {
+	write(data.size());
+	for (size_t i = 0; i < data.size(); i++) { 
+		write(data[i].id);
+	}
 }
+
+
 
 bool FileManager::read(std::string& data, const std::string& path) {
 		// Этап №1: Получение исходного кода вершинного/фрагментного шейдера из переменной filePath
@@ -36,10 +46,10 @@ bool FileManager::read(const std::string& path, std::vector<Voxel>& data) {
 		return 0;
 	}
 	int size; 
-	::read(in, size);
+	Reader::read(in, size);
 	data.resize(size);
 	for (size_t i = 0; i < size; i++) {
-		::read(in, data[i].id);
+		Reader::read(in, data[i].id);
 	}
 	in.close(); //Закрываем файл
 	return 1;
@@ -50,9 +60,9 @@ bool FileManager::write(const std::string& path, const std::vector<Voxel>& data)
 	if (out.is_open() == 0) {
 		return 0;
 	}
-	::write(out, data.size());
+	Writer::write(out, data.size());
 	for (size_t i = 0; i < data.size(); i++) {
-		::write(out, data[i].id);
+		Writer::write(out, data[i].id);
 	}
 	out.close(); //Закрываем файл
 	return 1;

@@ -5,10 +5,11 @@
 #include "Math/Math.h"
 #define CHUNK_D 16
 #define CHUNK_W 16
-#define CHUNK_H 16
+#define CHUNK_H 128
 
 #define CHUNK_SIZE CHUNK_W * CHUNK_H * CHUNK_D
 #define CHUNK_VOLUME glm::ivec3(CHUNK_W,CHUNK_H,CHUNK_D)
+
 inline size_t getIndex(size_t x, size_t y, size_t z, size_t size) {
 	return ((y * size + z) * size + x);
 }
@@ -22,21 +23,33 @@ inline size_t toInt(size_t x, size_t y, size_t z, size_t size) {
 inline size_t toInt(const glm::uvec3& coord, size_t size) {
 	return ((coord.y * size + coord.z) * size + coord.x);
 }
-
+//3
 inline size_t getIndex(size_t x, size_t y, size_t z) {
 	return ((y * CHUNK_D + z) * CHUNK_W + x);
 }
 inline size_t getIndex(const glm::uvec3& coord) {
 	return ((coord.y * CHUNK_D + coord.z) * CHUNK_W + coord.x);
 }
-
 inline size_t getIndex(size_t x, size_t y, size_t z, const glm::uvec3& size) {
 	return ((y * size.z + z) * size.x + x);
 }
 inline size_t getIndex(const glm::uvec3& coord, const glm::uvec3& size) {
 	return ((coord.y * size.z + coord.z) * size.x + coord.x);
 }
+//2
+inline size_t toInt(size_t x, size_t z) {
+	return (z * CHUNK_W + x);
+}
 
+inline size_t toInt(size_t x, size_t z, size_t size) {
+	return (z * size + x);
+}
+inline size_t toInt(const glm::uvec2& coord, size_t size) {
+	return (coord.y * size + coord.x);
+}
+inline size_t toInt(const glm::uvec2& coord, const glm::uvec2& size) {
+	return (coord.y * size.x + coord.x);
+}
 //Global
 
 inline int clip(int coord, int max) {
@@ -127,44 +140,19 @@ struct LightUint8 {
 
 	glm::ivec3 pos;
 	unsigned char light;
-
+	
 	LightUint8() {}
-	LightUint8(int x_, int y_, int z_, unsigned char light_) :
+	LightUint8(int x_, int y_, int z_, byte light_) :
 		pos(x_, y_, z_),
 		light(light_)
 	{}
-	LightUint8(const glm::ivec3& pos_, unsigned char light_) :
+	LightUint8(const glm::ivec3& pos_, byte light_) :
 		pos(pos_),
 		light(light_)
 	{}
 };
 
-///Uint8RGB-------------------------------------------------------
-/// <summary>
-/// 
-/// </summary>
-struct Uint8RGB {
 
-	Uint8RGB(unsigned char r_, unsigned char g_, unsigned char b_):
-	r(r_),
-	g(g_),
-	b(b_) 
-	{}
-
-	Uint8RGB() :
-		r(0),
-		b(0),
-		g(0) 
-	{}
-
-	Uint8RGB(unsigned char rgb) :
-		r(rgb),
-		g(rgb),
-		b(rgb)
-	{}
-
-	unsigned char r, g, b;
-};
 ///LightUint8-------------------------------------------------------
 /// <summary>
 /// 

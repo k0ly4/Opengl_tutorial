@@ -1,6 +1,6 @@
 #include "LightSolver.h"
 
-void LightSolver::add(const glm::ivec3& pos, int emission) {
+void LightSolver::add(const glm::ivec3& pos, unsigned char emission) {
 
 	if (emission <= 1)
 		return;
@@ -74,7 +74,7 @@ void LightSolver::solve() {
 			if (chunk == 0) continue;
 
 			const Voxel* v = chunks->getVoxel(pos);
-			if (isRender(*v) == 0 &&
+			if (VoxelPack::isOpaque(*v) == 0 &&
 				chunks->getChannelLight(pos, channel) + 1 < entry.light) {
 
 					LightUint8 outer(pos, entry.light - 1);

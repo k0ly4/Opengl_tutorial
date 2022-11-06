@@ -3,27 +3,65 @@
 
 #include "Chunk.h"
 
+///Region---------------------------------------------
+/// <summary>
+///  
+/// </summary>
+class Region {
+
+public:
+
+	Region() {
+		if(load(buffer,center)==0) generate(buffer,center);
+		for (size_t i = 0; i < buffer.size(); i++) 
+			buffer[i].setCloses(buffer);
+	}
+
+	void fill(std::vector<Chunk*>& target, size_t size, const glm::ivec2& center);
+	inline bool save()const {
+		return save(getPath(), buffer);
+	}
+	static bool save(const std::string& path, const std::vector<Chunk>& chunks);
+
+private:
+
+	static inline std::string getPath(const glm::ivec2& center) {
+		return DIRECTORY + std::to_string(center.x) + "@" + std::to_string(center.y) + EXTENSION;
+	}
+
+	inline std::string getPath()const {
+		return getPath(center);
+	}
+
+	static void generate(std::vector<Chunk>& empty,const glm::ivec2& center);
+	static bool load(std::vector<Chunk>& empty, const glm::ivec2& center);
+	void generate(Chunk& chunk);
+	bool load(const Chunk);
+
+	static const std::string DIRECTORY;
+	static const std::string EXTENSION;
+
+	static const size_t region_size = 6;
+	
+	glm::ivec2 center = glm::ivec2(0,0);
+	std::vector<Chunk> buffer;
+};
+
 ///ChunkHandle---------------------------------------------
 /// <summary>
-/// 
+///  
 /// </summary>
 class ChunkHandle :public Drawable {
 
 public:
 
-	ChunkHandle() :volume_(0, 0, 0) {
+	ChunkHandle() :size_(0) {
 		shaderHint = glShader::voxel;
 	}
 
-	void create(const glm::uvec3& volume);
+	void create(size_t radius);
 
 	void save()const;
-
-	void setAtlas(const VoxelAtlas& atlas) {
-		for (size_t i = 0; i < chunks_.size(); i++) {
-			chunks_[i].setAtlas(atlas);
-		}
-	}
 
 	/// <summary>
 	/// 
@@ -43,7 +81,7 @@ public:
 	}
 	void draw(const View* view, const Shader& shader) {
 		for (size_t i = 0; i < chunks_.size(); i++) {
-			chunks_[i].draw(view, shader);
+			chunks_[i]->draw(view, shader);
 		}
 	}
 	void setVoxel(const Voxel&, const glm::ivec3& coord);
@@ -78,14 +116,14 @@ public:
 	unsigned char getChannelLight(const glm::ivec3& coord, int channel);
 	inline unsigned char getChannelLight(int x, int y, int z, int channel) { return getChannelLight(glm::ivec3(x, y, z), channel); }
 
-	const glm::uvec3& size()const {
-		return volume_;
+	inline size_t size()const {
+		return size_;
 	}
 
 private:
 	//ѕровер€ет допустимость локальных кординат
 	inline bool isIn(const glm::ivec3& local) {
-		if (local.x < 0 || local.z < 0 || local.y < 0 || local.x >= volume_.x || local.y >= volume_.y || local.z >= volume_.z) return 0;
+		if (local.x < 0 || local.z < 0 || local.x >= size_ || local.z >= size_ || local.y!=0) return 0;
 		return 1;
 	}
 
@@ -96,7 +134,11 @@ private:
 		if (global.z < 0) local.z--;
 		return local;
 	}
-	std::vector<Chunk> chunks_;
-	glm::uvec3 volume_;
+
+	Region region;
+
+	std::vector<Chunk*> chunks_;
+	size_t size_;
+	glm::ivec2 center;
 };
 #endif

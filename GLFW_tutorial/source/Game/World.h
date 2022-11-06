@@ -5,16 +5,11 @@
 class World {
 public:
 
-    World():light(&chunks) {
-        chunks.create(glm::uvec3(4,4,4));
-        if (atlas.load("asset\\image\\")==0)exit(0);
-        chunks.setAtlas(atlas);
-        light.init();
-    }
+    World();
     void save();
     //Generation
     LightHandle light;
     ChunkHandle chunks;
-    VoxelAtlas atlas;
+    ResourceVoxelPack atlas;
 };
 #endif

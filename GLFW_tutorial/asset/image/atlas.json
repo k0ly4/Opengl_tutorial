@@ -1,29 +1,46 @@
 {
 	"path": "voxel_atlas.png",
 	"size_uv": 32,
-	
-	"max_size_side":5,
-	"max_size_blocks":4,
-	
+	"max_size_blocks":6,
 	"blocks":
 	{	
 		"0":{
 			"name":"turf",
-			"side":[1,1,2,0,1,1]
+			"side":[1,1,2,0,1,1],
+			"emission":[0,0,0],
+			"drawGroup":0
 		},
 		
 		"1":{
 			"name":"earth",
-			"side":[2,2,2,2,2,2]
+			"side":[2,2,2,2,2,2],
+			"emission":[0,0,0],
+			"drawGroup":0
 		},
 		
 		"2":{
-			"name":"light",
-			"side":[3,3,3,3,3,3]
+			"name":"light_cold",
+			"side":[3,3,3,3,3,3],
+			"emission":[1,1,7],
+			"drawGroup":0
 		},
 		"3":{
 			"name":"stone",
-			"side":[4,4,4,4,4,4]
+			"side":[4,4,4,4,4,4],
+			"emission":[0,0,0],
+			"drawGroup":0
+		},
+		"4":{
+			"name":"glass",
+			"side":[5,5,5,5,5,5],
+			"emission":[0,0,0],
+			"drawGroup":1
+		},
+		"5":{
+			"name":"light_warm",
+			"side":[6,6,6,6,6,6],
+			"emission":[10,10,10],
+			"drawGroup":0
 		}
 	}
 }

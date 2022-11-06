@@ -4,7 +4,7 @@
 /// <summary>
 /// 
 /// </summary>
-void VoxelAtlas::load(const std::string& path, size_t sizeVoxelUV) {
+void ResourceVoxelPack::load(const std::string& path, size_t sizeVoxelUV) {
 	texture_.getPath(path, 4);
 	texture_.filter(TextureFilter::Nearest, TextureFilter::NearestMipmapNearest);
 	sizeVoxel_ = sizeVoxelUV;
@@ -29,7 +29,7 @@ void VoxelAtlas::load(const std::string& path, size_t sizeVoxelUV) {
 /// <summary>
 /// 
 /// </summary>
-bool VoxelAtlas::load(const std::string& directory) {
+bool ResourceVoxelPack::load(const std::string& directory) {
 	JSON json;
 
 	if (FileManager::read(directory+"atlas.json", json) == 0)return 0;
@@ -49,16 +49,29 @@ bool VoxelAtlas::load(const std::string& directory) {
 	blocks.resize(json.value("max_size_blocks",0));
 	JSON& json_blocks = json["blocks"];
 	for (size_t i = 0; i < blocks.size(); i++) {
-		auto& value = json_blocks[std::to_string(i)]["side"];
+		//name
+		auto& block = json_blocks[std::to_string(i)];
+		blocks[i].name = block["name"];
+		//side
+		auto& sides = block["side"];
 		for (size_t side = 0; side < 6; side++) {
-			blocks[i].idSide[side] = value[side];
+			blocks[i].idSide[side] = sides[side];
 		}
+		//emission
+		auto& emission = block["emission"];
+		blocks[i].emission = Uint8RGB(emission[0], emission[1], emission[2]);
+		blocks[i].setEmissionFlag();
+		blocks[i].drawGroup = block["drawGroup"];
 		
 	}
 	//uv
-	uv.resize(json.value("max_size_side", 0));
+	size_t size_side = texture_.getSize().x / sizeVoxel_;
+	uv.resize(size_side * size_side);
 	for (size_t i = 0; i < uv.size(); i++) {
 		uv[i] = getUV(i);
 	}
+
 	return 1;
 }
+
+const ResourceVoxelPack* VoxelPack::pack = 0;

@@ -17,10 +17,9 @@ public:
 	}
 
 	void init();
-	void add(const glm::ivec3& pos, int blockId);
+	void add(const glm::ivec3& pos, Voxel voxel);
 	
 	void remove(const glm::ivec3& pos);
-
 private:
 
 	inline void removeRGB(const glm::ivec3& pos) {
@@ -43,15 +42,15 @@ private:
 		solverG.add(x, y, z, light);
 		solverB.add(x, y, z, light);
 	}
-	inline void addRGB(const glm::ivec3& pos, int light) {
+	inline void addRGB(const glm::ivec3& pos, byte light) {
 		solverR.add(pos, light);
 		solverG.add(pos, light);
 		solverB.add(pos, light);
 	}
-	inline void addRGB(const glm::ivec3& pos, const glm::ivec3& light) {
-		solverR.add(pos, light.x);
-		solverG.add(pos, light.y);
-		solverB.add(pos, light.z);
+	inline void addRGB(const glm::ivec3& pos, Uint8RGB light) {
+		solverR.add(pos, light.r);
+		solverG.add(pos, light.g);
+		solverB.add(pos, light.b);
 	}
 	inline void addRGBS(int x, int y, int z) {
 		addRGB(x, y, z);
@@ -68,13 +67,11 @@ private:
 		solverS.solve();
 	}
 
-	int idLight = 2;
 	ChunkHandle* chunks;
 	LightSolver  solverR;
 	LightSolver  solverG;
 	LightSolver  solverB;
 	LightSolver  solverS;
-
 };
 
 #endif

@@ -10,8 +10,7 @@
 
 bool Chunk::load(const glm::ivec3& global) {
 
-	local_ = global;
-	global_ = global * CHUNK_VOLUME;
+	setPosition(global);
 
 	if (FileManager::read(getFilePath(), voxels)) {
 		modified = 1;
@@ -30,8 +29,7 @@ bool Chunk::save()const {
 }
 
 void Chunk::generate(const glm::ivec3& global) {
-		local_ = global;
-		global_ = global * CHUNK_VOLUME;
+		setPosition(global);
 
 		voxels.resize(CHUNK_SIZE);
 	
@@ -106,14 +104,15 @@ void Chunk::upMesh() {
 			for (size_t x = 0; x < CHUNK_W; x++) {
 				const Voxel& voxel = getFromLocalCoord(x, y, z);
 
-				if (isRender(voxel) == 0) {
+				if (VoxelPack::isRender(voxel) == 0) {
 					continue;
 				}
-				float uvsize = atlas_->getVoxelSize();
-				// AO values
+				float uvsize = VoxelPack::get()->getVoxelSize();
+				
 				float l;
+				byte drawGroup = VoxelPack::get(voxel).drawGroup;
 				//top
-				if (isFree(x, y + 1, z)) {
+				if (isFree(x, y + 1, z, drawGroup)) {
 
 					l = 1.0f;
 					glm::vec4 l_(
@@ -143,7 +142,7 @@ void Chunk::upMesh() {
 					float ls2 = (LIGHT(x + 1, y + 1, z, 3) + l_.a * 30 + LIGHT(x + 1, y + 1, z + 1, 3) + LIGHT(x, y + 1, z + 1, 3)) / 5.0f / 15.0f;
 					float ls3 = (LIGHT(x + 1, y + 1, z, 3) + l_.a * 30 + LIGHT(x + 1, y + 1, z - 1, 3) + LIGHT(x, y + 1, z - 1, 3)) / 5.0f / 15.0f;
 
-					const glm::vec2& uv = atlas_->get(voxel, ::top);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::top);
 
 					push_back(indices, buffer.size());
 					push_back(buffer,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
@@ -152,7 +151,7 @@ void Chunk::upMesh() {
 					push_back(buffer,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x,			uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
 				}
 
-				if (isFree(x, y - 1, z)) {
+				if (isFree(x, y - 1, z, drawGroup)) {
 					l = 0.75f;
 
 					float lr = LIGHT(x, y - 1, z, 0) / 15.0f;
@@ -180,7 +179,7 @@ void Chunk::upMesh() {
 					float ls2 = (LIGHT(x - 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x - 1, y - 1, z, 3) + LIGHT(x, y - 1, z + 1, 3)) / 5.0f / 15.0f;
 					float ls3 = (LIGHT(x + 1, y - 1, z - 1, 3) + ls * 30 + LIGHT(x + 1, y - 1, z, 3) + LIGHT(x, y - 1, z - 1, 3)) / 5.0f / 15.0f;
 
-					const glm::vec2& uv = atlas_->get(voxel, ::bottom);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::bottom);
 
 					push_back(indices, buffer.size());
 					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
@@ -189,7 +188,7 @@ void Chunk::upMesh() {
 					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
 				}
 
-				if (isFree(x + 1, y, z)) {
+				if (isFree(x + 1, y, z, drawGroup)) {
 					l = 0.95f;
 					float lr = LIGHT(x + 1, y, z, 0) / 15.0f;
 					float lg = LIGHT(x + 1, y, z, 1) / 15.0f;
@@ -216,7 +215,7 @@ void Chunk::upMesh() {
 					float ls2 = (LIGHT(x + 1, y + 1, z + 1, 3) + ls * 30 + LIGHT(x + 1, y, z + 1, 3) + LIGHT(x + 1, y + 1, z, 3)) / 5.0f / 15.0f;
 					float ls3 = (LIGHT(x + 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x + 1, y, z + 1, 3) + LIGHT(x + 1, y - 1, z, 3)) / 5.0f / 15.0f;
 
-					const glm::vec2& uv = atlas_->get(voxel, ::right);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::right);
 
 					push_back(indices, buffer.size());
 					push_back(buffer,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
@@ -225,7 +224,7 @@ void Chunk::upMesh() {
 					push_back(buffer,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr3, lg3, lb3, ls3));
 				}
 
-				if (isFree(x - 1, y, z)) {
+				if (isFree(x - 1, y, z, drawGroup)) {
 					l = 0.85f;
 
 					float lr = LIGHT(x - 1, y, z, 0) / 15.0f;
@@ -254,7 +253,7 @@ void Chunk::upMesh() {
 					float ls3 = (LIGHT(x - 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x - 1, y, z + 1, 3) + LIGHT(x - 1, y - 1, z, 3)) / 5.0f / 15.0f;
 
 			
-					const glm::vec2& uv = atlas_->get(voxel, ::left);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::left);
 
 					push_back(indices, buffer.size());
 					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
@@ -263,7 +262,7 @@ void Chunk::upMesh() {
 					push_back(buffer,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
 				}
 
-				if (isFree(x, y, z + 1)) {
+				if (isFree(x, y, z + 1, drawGroup)) {
 					l = 0.9f;
 
 					float lr = LIGHT(x, y, z + 1, 0) / 15.0f;
@@ -291,7 +290,7 @@ void Chunk::upMesh() {
 					float ls2 = l * (LIGHT(x - 1, y + 1, z + 1, 3) + ls * 30 + LIGHT(x, y + 1, z + 1, 3) + LIGHT(x - 1, y, z + 1, 3)) / 5.0f / 15.0f;
 					float ls3 = l * (LIGHT(x + 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x, y - 1, z + 1, 3) + LIGHT(x + 1, y, z + 1, 3)) / 5.0f / 15.0f;
 
-					const glm::vec2& uv = atlas_->get(voxel, ::front);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::front);
 
 					push_back(indices, buffer.size());
 					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
@@ -299,7 +298,7 @@ void Chunk::upMesh() {
 					push_back(buffer,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
 					push_back(buffer,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
 				}
-				if (isFree(x, y, z - 1)) {
+				if (isFree(x, y, z - 1, drawGroup)) {
 					l = 0.8f;
 					float lr = LIGHT(x, y, z - 1, 0) / 15.0f;
 					float lg = LIGHT(x, y, z - 1, 1) / 15.0f;
@@ -326,7 +325,7 @@ void Chunk::upMesh() {
 					float ls2 = l * (LIGHT(x + 1, y + 1, z - 1, 3) + ls * 30 + LIGHT(x, y + 1, z - 1, 3) + LIGHT(x + 1, y, z - 1, 3)) / 5.0f / 15.0f;
 					float ls3 = l * (LIGHT(x + 1, y - 1, z - 1, 3) + ls * 30 + LIGHT(x, y - 1, z - 1, 3) + LIGHT(x + 1, y, z - 1, 3)) / 5.0f / 15.0f;
 
-					const glm::vec2& uv = atlas_->get(voxel, ::back);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::back);
 
 					push_back(indices, buffer.size());
 					push_back(buffer,glm::vec3( x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
@@ -348,15 +347,16 @@ void Chunk::fastUpMesh() {
 			for (size_t x = 0; x < CHUNK_W; x++) {
 				const Voxel& voxel = getFromLocalCoord(x, y, z);
 
-				if (isRender(voxel) == 0) {
+				if (VoxelPack::isRender(voxel) == 0) {
 					continue;
 				}
-				float uvsize = atlas_->getVoxelSize();
+				float uvsize = VoxelPack::get()->getVoxelSize();
+				byte drawGroup = VoxelPack::get()->get(voxel).drawGroup;
 				//top
-				if (isFree(x, y + 1, z)) {
+				if (isFree(x, y + 1, z, drawGroup)) {
 					glm::vec4 light = getFastLight(x, y + 1, z);
 				
-					const glm::vec2& uv = atlas_->get(voxel, ::top);	
+					const glm::vec2& uv = VoxelPack::get(voxel, ::top);
 
 					push_back(indices, buffer.size());
 					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
@@ -365,10 +365,10 @@ void Chunk::fastUpMesh() {
 					push_back(buffer, glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
 				}
 
-				if (isFree(x, y - 1, z)) {
+				if (isFree(x, y - 1, z, drawGroup)) {
 					glm::vec4 light = getFastLight(x, y - 1, z);
 				
-					const glm::vec2& uv = atlas_->get(voxel, ::bottom);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::bottom);
 
 					push_back(indices, buffer.size());
 					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
@@ -377,10 +377,10 @@ void Chunk::fastUpMesh() {
 					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
 				}
 
-				if (isFree(x + 1, y, z)) {
+				if (isFree(x + 1, y, z, drawGroup)) {
 					glm::vec4 light = getFastLight(x + 1, y, z);
 				
-					const glm::vec2& uv = atlas_->get(voxel, ::right);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::right);
 
 					push_back(indices, buffer.size());
 					push_back(buffer, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
@@ -389,10 +389,10 @@ void Chunk::fastUpMesh() {
 					push_back(buffer, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					light);
 				}
 
-				if (isFree(x - 1, y, z)) {
+				if (isFree(x - 1, y, z, drawGroup)) {
 					glm::vec4 light = getFastLight(x - 1, y, z);
 
-					const glm::vec2& uv = atlas_->get(voxel, ::left);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::left);
 
 					push_back(indices, buffer.size());
 					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
@@ -401,10 +401,10 @@ void Chunk::fastUpMesh() {
 					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
 				}
 
-				if (isFree(x, y, z + 1)) {
+				if (isFree(x, y, z + 1, drawGroup)) {
 					glm::vec4 light = getFastLight(x, y, z + 1);
 					
-					const glm::vec2& uv = atlas_->get(voxel, ::front);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::front);
 
 					push_back(indices, buffer.size());
 					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					light);
@@ -412,10 +412,10 @@ void Chunk::fastUpMesh() {
 					push_back(buffer, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
 					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
 				}
-				if (isFree(x, y, z - 1)) {
+				if (isFree(x, y, z - 1, drawGroup)) {
 					glm::vec4 light = getFastLight(x, y, z - 1);
 					
-					const glm::vec2& uv = atlas_->get(voxel, ::back);
+					const glm::vec2& uv = VoxelPack::get(voxel, ::back);
 
 					push_back(indices, buffer.size());
 					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
@@ -433,7 +433,7 @@ void Chunk:: draw(const View* view, const Shader& shader) {
 	if (modified) upMesh();
 	shader.use();
 	view->useVP(shader);
-	atlas_->use(shader);
+	VoxelPack::get()->use(shader);
 	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_)+glm::vec3(0.5f)  ));
 	buffer.getVAO().begin();
 	glDrawElements(GlRender::TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());

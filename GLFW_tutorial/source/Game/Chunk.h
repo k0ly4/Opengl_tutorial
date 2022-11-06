@@ -1,5 +1,5 @@
-#ifndef CHUNK_H
-#define CHUNK_H
+#ifndef CHUNK_FILE_H
+#define CHUNK_FILE_H
 
 #include <stack>
 #include "Scene/Camera.h"
@@ -8,6 +8,7 @@
 #include "Scene/Convex.h"
 #include "VoxelAtlas.h"
 #include "LightMap.h"
+
 ///Chunk---------------------------------------------
 /// <summary>
 /// 
@@ -39,17 +40,14 @@ public:
 				if (local.x == CHUNK_W - 1) setModified(right);
 				else if (local.x == 0) setModified(left);
 
-				if (local.y == CHUNK_H - 1) setModified(top);
-				else if (local.y == 0) setModified(bottom);
-
 				if (local.z == CHUNK_D - 1) setModified(front);
 				else if (local.z == 0) setModified(back);
-
 			}
 
 			inline Chunk* get(size_t index) {
 				return chunks[index];
 			}
+
 			Chunk* chunks[6];
 	private:
 			
@@ -62,16 +60,15 @@ public:
 		shaderHint = glShader::voxel;
 	}
 
-
+	inline void setPosition(const glm::ivec3&global) {
+		local_ = global;
+		global_ = global * CHUNK_VOLUME;
+	}
 	//init
 	bool load(const glm::ivec3& global);
 	bool save()const;
 	void generate(const glm::ivec3& global);
 	void setCloses(std::vector<Chunk>& chunks);
-
-	inline void setAtlas(const VoxelAtlas& atlas) {
-		atlas_ = &atlas;
-	}
 
 	inline void setModified(){
 		modified = 1;
@@ -79,7 +76,7 @@ public:
 	
 	//Local
 	inline bool isUnVisible(size_t x, size_t y, size_t z)const {
-		return !(!isChunkBelong(x, y, z) || isRender(getFromLocalCoord(x, y, z)));
+		return !(!isChunkBelong(x, y, z) || VoxelPack::isRender(getFromLocalCoord(x, y, z)));
 	}
 	
 	//Global
@@ -125,6 +122,8 @@ public:
 	//render
 	void draw(const View* view, const Shader& shader);
 
+	std::vector<Voxel>& getVoxels()				{ return voxels; }
+	const std::vector<Voxel>& getVoxels()const	{ return voxels;}
 private:
 
 	inline std::string getFilePath()const {
@@ -137,14 +136,16 @@ private:
 	inline const Voxel& getFromLocalCoord(size_t x, size_t y, size_t z)const {
 		return voxels[getIndex(x, y, z)];
 	}
-
-	inline bool isFree(int x, int y, int z) {
+	inline bool isFree(Voxel voxel, byte drawGroup) {
+		return !VoxelPack::isRender(voxel) || (VoxelPack::get(voxel).drawGroup != drawGroup);
+	}
+	inline bool isFree(int x, int y, int z, byte drawGroup) {
 		///Local test
-		if (isChunkBelong(x, y, z)) return !isRender(getFromLocalCoord(x, y, z));
+		if (isChunkBelong(x, y, z)) return isFree(getFromLocalCoord(x, y, z),drawGroup);
 		//Global
 		const Chunk* chunk = closes.get(getSide(x, y, z, CHUNK_VOLUME));
 		if (chunk == nullptr) return 0;
-		return !(isRender( chunk->getFromLocalCoord( ::clip(x , CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D)) ) );
+		return isFree( chunk->getFromLocalCoord( ::clip(x , CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D) ), drawGroup);
 	}
 
 	unsigned char LIGHT(int x, int y, int z,int channel) {
@@ -159,15 +160,16 @@ private:
 	void upMesh();
 	void fastUpMesh();
 	//render
-	const VoxelAtlas* atlas_ = 0;
-	TypeConvex<VoxelVertex> buffer;
 	std::vector<Voxel>voxels;
-	std::vector<unsigned int> indices;
+
 	Closes closes;
 	mutable bool modified = 1;
 
 	glm::ivec3 global_;
 	glm::ivec3 local_;
+
+	TypeConvex<VoxelVertex> buffer;
+	std::vector<unsigned int> indices;
 };
 
 

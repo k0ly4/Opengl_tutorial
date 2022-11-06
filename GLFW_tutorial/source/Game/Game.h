@@ -10,7 +10,7 @@ public:
     static const glm::vec3 WORLD_UP;
     static const glm::ivec2 RENDER_SIZE;
     static const Perspective PROJECTION;
-
+    static int distance_render;
 private:
     GAME() {}
     ~GAME() {}

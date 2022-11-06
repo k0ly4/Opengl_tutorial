@@ -6,7 +6,7 @@
 #include "System/Exception.h"
 #include "Resource/Shader.h"
 
-enum Side :size_t
+enum Side :byte
 {
 	left,
 	right,
@@ -15,6 +15,7 @@ enum Side :size_t
 	back,
 	front,
 };
+
 inline Side getSide(const glm::ivec3& dist) {
 	Side side;
 	if (dist.x == -1) side = left;
@@ -41,24 +42,37 @@ inline Side	getSide(int x, int y, int z, const glm::uvec3& max) {
 inline Side	getSide(int x, int y, int z, const glm::ivec3& max) {
 	return getSide(normalizeSign(x, max.x), normalizeSign(y, max.y), normalizeSign(z, max.z));
 }
+
+
+
 ///VoxelType----------------------------------------------
 /// <summary>
 /// 
 /// </summary>
 struct Block {
 
-	void setSolid(int fill) {
+	std::string name;
+	int idSide[6];
+	Uint8RGB emission;
+	byte drawGroup;
+
+	bool emissionFlag;
+
+	inline void setSolid(int fill) {
 		for (size_t i = 0; i < 6; i++)
 			idSide[i] = fill;
 	}
-	int idSide[6];
+
+	inline void setEmissionFlag() {
+			emissionFlag = emission.r || emission.g || emission.b;
+	}
 };
 
 ///VoxelAtlas---------------------------
 /// <summary>
 /// 
 /// </summary>
-class VoxelAtlas {
+class ResourceVoxelPack {
 
 public:
 
@@ -80,6 +94,9 @@ public:
 		id_max,
 	};
 
+	const Block& get(Voxel id)const  {
+		return blocks[id.id];
+	}
 
 	void load(const std::string& path, size_t sizeVoxel);
 	//path to json file
@@ -89,7 +106,7 @@ public:
 		return uv[blocks[id].idSide[side]];
 	}
 
-	inline const glm::vec2& get(const Voxel& id, int side)const {
+	inline const glm::vec2& get(Voxel id, int side)const {
 		return get(id.id, side);
 	}
 
@@ -105,12 +122,11 @@ public:
 
 private:
 
-	glm::vec2 getUV(int id) {
+	inline glm::vec2 getUV(int id) {
 		float u = (id % sizeVoxel_) * uvSize_;
 		float v = 1.f - ((1.f + id / sizeVoxel_) * uvSize_);
 		return glm::vec2(u, v);
 	}
-
 	std::vector<glm::vec2> uv;
 	std::vector<Block> blocks;
 
@@ -118,5 +134,45 @@ private:
 	size_t sizeVoxel_;
 	Texture2D texture_;
 
+};
+
+class VoxelPack {
+public:
+
+	static inline const Block& get(Voxel id) {
+		return pack->get(id);
+	}
+
+	static inline bool isEmission(Voxel id) {
+		return (id.id > -1) && (get(id).emissionFlag == 1);
+	}
+
+	static inline bool isRender(Voxel id) {
+		return id.id > -1;
+	}
+	static inline bool isSelectable(Voxel voxel) {
+		return (voxel.id != -1);
+	}
+	static inline bool isOpaque(Voxel id) {
+		return isRender(id) && (get(id).drawGroup == 0);
+	}
+
+	static inline const glm::vec2& get(Voxel id, byte side) {
+		return pack->get(id, side);
+	}
+
+	static inline const ResourceVoxelPack* get() {
+		return pack;
+	}
+
+	static inline void set(const ResourceVoxelPack* pack_){
+		pack = pack_;
+	}
+
+private:
+
+	VoxelPack() {}
+	~VoxelPack() {}
+	static const ResourceVoxelPack* pack;
 };
 #endif

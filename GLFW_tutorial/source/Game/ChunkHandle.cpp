@@ -1,34 +1,66 @@
 #include "ChunkHandle.h"
 
+void Region::fill(std::vector<Chunk*>& target, size_t size, const glm::ivec2& center) {
+	target.resize(size * size);
+	for (size_t z = center.y; z < center.y + size; z++) {
+		for (size_t x = center.x; x < center.x + size; x++) {
+			target[toInt(glm::ivec2(x, z) - center, size)] = &buffer[toInt(x, z, region_size)];
+		}
+	}
+}
+
+void Region::generate(std::vector<Chunk>& chunks, const glm::ivec2& center) {
+	chunks.resize(region_size * region_size);
+	for (size_t z = 0, index = 0; z < region_size; z++) {
+		for (size_t x = 0; x < region_size; x++, index++) {
+			chunks[index].generate(glm::ivec3(center.x+x, 0, center.y + z));
+		}
+	}
+}
+
+bool Region::load(std::vector<Chunk>& empty, const glm::ivec2& center) {
+	Reader reader;
+	if (reader.open(getPath(center)) == 0)return 0;
+	empty.resize(region_size* region_size);
+	for (size_t i = 0; i < empty.size(); i++) {
+		reader.read(empty[i].getVoxels());
+		empty[i].setPosition(glm::ivec3(center.x + i%region_size, 0, center.y + i/region_size));
+	}
+	reader.close();
+	return 1;
+}
+
+bool Region::save(const std::string& path, const std::vector<Chunk>& buffer) {
+	Writer writer;
+
+	if (writer.open(path) == 0) {
+		LOG("Failed to save region:%s\n", path.c_str());
+		return 0;
+	}
+	for (size_t i = 0; i < buffer.size(); i++) {
+		writer.write(buffer[i].getVoxels());
+	}
+
+	writer.close();
+	return 1;
+}
+
+const std::string Region::DIRECTORY = "saves\\";
+const std::string Region::EXTENSION = ".region";
+
 ///ChunkHandle---------------------------------------------
 /// <summary>
 /// 
 /// </summary>
-void ChunkHandle::create(const glm::uvec3& volume) {
-	volume_ = volume;
-	chunks_.resize(volume_.x * volume_.y * volume_.z);
-	size_t index = 0;
-	for (size_t y = 0; y < volume_.y; y++) {
-		for (size_t z = 0; z < volume_.z; z++) {
-			for (size_t x = 0; x < volume_.x; x++) {
-				if (chunks_[index].load(glm::ivec3(x, y, z)) == 0) {
-					chunks_[index].generate(glm::ivec3(x, y, z));
-					LOG("Not succes load chunk\n");
-				}
-				index++;
-			}
-		}
-	}
-	for (size_t i = 0; i < chunks_.size(); i++)
-		chunks_[i].setCloses(chunks_);
+void ChunkHandle::create(size_t size) {
+	size_ = size;
+	center = glm::ivec2(0);
+	region.fill(chunks_,size_, center);
 }
 
 void ChunkHandle::save()const {
-	LOG(LogInfo, "ChunkHandle::save()\n");
-	for(size_t i=0;i<chunks_.size();i++)
-	{
-		chunks_[i].save();
-	}
+	LOG(LogInfo, "Region::save()\n");
+	region.save();
 }
 
 const Voxel* ChunkHandle::getVoxel(const glm::ivec3& coord) {
@@ -47,7 +79,7 @@ void ChunkHandle::setVoxel(const Voxel& voxel, const glm::ivec3& coord) {
 Chunk* ChunkHandle::get(const glm::ivec3& coord) {
 	
 	if (isIn(coord) == 0) return 0;
-	return &chunks_[getIndex(coord, volume_)];
+	return chunks_[getIndex(coord, glm::ivec3(size_,1,size_))];
 
 }
 
@@ -105,7 +137,7 @@ const Voxel* ChunkHandle::rayCast(const glm::vec3& a, const glm::vec3& dir, floa
 
 	while (t <= maxDist) {
 		const Voxel* voxel = getVoxel(glm::ivec3(ix, iy, iz));
-		if (voxel != nullptr && isValid(*voxel)) {
+		if (voxel != nullptr && VoxelPack::isSelectable(*voxel)) {
 			end.x = px + t * dx;
 			end.y = py + t * dy;
 			end.z = pz + t * dz;
@@ -164,5 +196,5 @@ const Voxel* ChunkHandle::rayCast(const glm::vec3& a, const glm::vec3& dir, floa
 unsigned char ChunkHandle::getChannelLight(const glm::ivec3& coord, int channel) {
 	auto local = toLocal(coord);
 	if (isIn(local) == 0) return 0;
-	return chunks_[getIndex(local, volume_)].lightMap.get(coord - local*CHUNK_VOLUME, channel);
+	return chunks_[toInt(local.x,local.z,size_)]->lightMap.get(coord - local*CHUNK_VOLUME, channel);
 }

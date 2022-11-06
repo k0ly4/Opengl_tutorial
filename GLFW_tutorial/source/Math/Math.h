@@ -65,4 +65,30 @@ struct Vertex {
 };
 #define SIZE_VERTEX sizeof(Vertex)
 
+///Uint8RGB-------------------------------------------------------
+/// <summary>
+/// 
+/// </summary>
+struct Uint8RGB {
+
+    Uint8RGB(unsigned char r_, unsigned char g_, unsigned char b_) :
+        r(r_),
+        g(g_),
+        b(b_)
+    {}
+
+    Uint8RGB() :
+        r(0),
+        b(0),
+        g(0)
+    {}
+
+    Uint8RGB(unsigned char rgb) :
+        r(rgb),
+        g(rgb),
+        b(rgb)
+    {}
+
+    unsigned char r, g, b;
+};
 #endif
