@@ -2,23 +2,6 @@
 
 
 
-void Reader::read(std::vector<Voxel>& data) {
-	int size;
-	read(size);
-	data.resize(size);
-	for (size_t i = 0; i < size; i++) {
-		read(data[i].id);
-	}
-}
-
-void Writer::write(const std::vector<Voxel>& data) {
-	write(data.size());
-	for (size_t i = 0; i < data.size(); i++) { 
-		write(data[i].id);
-	}
-}
-
-
 
 bool FileManager::read(std::string& data, const std::string& path) {
 		// Этап №1: Получение исходного кода вершинного/фрагментного шейдера из переменной filePath

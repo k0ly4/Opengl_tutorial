@@ -71,7 +71,7 @@ struct Vertex {
 /// </summary>
 struct Uint8RGB {
 
-    Uint8RGB(unsigned char r_, unsigned char g_, unsigned char b_) :
+    Uint8RGB(byte r_, byte g_, byte b_) :
         r(r_),
         g(g_),
         b(b_)
@@ -83,12 +83,12 @@ struct Uint8RGB {
         g(0)
     {}
 
-    Uint8RGB(unsigned char rgb) :
+    Uint8RGB(byte rgb) :
         r(rgb),
         g(rgb),
         b(rgb)
     {}
 
-    unsigned char r, g, b;
+    byte r, g, b;
 };
 #endif

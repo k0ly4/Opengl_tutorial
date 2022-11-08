@@ -46,7 +46,7 @@ void LightSolver::solve() {
 		remqueue.pop();
 
 		for (size_t i = 0; i < 6; i++) {
-			glm::ivec3 pos = entry.pos + coords[i];
+			glm::uvec3 pos = glm::ivec3(entry.pos) + coords[i];
 			Chunk* chunk = chunks->getByVoxel(pos);
 			if (chunk == 0) continue;
 
@@ -69,7 +69,7 @@ void LightSolver::solve() {
 			continue;
 
 		for (size_t i = 0; i < 6; i++) {
-			glm::ivec3 pos = entry.pos + coords[i];
+			glm::ivec3 pos = glm::ivec3(entry.pos) + coords[i];
 			Chunk* chunk = chunks->getByVoxel(pos);
 			if (chunk == 0) continue;
 

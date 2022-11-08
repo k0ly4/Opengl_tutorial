@@ -8,7 +8,7 @@
 /// 
 /// </summary>
 
-bool Chunk::load(const glm::ivec3& global) {
+bool Chunk::load(const glm::uvec3& global) {
 
 	setPosition(global);
 
@@ -28,16 +28,13 @@ bool Chunk::save()const {
 	return 0;
 }
 
-void Chunk::generate(const glm::ivec3& global) {
-		setPosition(global);
-
-		voxels.resize(CHUNK_SIZE);
-	
+void Chunk::generate(const glm::uvec3& global) {
+		setPosition(global);	
 		for (size_t y = 0; y < CHUNK_H; y++) {
 			for (size_t z = 0; z < CHUNK_D; z++) {
 				for (size_t x = 0; x < CHUNK_W; x++)
 				{
-					glm::ivec3 real_coord = glm::ivec3(x,y,z) + global_;
+					glm::ivec3 real_coord = glm::ivec3(x,y,z) + glm::ivec3(global_);
 					int id = (glm::perlin(glm::vec3(real_coord) * 0.0125f) > 0.1f)-1;//real_y <= (height) * 60 + 30;
 					if (real_coord.y <= 2)
 						id = 1;
@@ -46,14 +43,14 @@ void Chunk::generate(const glm::ivec3& global) {
 			}
 		}
 
-		modified = 1;
-
+		isGenerated = modified = 1;
+		isInitLightMap = 0;
 }
 
 void Chunk::setCloses(std::vector<Chunk>& chunks) {
 	closes.clear();
 	for (size_t i = 0; i < chunks.size(); i++) {
-		glm::ivec3 dist = chunks[i].local_ - local_;
+		glm::ivec3 dist = (glm::ivec3)chunks[i].local_ - (glm::ivec3)local_;
 		if (((abs(dist.x) + abs(dist.y) + abs(dist.z)) != 1))
 			continue;
 		closes.chunks[getSide(dist)] = &chunks[i];
@@ -69,7 +66,7 @@ bool Chunk::setVoxel(const Voxel& voxel, const glm::uvec3& coord) {
 
 	*voxel_ = voxel;
 	modified = 1;
-	closes.setModified(coord - glm::uvec3(global_));
+	closes.setModified(coord - global_);
 	return 1;
 }
 
@@ -434,8 +431,10 @@ void Chunk:: draw(const View* view, const Shader& shader) {
 	shader.use();
 	view->useVP(shader);
 	VoxelPack::get()->use(shader);
-	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_)+glm::vec3(0.5f)  ));
+	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_) + glm::vec3(0.5f)  ));
 	buffer.getVAO().begin();
 	glDrawElements(GlRender::TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
 }
 
+
+//////ReaderChunk----------------------------------

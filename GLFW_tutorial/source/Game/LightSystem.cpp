@@ -2,10 +2,13 @@
 
 void LightHandle::init() {
 
-	for (int y = 0; y < CHUNK_H; y++) {
-		for (int z = 0; z < chunks->size() * CHUNK_D; z++) {
-			for (int x = 0; x < chunks->size() * CHUNK_W; x++) {
-				glm::ivec3 pos(x, y, z);
+	size_t x0 = chunks->getBegin().x * CHUNK_W, xm = (chunks->size()+ chunks->getBegin().x )* CHUNK_W ;
+	size_t z0 = chunks->getBegin().y * CHUNK_D, zm = (chunks->size() + chunks->getBegin().y) * CHUNK_D ;
+	//Light block
+	for (size_t y = 0; y < CHUNK_H; y++) {
+		for (size_t  z = z0; z < zm; z++) {
+			for (size_t x = x0; x < xm; x++) {
+				glm::uvec3 pos(x, y, z);
 				const Voxel* voxel = chunks->getVoxel(pos);
 				if (VoxelPack::isEmission(*voxel)) {
 					addRGB(pos, VoxelPack::get(*voxel).emission);
@@ -14,10 +17,11 @@ void LightHandle::init() {
 		}
 	}
 
-	for (int z = 0; z < chunks->size() * CHUNK_D; z++) {
-		for (int x = 0; x < chunks->size() * CHUNK_W; x++) {
+	//Sun
+	for (size_t z = z0; z < zm; z++) {
+		for (size_t x = x0; x < xm; x++) {
 			for (int y = CHUNK_H - 1; y >= 0; y--) {
-				glm::ivec3 pos(x, y, z);
+				glm::uvec3 pos(x, y, z);
 				const Voxel* voxel = chunks->getVoxel(pos);
 				if (VoxelPack::isOpaque(*voxel)) {
 					break;
@@ -26,11 +30,10 @@ void LightHandle::init() {
 			}
 		}
 	}
-
-	for (int z = 0; z < chunks->size() * CHUNK_D; z++) {
-		for (int x = 0; x < chunks->size() * CHUNK_W; x++) {
+	for (size_t z = z0; z < zm; z++) {
+		for (size_t x = x0; x < xm; x++) {
 			for (int y = CHUNK_H - 1; y >= 0; y--) {
-				glm::ivec3 pos(x, y, z);
+				glm::uvec3 pos(x, y, z);
 				const Voxel* voxel = chunks->getVoxel(pos);
 				if (VoxelPack::isOpaque(*voxel)) {
 					break;
@@ -92,4 +95,52 @@ void LightHandle::add(const glm::ivec3& pos, Voxel voxel) {
 			addRGB(pos, VoxelPack::get(voxel).emission);
 			solveRGB();
 		}
+}
+
+void LightHandle::chunkInit(Chunk& chunk) {
+	//Light block
+	const glm::uvec3& beg = chunk.getGlobalPos();
+	std::vector<Voxel>& voxels = chunk.getVoxels();
+	for (size_t i = 0; i < voxels.size(); i++) {
+		if (VoxelPack::isEmission(voxels[i])) {
+			addRGB(beg + toCoord3(i), VoxelPack::get(voxels[i]).emission);
+		}
+
+	}
+	
+	//Sun
+	for (size_t z = 0; z < CHUNK_D; z++) {
+		for (size_t x = 0; x < CHUNK_W; x++) {
+			for (int y = CHUNK_H - 1; y >= 0; y--) {
+				Voxel voxel = chunk.getFromLocalCoord(x, y, z);
+				if (VoxelPack::isOpaque(voxel)) {
+					break;
+				}
+				chunk.lightMap.setS(x, y, z, 0xF);
+			}
+		}
+	}
+	for (size_t z = 0; z < CHUNK_D; z++) {
+		for (size_t x = 0; x < CHUNK_W; x++) {
+			for (int y = CHUNK_H - 1; y >= 0; y--) {
+				
+				Voxel voxel = chunk.getFromLocalCoord(x, y, z);
+				if (VoxelPack::isOpaque(voxel)) {
+					break;
+				}
+				if (
+					chunk.getLightLocal(x - 1, y, z, 3) == 0 ||
+					chunk.getLightLocal(x + 1, y, z, 3) == 0 ||
+					chunk.getLightLocal(x, y - 1, z, 3) == 0 ||
+					chunk.getLightLocal(x, y + 1, z, 3) == 0 ||
+					chunk.getLightLocal(x, y, z - 1, 3) == 0 ||
+					chunk.getLightLocal(x, y, z + 1, 3) == 0
+					)
+				{
+					solverS.add(beg + glm::uvec3(x, y, z));
+				}
+				chunk.lightMap.setS(x, y, z, 0xF);
+			}
+		}
+	}
 }

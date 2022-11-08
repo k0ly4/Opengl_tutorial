@@ -18,7 +18,9 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
             f.debugCascadeShadow = !f.debugCascadeShadow;
             graphic.gBuffer.setDebugMode(f.debugCascadeShadow);
         }
-
+        else if (event.key.code == Keyboard::Tab) {
+            scene.world.chunks.loadFromRegion();
+        }
    
         else if (event.key.code == Keyboard::F) {
             printf("F\n");
@@ -97,6 +99,7 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
     scene.camera.mouse_move(Mouse::getPosition());
     move_camera(time, scene);
     scene.player.upVoxelCursor(scene.world.chunks);
+    scene.world.chunks.update(scene.player.getPosition());
 }
 
 /// <summary>

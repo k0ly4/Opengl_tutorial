@@ -8,7 +8,8 @@
 #define CHUNK_H 128
 
 #define CHUNK_SIZE CHUNK_W * CHUNK_H * CHUNK_D
-#define CHUNK_VOLUME glm::ivec3(CHUNK_W,CHUNK_H,CHUNK_D)
+#define CHUNK_VOLUME glm::uvec3(CHUNK_W,CHUNK_H,CHUNK_D)
+#define ICHUNK_VOLUME glm::ivec3(CHUNK_W,CHUNK_H,CHUNK_D)
 
 inline size_t getIndex(size_t x, size_t y, size_t z, size_t size) {
 	return ((y * size + z) * size + x);
@@ -50,6 +51,21 @@ inline size_t toInt(const glm::uvec2& coord, size_t size) {
 inline size_t toInt(const glm::uvec2& coord, const glm::uvec2& size) {
 	return (coord.y * size.x + coord.x);
 }
+
+inline glm::uvec2 toCoord2(size_t index,size_t size) {
+	return glm::uvec2(index % size, index / size);
+}
+inline glm::uvec2 toCoord2(size_t index, glm::uvec2 size) {
+	return glm::uvec2(index % size.x, index / size.y);
+}
+inline glm::uvec2 toCoord2(size_t index) {
+	return glm::uvec2(index % CHUNK_W, index / CHUNK_D);
+}
+inline glm::uvec3 toCoord3(size_t index) {
+	size_t xz_size = CHUNK_W * CHUNK_D;
+	glm::uvec2 xz = toCoord2(index % xz_size);
+	return glm::uvec3(xz.x,index / xz_size,xz.y);
+}
 //Global
 
 inline int clip(int coord, int max) {
@@ -67,6 +83,12 @@ inline bool isChunkBelong(const glm::uvec3& coord) {
 }
 
 
+//inline int DIV(int x, int d) {
+//	return x < 0 ? x / d - 1 : x / d;
+//}
+//inline size_t ABS(int x, size_t size) {
+//	return x < 0 ? (size + x) % size : x % size;
+//}
 
 ///LightMap_-----------------------------------------
 /// <summary>
@@ -138,15 +160,15 @@ class LightMap
 /// </summary>
 struct LightUint8 {
 
-	glm::ivec3 pos;
+	glm::uvec3 pos;
 	unsigned char light;
 	
 	LightUint8() {}
-	LightUint8(int x_, int y_, int z_, byte light_) :
+	LightUint8(size_t x_, size_t y_, size_t z_, byte light_) :
 		pos(x_, y_, z_),
 		light(light_)
 	{}
-	LightUint8(const glm::ivec3& pos_, byte light_) :
+	LightUint8(const glm::uvec3& pos_, byte light_) :
 		pos(pos_),
 		light(light_)
 	{}
@@ -159,7 +181,7 @@ struct LightUint8 {
 /// </summary>
 struct LightUint8RGB {
 
-	glm::ivec3 pos;
+	glm::uvec3 pos;
 	Uint8RGB light;
 
 	LightUint8RGB() {}

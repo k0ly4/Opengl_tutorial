@@ -22,12 +22,11 @@ public:
 		out.open(path, std::ios::binary | std::ios::out);
 		return out.is_open();
 	}
+
 	template<typename T>
 	static inline void write(std::ofstream& out, T data) {
 		out.write((char*)&data, sizeof(data));
 	}
-
-	void write(const std::vector<Voxel>& data);
 
 	template<typename T>
 	inline void write(T data) {
@@ -37,11 +36,11 @@ public:
 	inline void close() {
 		out.close();
 	}
-	~Writer() {
+	virtual ~Writer() {
 		out.close();
 	}
 
-private:
+protected:
 
 	std::ofstream out;
 };
@@ -64,17 +63,23 @@ public:
 	inline void read(T& data) {
 		read(in,data);
 	}
+	
+	inline void set(size_t pos) {
+		in.seekg(pos);
+	}
 
-	void read(std::vector<Voxel>& data);
+	inline void move(size_t offset) {
+		in.seekg(offset, std::ios::cur);
+	}
 
 	inline void close() {
 		in.close();
 	}
-	~Reader() {
+	virtual ~Reader() {
 		in.close();
 	}
 
-private:
+protected:
 
 	std::ifstream in;
 };

@@ -17,7 +17,9 @@ class Chunk:public Drawable{
 public:
 
 	///Closes---------------------------------------------
+
 	class Closes {
+
 		public:
 			inline void clear() {
 				for (size_t i = 0; i < 6; i++) {
@@ -49,30 +51,35 @@ public:
 			}
 
 			Chunk* chunks[6];
+
 	private:
 			
 	};
 
-	Chunk():
-		global_(0) {
+	Chunk(): global_(0) 
+	{
+
 		closes.clear();
 		buffer.setDataDraw(DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES, 0));
 		shaderHint = glShader::voxel;
+		voxels.resize(CHUNK_SIZE);
 	}
 
-	inline void setPosition(const glm::ivec3&global) {
+	inline void setPosition(const glm::uvec3&global) {
 		local_ = global;
 		global_ = global * CHUNK_VOLUME;
 	}
+
 	//init
-	bool load(const glm::ivec3& global);
+	bool load(const glm::uvec3& global);
+
 	bool save()const;
-	void generate(const glm::ivec3& global);
+
+	void generate(const glm::uvec3& global);
+
 	void setCloses(std::vector<Chunk>& chunks);
 
-	inline void setModified(){
-		modified = 1;
-	}
+	inline void setModified(){ modified = 1; }
 	
 	//Local
 	inline bool isUnVisible(size_t x, size_t y, size_t z)const {
@@ -81,7 +88,7 @@ public:
 	
 	//Global
 	inline const Voxel* getFromGlobalCoord(const glm::uvec3& coord) const{
-		auto local = coord - glm::uvec3(global_);
+		glm::uvec3 local = coord - glm::uvec3(global_);
 		return isChunkBelong(local) ? &voxels[getIndex(local)] : 0;
 	}
 
@@ -89,13 +96,19 @@ public:
 		glm::uvec3 local = coord - glm::uvec3(global_);
 		return isChunkBelong(local) ? &voxels[getIndex(local)] : 0;
 	}
+	//Local
+	inline Voxel& getFromLocalCoord(size_t x, size_t y, size_t z) {
+		return voxels[getIndex(x, y, z)];
+	}
 
-	inline const glm::ivec3& getGlobalPos()const {
-		return global_;
+	inline const Voxel& getFromLocalCoord(size_t x, size_t y, size_t z)const {
+		return voxels[getIndex(x, y, z)];
 	}
-	inline const glm::ivec3& getLocalPos()const {
-		return local_;
-	}
+
+	inline const glm::uvec3& getGlobalPos()const { return global_; }
+
+	inline const glm::uvec3& getLocalPos()const { return local_; }
+
 	/// <summary>
 	/// »змен€ет заданный в глобальных кординатах coord воксель, устанавлива€ себе и 6 ближайшим чанкам modified в true
 	/// </summary>
@@ -104,7 +117,21 @@ public:
 	/// <summary>
 	/// Lightning----------------
 	/// </summary>
-	LightMap lightMap;
+	
+
+	inline unsigned char getLightLocal(const glm::uvec3& local, int channel_) {
+		return isChunkBelong(local) ? lightMap.get(local, channel_) : 0;
+	}
+	inline unsigned char getLightLocal(size_t x,size_t y,size_t z, int channel_) {
+		return getLightLocal(glm::uvec3(x, y, z), channel_);
+	}
+
+	inline unsigned char getLightGlobal(const glm::uvec3& coord, int channel_) {
+		return lightMap.get(
+			coord - global_,
+			channel_);
+	}
+
 	inline void setLightGlobal(const LightUint8& light, int channel_) {
 		modified = 1;
 		lightMap.set(
@@ -113,32 +140,34 @@ public:
 			light.light);
 	}
 
-	inline unsigned char getLightGlobal(const glm::ivec3& coord,int channel_) {
-		return lightMap.get(
-			coord - global_,
-			channel_);
-	}
+	
 	
 	//render
 	void draw(const View* view, const Shader& shader);
 
-	std::vector<Voxel>& getVoxels()				{ return voxels; }
+	std::vector<Voxel>& getVoxels()				{ return voxels;}
 	const std::vector<Voxel>& getVoxels()const	{ return voxels;}
+
+	inline void setNull() {
+		isInitLightMap = isGenerated = 0;
+		modified = 1;
+		for (size_t i = 0; i < CHUNK_SIZE; i++) voxels[i].id = ResourceVoxelPack::id_air;
+	}
+
+	bool isGenerated = 0;
+	bool isInitLightMap = 0;
+	LightMap lightMap;
+
 private:
 
 	inline std::string getFilePath()const {
 		return std::string("saves\\"+std::to_string(local_.x) + '_' + std::to_string(local_.y) + '_' + std::to_string(local_.z) + ".chunk");
 	}
-	//Local
-	inline Voxel& getFromLocalCoord(size_t x, size_t y, size_t z) {
-		return voxels[getIndex(x, y, z)];
-	}
-	inline const Voxel& getFromLocalCoord(size_t x, size_t y, size_t z)const {
-		return voxels[getIndex(x, y, z)];
-	}
+
 	inline bool isFree(Voxel voxel, byte drawGroup) {
 		return !VoxelPack::isRender(voxel) || (VoxelPack::get(voxel).drawGroup != drawGroup);
 	}
+
 	inline bool isFree(int x, int y, int z, byte drawGroup) {
 		///Local test
 		if (isChunkBelong(x, y, z)) return isFree(getFromLocalCoord(x, y, z),drawGroup);
@@ -159,19 +188,58 @@ private:
 
 	void upMesh();
 	void fastUpMesh();
+
 	//render
 	std::vector<Voxel>voxels;
 
 	Closes closes;
 	mutable bool modified = 1;
 
-	glm::ivec3 global_;
-	glm::ivec3 local_;
+	glm::uvec3 local_, global_;
 
 	TypeConvex<VoxelVertex> buffer;
 	std::vector<unsigned int> indices;
 };
 
+/////ReaderChunk----------------------------------
 
+class ReaderChunk:public Reader {
+public:
+
+	inline void readChunk(Chunk& data) {
+		read(data.isGenerated);
+		if (data.isGenerated) readVoxels(data.getVoxels(), CHUNK_SIZE);
+	}
+
+	inline void readChunk(Chunk& data, size_t chunkIndexInFile) {
+		set(chunkIndexInFile * (CHUNK_SIZE * sizeof(Voxel)+ sizeof(bool)));
+		readChunk(data);
+	}
+
+	inline void readVoxels(std::vector<Voxel>& data, size_t size) {
+		data.resize(size);
+		for (size_t i = 0; i < size; i++) read(data[i].id);
+	}
+private:
+	
+};
+
+////WriterChunk--------------------------
+class WriterChunk:public Writer {
+
+public:
+
+	inline void writeChunk(const Chunk& data) {
+		write(data.isGenerated);
+		writeVoxels(data.getVoxels());
+	}
+
+	inline void writeVoxels(const std::vector<Voxel>& data) {
+		for (size_t i = 0; i < data.size(); i++) write(data[i].id);
+	}
+
+private:
+
+};
 #endif
 

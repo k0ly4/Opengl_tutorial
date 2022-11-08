@@ -32,6 +32,8 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	light.getDirs().setSizeMap(glm::ivec2(1024));
 	light.setAmbientFactor(0.01f);
 
+
+	camera.setPosition(glm::ivec3(150,10,150));
 	camera.setProjection(GAME::PROJECTION);
 	camera.cur_pos_mouse = Mouse::getPosition();
 
