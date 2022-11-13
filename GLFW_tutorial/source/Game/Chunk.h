@@ -1,5 +1,5 @@
-#ifndef CHUNK_FILE_H
-#define CHUNK_FILE_H
+#ifndef CHUNK_CLASS_H
+#define CHUNK_CLASS_H
 
 #include <stack>
 #include "Scene/Camera.h"
@@ -140,8 +140,6 @@ public:
 			light.light);
 	}
 
-	
-	
 	//render
 	void draw(const View* view, const Shader& shader);
 
@@ -201,45 +199,6 @@ private:
 	std::vector<unsigned int> indices;
 };
 
-/////ReaderChunk----------------------------------
 
-class ReaderChunk:public Reader {
-public:
-
-	inline void readChunk(Chunk& data) {
-		read(data.isGenerated);
-		if (data.isGenerated) readVoxels(data.getVoxels(), CHUNK_SIZE);
-	}
-
-	inline void readChunk(Chunk& data, size_t chunkIndexInFile) {
-		set(chunkIndexInFile * (CHUNK_SIZE * sizeof(Voxel)+ sizeof(bool)));
-		readChunk(data);
-	}
-
-	inline void readVoxels(std::vector<Voxel>& data, size_t size) {
-		data.resize(size);
-		for (size_t i = 0; i < size; i++) read(data[i].id);
-	}
-private:
-	
-};
-
-////WriterChunk--------------------------
-class WriterChunk:public Writer {
-
-public:
-
-	inline void writeChunk(const Chunk& data) {
-		write(data.isGenerated);
-		writeVoxels(data.getVoxels());
-	}
-
-	inline void writeVoxels(const std::vector<Voxel>& data) {
-		for (size_t i = 0; i < data.size(); i++) write(data[i].id);
-	}
-
-private:
-
-};
 #endif
 

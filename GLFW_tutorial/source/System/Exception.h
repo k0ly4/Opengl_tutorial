@@ -17,7 +17,13 @@ static const char* LOG_attribute[] = {"(!)ERROR::","WARNING::","INFO::"};
 inline void LOG(TypeLog typeLog,
 	const char* strFormat, ...)noexcept
 {
-	printf("%s%s", LOG_attribute[typeLog],strFormat);
+	//printf("%s%s", LOG_attribute[typeLog],strFormat);
+	printf(LOG_attribute[typeLog]);
+
+	va_list factor;
+	va_start(factor, strFormat);
+	vprintf(strFormat, factor);
+	va_end(factor); // завершаем обработку параметров
 }
 
 inline void LOG( const char* strFormat, ...)noexcept

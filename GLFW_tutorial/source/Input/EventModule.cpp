@@ -34,8 +34,8 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
 
         else if (event.key.code == Keyboard::N) {
             f.shadow_level++;
-            if (f.shadow_level >= scene.light.getDirs().getShadowMap().getCount())
-                f.shadow_level = scene.light.getDirs().getShadowMap().getCount() - 1;
+            if (f.shadow_level >= (int)scene.light.getDirs().getShadowMap().getCount())
+                f.shadow_level = (int)scene.light.getDirs().getShadowMap().getCount() - 1;
             printf("Shadow_Level:%d\n", f.shadow_level);
         }
 
@@ -56,9 +56,6 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
         }
         else if (event.key.code >= Keyboard::Num0 && event.key.code<=Keyboard::Num9){
             scene.player.setCurVoxel(Voxel(event.key.code-Keyboard::Num0));
-        }
-        else if(event.key.code == Keyboard::F1) {
-            scene.world.save();
         }
     
     }

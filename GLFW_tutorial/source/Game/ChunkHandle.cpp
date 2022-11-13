@@ -12,11 +12,14 @@ void ChunkHandle::create(size_t size) {
 
 void ChunkHandle::loadFromRegion() {
 	begin_ = cameraChunk_- size_/2;
-	region.fill(chunks_, size_, begin_);
+	region.upTarget(chunks_, size_, begin_);
+
 	for (size_t i = 0; i < chunks_.size(); i++)
 		if (chunks_[i]->isInitLightMap == 0) {
+
 			notify(_obs_event::initChunkLight, chunks_[i]);
 			chunks_[i]->isInitLightMap = 1;
+
 		}
 	notify(_obs_event::solveLight, 0);
 }
@@ -83,9 +86,9 @@ const Voxel* ChunkHandle::rayCast(const glm::vec3& a, const glm::vec3& dir, floa
 	float dz = dir.z;
 
 	float t = 0.0f;
-	int ix = floor(px);
-	int iy = floor(py);
-	int iz = floor(pz);
+	int ix = (int)floor(px);
+	int iy = (int)floor(py);
+	int iz = (int)floor(pz);
 
 	float stepx = (dx > 0.0f) ? 1.0f : -1.0f;
 	float stepy = (dy > 0.0f) ? 1.0f : -1.0f;
@@ -133,7 +136,7 @@ const Voxel* ChunkHandle::rayCast(const glm::vec3& a, const glm::vec3& dir, floa
 				steppedIndex = 0;
 			}
 			else {
-				iz += stepz;
+				iz += (int)stepz;
 				t = tzMax;
 				tzMax += tzDelta;
 				steppedIndex = 2;
@@ -147,7 +150,7 @@ const Voxel* ChunkHandle::rayCast(const glm::vec3& a, const glm::vec3& dir, floa
 				steppedIndex = 1;
 			}
 			else {
-				iz += stepz;
+				iz += (int)stepz;
 				t = tzMax;
 				tzMax += tzDelta;
 				steppedIndex = 2;

@@ -34,7 +34,7 @@
 	 }
 
 GLFWwindow* ContextWindow::context = 0;
-glm::uvec2 ContextWindow::size = glm::uvec2(0.f);
-glm::ivec2 ContextWindow::position = glm::uvec2(0.f);
+glm::uvec2 ContextWindow::size = glm::uvec2(0);
+glm::ivec2 ContextWindow::position = glm::uvec2(0);
 EventStack ContextWindow::events;
 bool ContextWindow::focus = 1;

@@ -216,6 +216,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Game\SaveManager.cpp" />
     <ClCompile Include="source\Game\LightSystem.cpp" />
     <ClCompile Include="source\Game\LightSolver.cpp" />
     <ClCompile Include="source\Game\LightMap.cpp" />
@@ -290,6 +291,7 @@
     <ClCompile Include="source\Game\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Game\SaveManager.h" />
     <ClInclude Include="source\Game\Observer.h" />
     <ClInclude Include="source\Game\LightSystem.h" />
     <ClInclude Include="source\Game\LightSolver.h" />

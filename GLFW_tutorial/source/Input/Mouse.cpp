@@ -14,7 +14,7 @@
 	}
 
 	 void Mouse::callback::Scroll(GLFWwindow* window, double xoffset, double yoffset) {
-		 ContextWindow::events.push(Event::MouseScrollEvent(yoffset));
+		 ContextWindow::events.push(Event::MouseScrollEvent((int)yoffset));
 	}
 	 void Mouse::callback::setup(GLFWwindow* window) {
 		 glfwSetCursorPosCallback(window, Move);

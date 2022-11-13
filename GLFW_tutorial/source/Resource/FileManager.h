@@ -24,29 +24,60 @@ public:
 	}
 
 	template<typename T>
-	static inline void write(std::ofstream& out, T data) {
+	static inline void write(std::ofstream& out, const T& data) {
 		out.write((char*)&data, sizeof(data));
 	}
 
 	template<typename T>
-	inline void write(T data) {
+	inline void write(const T& data) {
 		out.write((char*)&data, sizeof(data));
 	}
-	
-	inline void close() {
-		out.close();
+
+	template<typename T>
+	inline void write(twoint pos,const T& data) {
+		set(pos);
+		out.write((char*)&data, sizeof(data));
 	}
-	virtual ~Writer() {
-		out.close();
-	}
+
+	inline std::streampos getPos() { return out.tellp(); }
+
+	inline void set(twoint pos) { out.seekp(pos); }
+
+	inline void moveFromCur(twoint offset) { out.seekp(offset, std::ios::cur); }
+
+	inline void moveFromEnd(twoint offset) { out.seekp(offset, std::ios::end); }
+
+	inline void moveFromBeg(twoint offset) { out.seekp(offset, std::ios::beg); }
+
+	inline void close() { out.close(); }
+
+	virtual ~Writer() { out.close(); }
 
 protected:
 
 	std::ofstream out;
 };
 
-////Reader--------------------------
+////ReaderStatic--------------------------
 class Reader {
+public:
+	template<typename T>
+	static inline void read(std::ifstream& in, T& data) {
+		in.read((char*)&data, sizeof(data));
+	}
+	template<typename T>
+	static inline void read(std::ifstream& in, T& data, size_t size) {
+		in.read((char*)&data, size);
+	}
+private:
+
+	Reader() {}
+	~Reader() {}
+
+};
+
+////Reader--------------------------
+class ReaderFile {
 
 public:
 
@@ -54,30 +85,32 @@ public:
 		in.open(path, std::ios::binary | std::ios::in);
 		return in.is_open();
 	}
+
 	template<typename T>
-	static inline void read(std::ifstream& in, T& data) {
-		in.read((char*)&data, sizeof(data));
+	inline void read(T& data,size_t size) {
+		Reader::read(in, data, size);
 	}
 
 	template<typename T>
 	inline void read(T& data) {
-		read(in,data);
-	}
-	
-	inline void set(size_t pos) {
-		in.seekg(pos);
+		Reader::read(in,data);
 	}
 
-	inline void move(size_t offset) {
-		in.seekg(offset, std::ios::cur);
+	template<typename T> 
+	inline void readFromPos(twoint pos, T& data) {
+		set(pos);
+		read(data);
 	}
 
-	inline void close() {
-		in.close();
-	}
-	virtual ~Reader() {
-		in.close();
-	}
+	inline std::streampos getPos(){ return in.tellg(); }
+
+	inline void set(twoint pos) { in.seekg(pos);}
+
+	inline void move(twoint offset) { in.seekg(offset, std::ios::cur);}
+
+	inline void close() { in.close(); }
+
+	virtual ~ReaderFile() { in.close(); }
 
 protected:
 

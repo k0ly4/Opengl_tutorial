@@ -59,7 +59,7 @@ MapGlyph Font::createFontMap(size_t size_char) {
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glm::uvec2 max_size(0.f);
+    glm::uvec2 max_size(0);
     std::map<size_t, Glyph> alphabet;
 
     for (size_t i = 0; i < alphSize; i++) {

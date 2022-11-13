@@ -12,7 +12,7 @@ int main()
     while (window.isOpen())
     {
         // Обработка ввоа
-        float time = clock.restart();
+        float time = (float)clock.restart();
         engine->update(time, clock);
         engine->render();
        // camera.update();

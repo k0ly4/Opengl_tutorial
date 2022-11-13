@@ -7,5 +7,7 @@
 
 #define PI 3.1415926535f
 typedef unsigned char byte;
+typedef unsigned short twobyte;
+typedef long long twoint;
 
 #endif

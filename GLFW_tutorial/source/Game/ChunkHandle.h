@@ -17,7 +17,9 @@ public:
 	}
 
 	void create(size_t radius);
+
 	void loadFromRegion();
+
 	void update(const glm::ivec3& positionCamera);
 
 	void save()const;
@@ -84,6 +86,7 @@ public:
 	std::vector<Chunk*>& getChunks() {
 		return chunks_;
 	}
+	Region region;
 private:
 	//ѕровер€ет допустимость локальных кординат
 	inline bool isIn(const glm::uvec3& local) {
@@ -94,7 +97,7 @@ private:
 		return ( glm::ivec3(global / CHUNK_VOLUME) - glm::ivec3(begin_.x, 0, begin_.y));
 	}
 
-	Region region;
+	
 
 	std::vector<Chunk*> chunks_;
 	size_t size_;
