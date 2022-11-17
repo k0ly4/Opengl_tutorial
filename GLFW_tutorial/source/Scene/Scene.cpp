@@ -33,7 +33,7 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	light.setAmbientFactor(0.01f);
 
 
-	camera.setPosition(glm::ivec3(150,10,150));
+	camera.setPosition(glm::vec3(1100,60,1100));
 	camera.setProjection(GAME::PROJECTION);
 	camera.cur_pos_mouse = Mouse::getPosition();
 
@@ -46,6 +46,7 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	gBufferObjects[1] = (&cube);
 	//LOG("this is%d exams\n",100u)
 	player.setCamera(camera);
+	world.init(camera);
 }
 
 void Scene::initializeUI(RenderWindow& window) {
@@ -61,19 +62,6 @@ void Scene::initializeUI(RenderWindow& window) {
 
 	sCowBoy.setTexture(texError);
 	sCowBoy.setPosition(700.f, 200.f);
-	
-
-	font.load("asset\\font\\UbuntuMono-R.ttf");
-	MapGlyph& map_ = font.getMapGlyphs(20);
-	sCowBoy.setTexture(map_.getTexture());
-	sError.setTexture(map_.getTexture());
-	
-	text2.setFont(font);
-	text2.setString(L"KOlya is the best\nI love you");
-	text2.setPosition(glm::vec2(10.f));
-	text2.setSizeFont(20);
-	text2.setScale(glm::vec2(7.f));
-	text2.setColor(Color::YELLOW);
 }
 
 
@@ -136,8 +124,6 @@ void Scene::inUI(RenderTarget& target) {
 	CullFace::Enable(false);
 	Depth::Enable(false);
 	Blend::Enable(true);
-
-	target.draw(text2);
 	target.draw(sCowBoy);
 
 }

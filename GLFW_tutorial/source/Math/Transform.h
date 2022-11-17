@@ -1,7 +1,7 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include "Game/Game.h"
+#include "Game/Lib/Game.h"
 
 ///AngleAxis----------------------------------------------------------
 /// <summary>

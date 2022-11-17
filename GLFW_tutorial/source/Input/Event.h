@@ -4,7 +4,7 @@
 
 #include <list>
 
-#include "Game/GLFW.h"
+#include "Game/Lib/GLFW.h"
 #include "Math/GLM.h"
 
 class Event {

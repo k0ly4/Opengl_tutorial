@@ -19,7 +19,7 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
             graphic.gBuffer.setDebugMode(f.debugCascadeShadow);
         }
         else if (event.key.code == Keyboard::Tab) {
-            scene.world.chunks.loadFromRegion();
+            scene.world.chunks.extractFromRegion();
         }
    
         else if (event.key.code == Keyboard::F) {

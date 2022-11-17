@@ -4,7 +4,7 @@
 
 #include <list>
 
-#include "Game/GLFW.h"
+#include "Game/Lib/GLFW.h"
 #include "Math/Math.h"
 #include "Input/Event.h"
 #include "Graphic/RenderEntity.h"

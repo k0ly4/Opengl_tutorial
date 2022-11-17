@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include "Resource/ImageLoader.h"
-#include "Game/GeneralGameEntity.h"
+#include "Game/Entities/GeneralGameEntity.h"
 #include "nlohmann/json.hpp"
 
 ////FileManager--------------------------
@@ -31,6 +31,11 @@ public:
 	template<typename T>
 	inline void write(const T& data) {
 		out.write((char*)&data, sizeof(data));
+	}
+
+	template<typename T>
+	inline void write(const T& data,size_t size) {
+		out.write((char*)&data, size);
 	}
 
 	template<typename T>
@@ -80,11 +85,16 @@ private:
 class ReaderFile {
 
 public:
+	ReaderFile() {}
+	ReaderFile(const std::string& path) { in.open(path, std::ios::binary | std::ios::in); }
 
 	inline bool open(const std::string& path) {
 		in.open(path, std::ios::binary | std::ios::in);
 		return in.is_open();
 	}
+
+	bool isOpen() { return in.is_open(); }
+	operator bool() { return in.is_open();}
 
 	template<typename T>
 	inline void read(T& data,size_t size) {
@@ -96,6 +106,11 @@ public:
 		Reader::read(in,data);
 	}
 
+	template<typename T>
+	inline void readFromPos(twoint pos, T& data,size_t size) {
+		set(pos);
+		read(data, size);
+	}
 	template<typename T> 
 	inline void readFromPos(twoint pos, T& data) {
 		set(pos);

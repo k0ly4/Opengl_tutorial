@@ -4,8 +4,8 @@
 #include <map>
 #include <vector>
 
-#include"Game/GLFW.h"
-#include "Game/Game.h"
+#include"Game/Lib/GLFW.h"
+#include "Game/Lib/Game.h"
 #include "GLM.h"
 
 #include "Math/Color.h"

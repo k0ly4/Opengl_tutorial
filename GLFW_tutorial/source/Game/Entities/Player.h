@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 #include "Scene/Camera.h"
-#include "Game/World.h"
+#include "Game/Voxels/World.h"
 #include "Scene/Primitive.h"
 class Player
 {
@@ -31,7 +31,7 @@ public:
 		camera_ = &camera;
 	}
 
-	void upVoxelCursor(ChunkHandle& chunks);
+	void upVoxelCursor(ChunkSectorRender& chunks);
 	void setCurVoxel(const Voxel& voxel) {
 		curVoxel = voxel;
 	}

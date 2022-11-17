@@ -1,13 +1,13 @@
 #ifndef LIGHT_HANDLE_H
 #define LIGHT_HANDLE_H
 
-#include "Game/LightSolver.h"
+#include "Game/Light/LightSolver.h"
 
 class LightHandle :public uniObserver<Chunk>
 {
 public:
 
-	LightHandle(ChunkHandle* chunks_) :
+	LightHandle(ChunkSectorRender* chunks_) :
 		chunks(chunks_)
 	{
 		solverR.init(chunks, 0);
@@ -89,7 +89,7 @@ private:
 		solverS.solve();
 	}
 
-	ChunkHandle* chunks;
+	ChunkSectorRender* chunks;
 	LightSolver  solverR;
 	LightSolver  solverG;
 	LightSolver  solverB;

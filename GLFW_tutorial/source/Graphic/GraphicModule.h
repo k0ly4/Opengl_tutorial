@@ -7,7 +7,7 @@
 #include "GBuffer.h"
 #include "PostEffects.h"
 
-#include "Game/GameModules.h"
+#include "Game/Lib/GameModules.h"
 
 /// <summary>
 /// GraphicPipeline

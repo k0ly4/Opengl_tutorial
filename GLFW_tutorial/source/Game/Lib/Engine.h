@@ -1,7 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "Game/GameModules.h"
+#include "Game/Lib/GameModules.h"
 #include "Input/EventModule.h"
 #include "Graphic/GraphicModule.h"
 #include "Scene/Scene.h"

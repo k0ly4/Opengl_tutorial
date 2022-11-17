@@ -7,12 +7,12 @@
 #include "Graphic/RenderWindow.h"
 #include "Ui/Sprite.h"
 #include "Scene/Quad.h"
-#include "Game/GameModules.h"
+#include "Game/Lib/GameModules.h"
 #include "Scene/Text.h"
 #include "Scene/Sphere.h"
 #include "Scene/LightManager.h"
-#include "Game/World.h"
-#include "Game/Player.h"
+#include "Game/Voxels/World.h"
+#include "Game/Entities/Player.h"
 
 /// <summary>
 /// Scene
@@ -57,8 +57,6 @@ public:
 	//Object2D
 	Sprite sCowBoy;
 	Sprite sError;
-	Font font;
-	Text text2;
 	//Views
 	Camera camera;
 	View2D view2D;

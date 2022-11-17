@@ -1,7 +1,4 @@
 #include "Chunk.h"
-#include <glm/gtc/noise.hpp>
-#include <glm/glm.hpp>
-
 
 //CHunk-------------------------------------
 /// <summary>
@@ -28,34 +25,15 @@ bool Chunk::save()const {
 	return 0;
 }
 
-void Chunk::generate(const glm::uvec3& global) {
-		setPosition(global);	
-		for (size_t y = 0; y < CHUNK_H; y++) {
-			for (size_t z = 0; z < CHUNK_D; z++) {
-				for (size_t x = 0; x < CHUNK_W; x++)
-				{
-					glm::ivec3 real_coord = glm::ivec3(x,y,z) + glm::ivec3(global_);
-					int id = (glm::perlin(glm::vec3(real_coord) * 0.0125f) > 0.1f)-1;//real_y <= (height) * 60 + 30;
-					if (real_coord.y <= 2)
-						id = 1;
-					getFromLocalCoord(x, y, z).id = id;
-				}
-			}
-		}
-
-		isGenerated = modified = 1;
-		isInitLightMap = 0;
-}
-
-void Chunk::setCloses(std::vector<Chunk>& chunks) {
-	closes.clear();
-	for (size_t i = 0; i < chunks.size(); i++) {
-		glm::ivec3 dist = (glm::ivec3)chunks[i].local_ - (glm::ivec3)local_;
-		if (((abs(dist.x) + abs(dist.y) + abs(dist.z)) != 1))
-			continue;
-		closes.chunks[getSide(dist)] = &chunks[i];
-	}
-}
+//void Chunk::setCloses(Chunk* chunks,size_t size) {
+//	closes.clear();
+//	for (size_t i = 0; i < size; i++) {
+//		glm::ivec3 dist = (glm::ivec3)chunks[i].local_ - (glm::ivec3)local_;
+//		if (((abs(dist.x) + abs(dist.y) + abs(dist.z)) != 1))
+//			continue;
+//		closes.chunks[getSide(dist)] = &chunks[i];
+//	}
+//}
 
 
 

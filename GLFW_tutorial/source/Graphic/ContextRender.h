@@ -3,7 +3,7 @@
 #define CONTEXT_RENDER_H
 
 #include "Math/Math.h"
-#include "Game/GLFW.h"
+#include "Game/Lib/GLFW.h"
 #include "Graphic/ContextWindow.h"
 
 /// CullFace------------------------------------------------------------

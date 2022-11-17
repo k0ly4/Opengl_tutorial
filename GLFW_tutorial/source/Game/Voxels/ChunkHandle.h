@@ -1,24 +1,24 @@
 #ifndef CHUNK_HANDLE_H
 #define CHUNK_HANDLE_H
 
-#include "Observer.h"
+#include "Game/Entities/Observer.h"
 #include "Region.h"
-
+#include "Game/Voxels/SuperRegion.h"
 ///ChunkHandle---------------------------------------------
 /// <summary>
 ///  
 /// </summary>
-class ChunkHandle :public Drawable, public uniListener<Chunk>{
+class ChunkSectorRender :public Drawable, public uniListener<Chunk>{
 
 public:
 
-	ChunkHandle() :size_(0) {
+	ChunkSectorRender() :size_(0) {
 		shaderHint = glShader::voxel;
 	}
 
 	void create(size_t radius);
 
-	void loadFromRegion();
+	void extractFromRegion();
 
 	void update(const glm::ivec3& positionCamera);
 
@@ -46,7 +46,8 @@ public:
 		}
 	}
 	void setVoxel(const Voxel&, const glm::ivec3& coord);
-	bool setVoxel(const Voxel&, const glm::vec3& start_ray, const glm::vec3& direction_ray, float maxDistance, bool adMode);
+	/*bool setVoxel(const Voxel&, const glm::vec3& start_ray, const glm::vec3& direction_ray, float maxDistance, bool adMode);*/
+
 	/// <summary>
 	/// 
 	/// </summary>
@@ -86,7 +87,7 @@ public:
 	std::vector<Chunk*>& getChunks() {
 		return chunks_;
 	}
-	Region region;
+	SupReg region;
 private:
 	//ѕровер€ет допустимость локальных кординат
 	inline bool isIn(const glm::uvec3& local) {
@@ -96,7 +97,7 @@ private:
 	inline glm::uvec3 toLocal(const glm::uvec3& global) {
 		return ( glm::ivec3(global / CHUNK_VOLUME) - glm::ivec3(begin_.x, 0, begin_.y));
 	}
-
+	void lightFlagUp();
 	
 
 	std::vector<Chunk*> chunks_;

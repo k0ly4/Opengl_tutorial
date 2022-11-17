@@ -1,6 +1,6 @@
 #include "Player.h"
 
-void Player::upVoxelCursor(ChunkHandle& chunks) {
+void Player::upVoxelCursor(ChunkSectorRender& chunks) {
 
 	glm::vec3 end;
 	glm::vec3 norm;
@@ -13,11 +13,11 @@ void Player::upVoxelCursor(ChunkHandle& chunks) {
 }
 
 void Player::setVoxel(World& world, bool isModAdd) {
-	LOG("R=%d,G=%d,B=%d,S=%d\n",
+	/*LOG("R=%d,G=%d,B=%d,S=%d\n",
 		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 0),
 		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 1),
 		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 2),
-		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 3));
+		world.chunks.getChannelLight(glm::ivec3(camera_->getPosition()), 3));*/
 	if (posCursor == glm::ivec3(0))return;
 
 	if (isModAdd) {

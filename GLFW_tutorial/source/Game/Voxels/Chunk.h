@@ -6,8 +6,8 @@
 #include "Math/Math.h"
 #include "Graphic/Texture.h"
 #include "Scene/Convex.h"
-#include "VoxelAtlas.h"
-#include "LightMap.h"
+#include "Game/Voxels/VoxelAtlas.h"
+#include "Game/Light/LightMap.h"
 
 ///Chunk---------------------------------------------
 /// <summary>
@@ -75,9 +75,7 @@ public:
 
 	bool save()const;
 
-	void generate(const glm::uvec3& global);
-
-	void setCloses(std::vector<Chunk>& chunks);
+	//void setCloses(Chunk* chunks, size_t size);
 
 	inline void setModified(){ modified = 1; }
 	
@@ -154,7 +152,9 @@ public:
 
 	bool isGenerated = 0;
 	bool isInitLightMap = 0;
+
 	LightMap lightMap;
+	Closes closes;
 
 private:
 
@@ -190,7 +190,7 @@ private:
 	//render
 	std::vector<Voxel>voxels;
 
-	Closes closes;
+	
 	mutable bool modified = 1;
 
 	glm::uvec3 local_, global_;

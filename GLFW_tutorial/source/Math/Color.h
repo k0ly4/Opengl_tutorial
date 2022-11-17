@@ -1,7 +1,7 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
-#include"Game/GLFW.h"
+#include"Game/Lib/GLFW.h"
 #include "Math/GLM.h"
 
 struct Color

@@ -42,4 +42,17 @@ struct Voxel {
 static bool operator==(const Voxel& left, const Voxel& right) {
 	return (right.id == left.id);
 }
+
+
+namespace vox {
+	enum Type:int
+	{
+		air = -1,
+		turf = 0,
+		earth = 1,
+		stone = 2
+	};
+}
+
+
 #endif

@@ -1,6 +1,6 @@
 #ifndef LIGHT_SOLVER_h
 #define LIGHT_SOLVER_h
-#include "Game/ChunkHandle.h"
+#include "Game/Voxels/ChunkHandle.h"
 #include <queue>
 
 
@@ -9,10 +9,10 @@ class LightSolver {
 public:
 
 	LightSolver() {}
-	LightSolver(ChunkHandle* chunks_, int channel_) {
+	LightSolver(ChunkSectorRender* chunks_, int channel_) {
 		init(chunks_, channel_);
 	}
-	void init(ChunkHandle* chunks_, int channel_) {
+	void init(ChunkSectorRender* chunks_, int channel_) {
 		chunks = chunks_;
 		channel = channel_;
 	}
@@ -28,7 +28,7 @@ private:
 	
 	std::queue<LightUint8> addqueue;
 	std::queue<LightUint8> remqueue;
-	ChunkHandle* chunks;
+	ChunkSectorRender* chunks;
 	int channel;
 
 };
