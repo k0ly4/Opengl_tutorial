@@ -6,6 +6,7 @@
 #include "Graphic/GraphicModule.h"
 #include "Scene/Scene.h"
 #include "System/Clock.h"
+#include "Physics/sPhysics.h"
 RenderWindow window;
 
 class Engine  {
@@ -27,6 +28,7 @@ class Engine  {
     Scene scene;
     GraphicPipeline graphic;
     EventModule event;
+    PhysicsModule physics;
 
 public:
 
@@ -35,10 +37,13 @@ public:
         setupWindow();
         scene.initialize(window);
         graphic.initialize(window);
+        event.initialize(scene);
+        physics.init(scene);
     }
   
     void update(float time, Clock& clock) {
-        event.update(time, window, graphic, scene);;
+        event.update(time, window, graphic, scene);
+        physics.update(time, scene);
     }
 
     void render() {

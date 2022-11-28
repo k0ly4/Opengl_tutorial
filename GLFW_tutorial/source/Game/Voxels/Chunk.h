@@ -75,7 +75,7 @@ public:
 
 	bool save()const;
 
-	//void setCloses(Chunk* chunks, size_t size);
+	void setCloses(Chunk* chunks, size_t size);
 
 	inline void setModified(){ modified = 1; }
 	

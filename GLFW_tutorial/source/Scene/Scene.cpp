@@ -32,8 +32,9 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	light.getDirs().setSizeMap(glm::ivec2(1024));
 	light.setAmbientFactor(0.01f);
 
-
-	camera.setPosition(glm::vec3(1100,60,1100));
+	player.setCamera(camera);
+	player.hitbox->position = glm::vec3(1100, 60, 1100);
+	camera.setPosition(glm::vec3(1100, 60, 1100));
 	camera.setProjection(GAME::PROJECTION);
 	camera.cur_pos_mouse = Mouse::getPosition();
 
@@ -45,7 +46,7 @@ void Scene::initialize3DScene(RenderWindow& window) {
 	gBufferObjects[0] = (&wall);
 	gBufferObjects[1] = (&cube);
 	//LOG("this is%d exams\n",100u)
-	player.setCamera(camera);
+	
 	world.init(camera);
 }
 
@@ -92,7 +93,7 @@ void Scene::inForward(RenderTarget& target) {
 	CullFace::Enable(false);
 	target.draw(world.chunks);
 	sphere.displayLine(target);
-	player.draw(target);
+	player.cursor.draw(target);
 	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 
 	CullFace::Enable(true);

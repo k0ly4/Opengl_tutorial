@@ -120,10 +120,10 @@ bool Region::load(Chunk& chunk,size_t index) {
 }
 
 inline bool isValid(const glm::uvec2& coord) {
-	return coord.x < REGION_SIZE&& coord.y < REGION_SIZE;
+	return coord.x < REGION_SIZE && coord.y < REGION_SIZE;
 }
 
-inline void set(const glm::uvec2& coord, Chunk*& target, Chunk* source) {
+inline void set(const glm::ivec2& coord, Chunk*& target, Chunk* source) {
 	if (isValid(coord)) target = &source[toInt(coord, REGION_SIZE)];
 }
 
@@ -138,13 +138,14 @@ void Region::setNull() {
 	}
 	//Set Closes
 	for (size_t i = 0; i < REGION_VOLUME; i++) {
+		/*buffer[i].setCloses(buffer,REGION_VOLUME)*/
 		Chunk::Closes& cl = buffer[i].closes;
+		cl.clear();
 		glm::ivec2 coord(toCoord2(i, REGION_SIZE));
-
-		set(coord + glm::ivec2(-1, 0), cl.chunks[left],		buffer);
-		set(coord + glm::ivec2(	1, 0), cl.chunks[right],	buffer);
-		set(coord + glm::ivec2( 0,-1), cl.chunks[back],		buffer);
-		set(coord + glm::ivec2( 0, 1), cl.chunks[front],	buffer);
+		set(glm::ivec2(coord.x-1, coord.y), cl.chunks[left], buffer);
+		set(glm::ivec2(coord.x+1, coord.y), cl.chunks[right], buffer);
+		set(glm::ivec2(coord.x, coord.y-1), cl.chunks[back], buffer);
+		set(glm::ivec2(coord.x, coord.y+1), cl.chunks[front], buffer);
 	}
 }
 

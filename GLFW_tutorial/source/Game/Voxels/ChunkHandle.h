@@ -18,8 +18,6 @@ public:
 
 	void create(size_t radius);
 
-	void extractFromRegion();
-
 	void update(const glm::ivec3& positionCamera);
 
 	void save()const;
@@ -31,7 +29,12 @@ public:
 	/// <returns></returns>
 	const Voxel* getVoxel(const glm::uvec3& coord);
 	inline const Voxel* getVoxel(int x, int y, int z) { return  getVoxel(glm::uvec3(x, y, z)); }
-
+	inline bool isObstacle(const glm::uvec3& coord) {
+		const Voxel* voxel = getVoxel(coord);
+		if (voxel && VoxelPack::isObstacle(*voxel))return 1;
+		return 0;
+	}
+	inline bool isObstacle(size_t x,size_t y,size_t z) { return isObstacle(glm::uvec3(x, y, z)); }
 	/// <summary>
 	/// coord - global chunk coordinates
 	/// </summary>
@@ -40,11 +43,13 @@ public:
 	inline Chunk* getByVoxel(const glm::ivec3& coord) {
 		return get(toLocal(coord));
 	}
+
 	void draw(const View* view, const Shader& shader) {
 		for (size_t i = 0; i < chunks_.size(); i++) {
 			chunks_[i]->draw(view, shader);
 		}
 	}
+
 	void setVoxel(const Voxel&, const glm::ivec3& coord);
 	/*bool setVoxel(const Voxel&, const glm::vec3& start_ray, const glm::vec3& direction_ray, float maxDistance, bool adMode);*/
 
@@ -87,8 +92,13 @@ public:
 	std::vector<Chunk*>& getChunks() {
 		return chunks_;
 	}
+
 	SupReg region;
+
 private:
+
+	void extractFromRegion();
+
 	//ѕровер€ет допустимость локальных кординат
 	inline bool isIn(const glm::uvec3& local) {
 		return (local.x < size_ && local.z < size_ && local.y == 0);

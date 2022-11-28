@@ -8,6 +8,8 @@ inline float getNoise(const glm::vec3& global) {
 	return glm::perlin(glm::vec3(global) * 0.0125f);
 }
 
+
+
 size_t  MasterGeneration::calcHeight(const glm::uvec2& real) {
 	
 	float height = noise.get(real);
@@ -29,18 +31,6 @@ size_t  MasterGeneration::calcHeight(const glm::uvec2& real) {
 
 void MasterGeneration::generateChunk(Chunk& chunk) {
 
-	//for (size_t y = 0; y < CHUNK_H; y++) {
-	//	for (size_t z = 0; z < CHUNK_D; z++) {
-	//		for (size_t x = 0; x < CHUNK_W; x++)
-	//		{
-	//			glm::uvec3 real_coord = glm::uvec3(x, y, z) + chunk.getGlobalPos();
-	//			int id = (noise.get(glm::vec3(real_coord) * 0.0125f) > 0.1f) - 1;//real_y <= (height) * 60 + 30;
-	//			if (real_coord.y <= 2)
-	//				id = 1;
-	//			chunk.getFromLocalCoord(x, y, z).id = id;
-	//		}
-	//	}
-	//}
 	size_t heights[CHUNK_D*CHUNK_W];
 
 	for (size_t z = 0; z < CHUNK_D; z++) {

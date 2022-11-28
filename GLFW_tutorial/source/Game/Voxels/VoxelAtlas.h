@@ -55,6 +55,7 @@ struct Block {
 	int idSide[6];
 	Uint8RGB emission;
 	byte drawGroup;
+	byte physGroup;
 
 	bool emissionFlag;
 
@@ -127,6 +128,7 @@ private:
 		float v = 1.f - ((1.f + id / sizeVoxel_) * uvSize_);
 		return glm::vec2(u, v);
 	}
+
 	std::vector<glm::vec2> uv;
 	std::vector<Block> blocks;
 
@@ -136,17 +138,26 @@ private:
 
 };
 
+///VoxelPack---------------------------
+/// <summary>
+/// 
+/// </summary>
 class VoxelPack {
 public:
 
 	static inline const Block& get(Voxel id) {
 		return pack->get(id);
 	}
+	static inline const glm::vec2& get(Voxel id, byte side) {
+		return pack->get(id, side);
+	}
+	static inline const ResourceVoxelPack* get() {
+		return pack;
+	}
 
 	static inline bool isEmission(Voxel id) {
 		return (id.id > -1) && (get(id).emissionFlag == 1);
 	}
-
 	static inline bool isRender(Voxel id) {
 		return id.id > -1;
 	}
@@ -156,13 +167,9 @@ public:
 	static inline bool isOpaque(Voxel id) {
 		return isRender(id) && (get(id).drawGroup == 0);
 	}
-
-	static inline const glm::vec2& get(Voxel id, byte side) {
-		return pack->get(id, side);
-	}
-
-	static inline const ResourceVoxelPack* get() {
-		return pack;
+	static inline bool isObstacle(Voxel id) {
+		if (id.id < 0)return 0;
+		return get(id).physGroup == 1;
 	}
 
 	static inline void set(const ResourceVoxelPack* pack_){
@@ -174,5 +181,6 @@ private:
 	VoxelPack() {}
 	~VoxelPack() {}
 	static const ResourceVoxelPack* pack;
+
 };
 #endif

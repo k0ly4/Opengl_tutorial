@@ -28,7 +28,6 @@ public:
 		GainedFocus,
 		SizeType,
 	};
-public:
 	Type type;
 public:
 

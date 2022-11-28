@@ -54,14 +54,14 @@ bool ResourceVoxelPack::load(const std::string& directory) {
 		blocks[i].name = block["name"];
 		//side
 		auto& sides = block["side"];
-		for (size_t side = 0; side < 6; side++) {
-			blocks[i].idSide[side] = sides[side];
-		}
+		for (size_t side = 0; side < 6; side++) blocks[i].idSide[side] = sides[side];
 		//emission
 		auto& emission = block["emission"];
-		blocks[i].emission = Uint8RGB(emission[0], emission[1], emission[2]);
-		blocks[i].setEmissionFlag();
+		blocks[i].emission = Uint8RGB(emission[0], emission[1], emission[2]); blocks[i].setEmissionFlag();
+		//drawGroup
 		blocks[i].drawGroup = block["drawGroup"];
+		//physGroup
+		blocks[i].physGroup = block["physGroup"];
 		
 	}
 	//uv

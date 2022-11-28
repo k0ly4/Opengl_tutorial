@@ -8,38 +8,44 @@
 			"name":"turf",
 			"side":[1,1,2,0,1,1],
 			"emission":[0,0,0],
-			"drawGroup":0
+			"drawGroup":0,
+			"physGroup":1
 		},
 		
 		"1":{
 			"name":"earth",
 			"side":[2,2,2,2,2,2],
 			"emission":[0,0,0],
-			"drawGroup":0
+			"drawGroup":0,
+			"physGroup":1
 		},
 		"2":{
 			"name":"stone",
 			"side":[4,4,4,4,4,4],
 			"emission":[0,0,0],
-			"drawGroup":0
+			"drawGroup":0,
+			"physGroup":1
 		},
 		"3":{
 			"name":"light_cold",
 			"side":[3,3,3,3,3,3],
 			"emission":[1,1,7],
-			"drawGroup":0
+			"drawGroup":0,
+			"physGroup":1
 		},
 		"4":{
 			"name":"glass",
 			"side":[5,5,5,5,5,5],
 			"emission":[0,0,0],
-			"drawGroup":1
+			"drawGroup":1,
+			"physGroup":1
 		},
 		"5":{
 			"name":"light_warm",
 			"side":[6,6,6,6,6,6],
 			"emission":[10,10,10],
-			"drawGroup":0
+			"drawGroup":0,
+			"physGroup":1
 		}
 	}
 }

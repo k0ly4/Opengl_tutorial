@@ -3,7 +3,7 @@
 
 #include "Scene/CascadedShadow.h"
 #include "Input/Input.h"
-
+#include "Input/InputHandler.h"
 #include "Game/Lib/GameModules.h"
 
 
@@ -27,12 +27,15 @@ public:
         bool debugCascadeShadow = 0;
     }f;
 
+    void initialize(Scene& scene);
+
     void update(float time, RenderWindow& window, GraphicPipeline& graphic, Scene& scene);
 
 private:
+
     void inputDisabledCursor(Event& event, Scene& scene, GraphicPipeline& graphic);
-    void move_camera(float time, Scene& scene);
 	Event event;
+    InputHandler inputMain;
 };
 
 #endif

@@ -216,6 +216,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Input\Command.cpp" />
+    <ClCompile Include="source\Input\InputHandler.cpp" />
+    <ClCompile Include="source\Physics\PhysicsSolver.cpp" />
+    <ClCompile Include="source\Physics\Hitbox.cpp" />
     <ClCompile Include="source\Game\Voxels\MasterGeneration.cpp" />
     <ClCompile Include="source\Game\Loader\SaveManager.cpp" />
     <ClCompile Include="source\Game\Light\LightSystem.cpp" />
@@ -291,8 +295,14 @@
     <ClCompile Include="source\Scene\Transformable.cpp" />
     <ClCompile Include="source\Game\Voxels\World.cpp" />
     <ClCompile Include="source\Game\Voxels\SuperRegion.cpp" />
+    <ClCompile Include="source\Physics\sPhysics.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Game\Lib\Engine.h" />
+    <ClInclude Include="source\Input\Command.h" />
+    <ClInclude Include="source\Input\InputHandler.h" />
+    <ClInclude Include="source\Physics\PhysicsSolver.h" />
+    <ClInclude Include="source\Physics\Hitbox.h" />
     <ClInclude Include="source\Game\Voxels\MasterGeneration.h" />
     <ClInclude Include="source\Game\Loader\SaveManager.h" />
     <ClInclude Include="source\Game\Entities\Observer.h" />
@@ -373,6 +383,7 @@
     <ClInclude Include="source\Math\Vectors.h" />
     <ClInclude Include="source\Game\Voxels\World.h" />
     <ClInclude Include="source\Game\Voxels\SuperRegion.h" />
+    <ClInclude Include="source\Physics\sPhysics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

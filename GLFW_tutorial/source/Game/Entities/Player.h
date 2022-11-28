@@ -4,50 +4,91 @@
 #include "Scene/Camera.h"
 #include "Game/Voxels/World.h"
 #include "Scene/Primitive.h"
-class Player
-{
+#include "Physics/Hitbox.h"
+
+//Player------------------------------------------------------
+class InputPlayer {
 
 public:
-	Player(const Texture2D& texture) :cube(glShader::texture)
-	{
+
+	void jump() { hitbox->velocity.y += jumpImpulse; }
+	inline void cameraUpdate(const glm::vec2& pos) { 
+		camera->mouse_move(pos); 
+		camera->setPosition(hitbox->position); 
+	}
+
+	void moveUpdate(float time);
+	void setVoxel(World& world, bool isModAdd);
+	inline void setCurVoxel(const Voxel& voxel) { curVoxel = voxel; }
+
+	float jumpImpulse = 0.1f;
+	float maxSpeed = 10.f;
+	Hitbox* hitbox;
+	Camera* camera;
+	
+	glm::vec3 normCursor;
+	glm::ivec3 posCursor;
+	Voxel curVoxel = Voxel(2);
+
+private:
+
+};
+
+//Cursor3D------------------------------------------------------
+class Cursor3D {
+public:
+
+	Cursor3D() :cube(glShader::texture) {
 		cube.getGraphic()->material.setBaseColor(Color::BLACK);
 		cube.setScale(glm::vec3(1.1f));
 		cube.genMesh(0.5f);
 		GlRender::Line::Width(5.f);
 		cube.getGraphic()->VAO.data_draw.data.mode_primitive = GlRender::LINE_STRIP;
-
-	}
-	void getMesh(std::vector<Vertex>& vertices);
-
-	const glm::vec3& getPosition()const {
-		return camera_->getPosition();
 	}
 
-	inline Basis getBasis()const {
-		return Basis(camera_->getBasis().position, camera_->getBasis().right, camera_->getBasis().up, camera_->getBasis().front);
-	}
+	void update(ChunkSectorRender& chunks, InputPlayer& input,const Basis& basis);
+	void draw(RenderTarget& target) { target.draw(cube); }
 
-	void setCamera(Camera& camera) {
-		camera_ = &camera;
-	}
+	float maxDistanceCursor = 10.f;
+	Cube cube;
 
-	void upVoxelCursor(ChunkSectorRender& chunks);
-	void setCurVoxel(const Voxel& voxel) {
-		curVoxel = voxel;
-	}
-	void setVoxel(World& world,bool isModAdd);
-	void draw(RenderTarget& target) {
-		target.draw(cube);
-	}
 private:
 
-	Voxel curVoxel = Voxel(2);
-	Cube cube;
-	float maxDistanceCursor = 10.f;
-	glm::vec3 normCursor;
-	glm::ivec3 posCursor;
-	Camera* camera_ =0;
+};
 
+//Player------------------------------------------------------
+class Player
+{
+
+public:
+
+	Player(const Texture2D& texture) : input(){
+		setHitbox(std::make_shared<Hitbox>());
+		hitbox->create(glm::vec3(0.f), glm::vec3(0.5f, 1.f, 0.5f), 10.f);
+	}
+
+	inline void setHitbox(std::shared_ptr<Hitbox> hitbox_) {
+		hitbox = hitbox_;
+		input.hitbox = &(*hitbox);
+	}
+
+	inline void setCamera(Camera& camera) {
+		camera_ = &camera;
+		input.camera = &camera;
+	}
+
+	const glm::vec3& getPosition()const {return camera_->getPosition(); }
+
+	inline Basis getBasis()const { return Basis(camera_->getBasis().position, camera_->getBasis().right, camera_->getBasis().up, camera_->getBasis().front);}
+	inline void cursorUpdate(ChunkSectorRender& chunks) { cursor.update(chunks, input, getBasis()); }
+	
+	std::shared_ptr<Hitbox> hitbox;
+	InputPlayer input;
+	Cursor3D cursor;
+
+private:
+
+	Camera* camera_ =0;
 };
 
 #endif

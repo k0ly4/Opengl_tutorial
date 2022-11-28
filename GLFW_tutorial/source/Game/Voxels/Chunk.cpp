@@ -25,15 +25,15 @@ bool Chunk::save()const {
 	return 0;
 }
 
-//void Chunk::setCloses(Chunk* chunks,size_t size) {
-//	closes.clear();
-//	for (size_t i = 0; i < size; i++) {
-//		glm::ivec3 dist = (glm::ivec3)chunks[i].local_ - (glm::ivec3)local_;
-//		if (((abs(dist.x) + abs(dist.y) + abs(dist.z)) != 1))
-//			continue;
-//		closes.chunks[getSide(dist)] = &chunks[i];
-//	}
-//}
+void Chunk::setCloses(Chunk* chunks,size_t size) {
+	closes.clear();
+	for (size_t i = 0; i < size; i++) {
+		glm::ivec3 dist = (glm::ivec3)chunks[i].local_ - (glm::ivec3)local_;
+		if (((abs(dist.x) + abs(dist.y) + abs(dist.z)) != 1))
+			continue;
+		closes.chunks[getSide(dist)] = &chunks[i];
+	}
+}
 
 
 
