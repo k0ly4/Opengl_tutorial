@@ -107,7 +107,6 @@ void LightHandle::chunkInit(Chunk& chunk) {
 		}
 
 	}
-	
 	//Sun
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
@@ -143,4 +142,5 @@ void LightHandle::chunkInit(Chunk& chunk) {
 			}
 		}
 	}
+	chunk.isInitLightMap = 1;
 }

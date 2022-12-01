@@ -11,7 +11,10 @@ class InputPlayer {
 
 public:
 
-	void jump() { hitbox->velocity.y += jumpImpulse; }
+	inline void jump() { 
+		hitbox->velocity += GAME::WORLD_UP* jumpImpulse;
+		hitbox->grounded = 0; 
+	}
 	inline void cameraUpdate(const glm::vec2& pos) { 
 		camera->mouse_move(pos); 
 		camera->setPosition(hitbox->position); 
@@ -21,9 +24,9 @@ public:
 	void setVoxel(World& world, bool isModAdd);
 	inline void setCurVoxel(const Voxel& voxel) { curVoxel = voxel; }
 
-	float jumpImpulse = 0.1f;
+	float jumpImpulse = 20.f;
 	float maxSpeed = 10.f;
-	Hitbox* hitbox;
+	std::shared_ptr<Hitbox> hitbox;
 	Camera* camera;
 	
 	glm::vec3 normCursor;
@@ -64,12 +67,12 @@ public:
 
 	Player(const Texture2D& texture) : input(){
 		setHitbox(std::make_shared<Hitbox>());
-		hitbox->create(glm::vec3(0.f), glm::vec3(0.5f, 1.f, 0.5f), 10.f);
+		hitbox->create(glm::vec3(0.f), glm::vec3(0.4f, 0.9f, 0.4f), 60.f);
 	}
 
 	inline void setHitbox(std::shared_ptr<Hitbox> hitbox_) {
 		hitbox = hitbox_;
-		input.hitbox = &(*hitbox);
+		input.hitbox = hitbox;
 	}
 
 	inline void setCamera(Camera& camera) {

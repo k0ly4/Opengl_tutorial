@@ -3,55 +3,112 @@
 
 #include "Math/Math.h"
 #include <vector>
+#include"System/Exception.h"
 
-/// <summary>
-/// GeneralBuffer
-/// </summary>
-class GeneralBuffer {
-protected:
-
-    friend class GlBuffer;
-
-    class g_buffer {
-        unsigned int ID;
-    public:
-        g_buffer() {
-            glGenBuffers(1, &ID);
-        }
-        unsigned int operator *() {
-            return ID;
-        }
-        ~g_buffer() {
-            glDeleteBuffers(1, &ID);
-        }
-    };
-
-    std::shared_ptr<g_buffer> ID;
-    size_t cur_size = 0;
-};
-
+class GeneralBuffer;
 /// <summary>
 /// GlBuffer
 /// </summary>
 class GlBuffer {
 
 public:
-
-    static  void resize(GeneralBuffer& buffer, size_t new_size, GLenum mode = GL_STATIC_DRAW);
+    static void init() {
+        pull.init();
+    }
+    static void resize(GeneralBuffer& buffer, size_t new_size, GLenum mode = GL_STATIC_DRAW);
     static void copy(GeneralBuffer& read, GeneralBuffer& write);
     static void copy(GeneralBuffer& read, int readOffset, GeneralBuffer& write, int writeOffset, size_t size);
+
     static  void bindVBO(unsigned int vbo);
     static  void bindEBO(unsigned int ebo);
     static  void bindVAO(unsigned int vao);
 
+    static unsigned getFreeBuffer() { return pull.getFreeBuffer(); }
+    static unsigned getFreeVertexArray() { return pull.getFreeVertexArray(); }
+
+    static void deleteBuffer(unsigned id) {         pull.deleteBuffer(id); }
+    static void deleteVertexArray(unsigned id) {    pull.deleteVertexArray(id); }
+
+
+    class Pull {
+
+    public:
+        inline void init() {
+            glGenBuffers(bMax, buffer);
+            for (size_t i = 0; i < bMax; i++)stack_buffer[i] = buffer[i];
+
+            glGenVertexArrays(MAX, vertexArray);
+            for (size_t i = 0; i < MAX; i++) stack_vertexArray[i] = vertexArray[i];
+
+            stack_buffer_forward = stack_vertexArray_forward = 0;
+            isInit = 1;
+        }
+        constexpr size_t getMax() { return MAX; }
+        constexpr size_t getbMax() { return bMax; }
+        inline unsigned getFreeBuffer() { 
+            assert(isInit && stack_buffer_forward != bMax -1);                       
+            return stack_buffer[stack_buffer_forward++]; }
+
+        inline unsigned getFreeVertexArray() {
+            assert(isInit && stack_vertexArray_forward != MAX - 1);              
+            return stack_vertexArray[stack_vertexArray_forward++]; }
+        
+        inline void deleteBuffer(unsigned id)   {             
+            assert(stack_buffer_forward > 0);
+            stack_buffer[--stack_buffer_forward] = id;}
+
+        inline void deleteVertexArray(unsigned id)     {  
+            assert(stack_buffer_forward >0);
+            stack_vertexArray[--stack_vertexArray_forward] = id;
+        }
+
+    private:
+        bool isInit = 0;
+        static const size_t MAX = 2048;
+        static const size_t bMax = 3000;
+
+        unsigned stack_buffer[bMax];
+        int stack_buffer_forward;
+        unsigned stack_vertexArray[MAX];
+        int stack_vertexArray_forward;
+
+        unsigned buffer[bMax];
+        unsigned vertexArray[MAX];
+
+    };
+
 private:
 
     static unsigned int last_vbo, last_ebo, last_vao;
-    static GeneralBuffer temp;
-    std::map<GLenum, unsigned int> log;
+    static Pull pull;
 
     GlBuffer() {}
     ~GlBuffer() {}
+};
+
+/// <summary>
+/// GeneralBuffer
+/// </summary>
+class GeneralBuffer {
+protected:
+    class id_buffer {
+        unsigned int ID;
+    public:
+
+        id_buffer() { ID = GlBuffer::getFreeBuffer(); }
+        unsigned int operator *() { return ID; }
+        virtual ~id_buffer() { GlBuffer::deleteBuffer(ID); }
+    };
+    GeneralBuffer():
+        ID(std::make_shared<id_buffer>()),
+        cur_size(0)
+    {}
+    inline size_t size()const { return cur_size; }
+    inline unsigned int get() { return **ID.get(); }
+
+    friend class GlBuffer;
+    std::shared_ptr<id_buffer> ID;
+    size_t cur_size;
 };
 
 /// <summary>
@@ -120,29 +177,19 @@ class GBO:public GeneralBuffer {
 
 public:
 
-    enum  MODE_DRAW:GLenum
+    enum  MODE_DRAW :GLenum
     {
         STATIC = 0x88E4, DYNAMIC = 0x88E8
     };
-
-    GBO() {
-        ID = std::make_unique<g_buffer>();
-    }
 
     void create(size_t Size, const void* Data = NULL) {
         cur_size = Size;
         glBufferData(target, cur_size, Data, mode);
     }
 
-    inline unsigned int get() {
-        return **ID.get();
-    }
+    void setMode(GLenum Mode) {mode = Mode;}
 
-    void setMode(GLenum Mode) {
-        mode = Mode;
-    }
-
-    inline size_t size()const { return cur_size; }
+   
     //data function
 
     void data(size_t Size, const void* data);
@@ -217,29 +264,20 @@ public:
         target = GL_ELEMENT_ARRAY_BUFFER;
     }
 
-    void begin() {
-        GlBuffer::bindEBO(**ID);
-    }
+    void begin() { GlBuffer::bindEBO(**ID);}
 
-    static inline void end() {
-        GlBuffer::bindEBO(0);
-    }
+    static inline void end() {GlBuffer::bindEBO(0);}
 };
+
+/// <summary>
+/// VertexBufferObject
+/// </summary>
 class VertexBufferObject :public GBO {
 
 public:
-
-    VertexBufferObject() {
-        target = GL_ARRAY_BUFFER;
-    }
-
-    void begin()const {
-        GlBuffer::bindVBO(**ID);
-    }
-
-    static inline void end() {
-        GlBuffer::bindVBO(0);
-    }
+    VertexBufferObject() {target = GL_ARRAY_BUFFER;}
+    inline void begin()const {GlBuffer::bindVBO(**ID);}
+    static inline void end() {GlBuffer::bindVBO(0);}
 };
 
 /// <summary>
@@ -247,29 +285,21 @@ public:
 /// </summary>
 class ArrayBufferObject {
 
-    class buffer {
+    class id_buffer {
         unsigned int ID;
     public:
-        buffer() {
-            glGenVertexArrays(1, &ID);
-        }
-        unsigned int operator *() {
-            return ID;
-        }
-        ~buffer() {
-            glDeleteVertexArrays(1, &ID);
-        }
+
+        id_buffer() {ID = GlBuffer::getFreeVertexArray();}
+        unsigned int operator *() { return ID; }
+        ~id_buffer() { GlBuffer::deleteVertexArray(ID);}
     };
 
 public:
 
-    ArrayBufferObject() {
-        ID = std::make_unique<buffer>();
-    }
+    ArrayBufferObject():
+        ID(std::make_shared<id_buffer>() ){}
 
-    inline void begin()const {
-        GlBuffer::bindVAO(**ID);
-    }
+    inline void begin()const { GlBuffer::bindVAO(**ID); }
 
     void attrib(size_t attribute, size_t size, size_t step, size_t offset);
     void attribI(size_t attribute, size_t size, size_t step, size_t offset);
@@ -277,18 +307,14 @@ public:
     void attribInstanceMat4(size_t attribute, size_t step, size_t offset);
     void attribInstance(size_t attribute, size_t size, size_t step, size_t offset);
 
-    static inline void end() {
-        GlBuffer::bindVAO(0);
-    }
+    static inline void end() {GlBuffer::bindVAO(0); }
 
-    size_t sizeAttribute()const {
-        return size_attribute;
-    }
+    inline size_t sizeAttribute()const {return size_attribute;}
 
 private:
 
     size_t size_attribute = 0;
-    std::shared_ptr<buffer> ID;
+    std::shared_ptr<id_buffer> ID;
 
 };
 

@@ -14,7 +14,7 @@ public:
 	bool grounded = 0;
 
 	inline float getGravityScale() {
-		return mass * 0.1f;
+		return mass * 0.02f;
 	}
 
 	inline void create(const glm::vec3& position_,const glm::vec3& halfSize_,float mass_,const glm::vec3& startVelocity_ = glm::vec3(0.f),bool grounded_ =0) {

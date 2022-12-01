@@ -25,7 +25,7 @@ public:
         shader.uniform("exposure", exposure);
 
         CullFace::Enable(false);
-        sBuffer::quad.getVAO().draw();
+        sBuffer::quad->getVAO().draw();
     }
 
 private:
@@ -57,7 +57,7 @@ public:
         shader.uniform("exposure", exposure);
         shader.uniform("model", glm::mat4(1.f));
         CullFace::Enable(false);
-        sBuffer::quad2D.getVAO().draw();
+        sBuffer::quad2D->getVAO().draw();
     }
 
 private:

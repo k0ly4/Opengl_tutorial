@@ -3,34 +3,20 @@
 
 
 void InputPlayer::moveUpdate(float time) {
-	const float speed = 10.f;
-	glm::vec3 vec_move(0.f);
-
-	hitbox->velocity.x = hitbox->velocity.y= hitbox->velocity.z =0.f;
-
+	hitbox->velocity.x = hitbox->velocity.z =0.f;
+	const glm::vec3& vecRight = camera->getBasis().right;
 	if (Keyboard::getKey(Keyboard::W).action) {
-		vec_move.z = 1;
-		hitbox->velocity += maxSpeed * camera->getBasis().front;
+		hitbox->velocity += maxSpeed * glm::cross(GAME::WORLD_UP, vecRight);
 	}
 	else if (Keyboard::getKey(Keyboard::S).action) {
-		vec_move.z = -1;
-		hitbox->velocity += -maxSpeed * camera->getBasis().front;
+		hitbox->velocity += -maxSpeed * glm::cross(GAME::WORLD_UP,vecRight);
 	}
 	if (Keyboard::getKey(Keyboard::D).action) {
-		vec_move.x = 1;
-		hitbox->velocity += maxSpeed * glm::normalize(glm::cross(camera->getBasis().front, GAME::WORLD_UP));
+		hitbox->velocity += maxSpeed * vecRight;
 	}
 	else if (Keyboard::getKey(Keyboard::A).action) {
-		vec_move.x = -1;
-		hitbox->velocity += -maxSpeed * glm::normalize(glm::cross(camera->getBasis().front, GAME::WORLD_UP));
+		hitbox->velocity += -maxSpeed * vecRight;
 	}
-	////  camera.move(glm::vec3(vec_move.x * time * speed, 0.f, vec_move.z * time * speed));
-	//float s = sqrt(abs(vec_move.z) + abs(vec_move.x));
-	//if (s > 0.f) {
-	//	s = (speed * time) / s;
-		//camera->move(glm::vec3(vec_move.x * s, 0.f, vec_move.z * s));
-	//}
-
 }
 
 void InputPlayer::setVoxel(World& world, bool isModAdd) {

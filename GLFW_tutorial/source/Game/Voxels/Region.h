@@ -5,31 +5,24 @@
 #include "Game/Loader/SaveManager.h"
 #include "Game/Voxels/MasterGeneration.h"
 
-struct uvecXZ {
-	size_t x, z;
-	operator glm::uvec2() {
-		return glm::uvec2(x, z);
-	}
-};
-
 ///Region---------------------------------------------
 /// <summary>
-///  
+///  Класс файлового взимодействия с игрой
 /// </summary>
 class Region {
 
 public:
 
+	Region() {}
+	Region(const glm::uvec2& begin) {
+		init(begin);
+	}
 	inline void init(size_t x, size_t z) { init(x, z); }
 	inline void init(const glm::uvec2& begin) {
-		beg_ch = begin;
-		beg_reg = beg_ch / REGION_VEC;
-		setNull();
+		beg_ch = begin; beg_reg = beg_ch / REGION_VEC;
+		clear();
 	}
-	
-	inline bool save()const { return save(getPath(), buffer); }
-
-	inline bool _save()const { return _save(buffer, beg_ch);}
+	bool save();
 
 	inline const glm::uvec2& getPosInChunk() { return beg_ch;  }
 
@@ -39,35 +32,35 @@ public:
 	inline Chunk* getChunks() { return buffer; };
 
 private:
+	inline void open() {
+		if (reader_.isOpen()) reader_.close();
+		if (reader_.open(getPath())) { 
+			for (size_t i = 0; i < REGION_VOLUME; i++) { load(buffer[i], i); }
+		}
+		else {
+			createRegionFile();
+			reader_.open(getPath());
+		}
+	}
+	void clear();
 
-	void setNull();
-
-	inline std::string getPath()const { return sSaveF::pathRegion(beg_reg);}
-
+	inline std::string getPath()const { return sFile::pathRegion(beg_reg);}
 	inline void createRegionFile() { createRegionFile(getPath()); }
-
-	static inline void createRegionFile(size_t x_region, size_t z_region) { 
-		createRegionFile(sSaveF::pathRegion(x_region, z_region)); 
-	}
-	static inline void createRegionFile(const std::string& path) {
+	inline void createRegionFile(size_t x_region, size_t z_region) { createRegionFile(sFile::pathRegion(x_region, z_region)); }
+	inline void createRegionFile(const std::string& path) {
 		LOG("createRegionFile::create path:%s\n", path.c_str());
-		WriterRLE writer;
-		writer.open(path);
-		writer.fillNull();
-		writer.close();
+		WriterRLE writer_(path);
+		writer_.fillNull();
 	}
-
-	static bool _save(const Chunk* chunks, const glm::uvec2& begin_);
-	static bool save(const std::string& path, const Chunk* chunks);
-
-	static void saveInRegion(const Chunk* buffer, size_t x_reg, size_t y_reg);
 
 	bool load(Chunk& chunk, size_t x, size_t z);
-	bool load(Chunk& chunk, size_t index);
+	inline void load(Chunk& chunk, size_t index) {reader_.readChunk(chunk, index);}
+
 
 	glm::uvec2 beg_ch = glm::uvec2(0);
 	glm::uvec2 beg_reg = glm::uvec2(0);
 	Chunk buffer[REGION_VOLUME];
+	ReaderRLE reader_;
 };
 
 #endif

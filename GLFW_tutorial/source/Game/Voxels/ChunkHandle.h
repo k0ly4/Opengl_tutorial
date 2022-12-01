@@ -8,19 +8,27 @@
 /// <summary>
 ///  
 /// </summary>
+typedef std::vector<Chunk*> ChunkPtrs;
 class ChunkSectorRender :public Drawable, public uniListener<Chunk>{
 
 public:
 
-	ChunkSectorRender() :size_(0) {
-		shaderHint = glShader::voxel;
+	ChunkSectorRender(SupReg* region) :
+		size_(sSetup::distance_render),
+		begin_(0.f),
+		cameraChunk_(glm::uvec3(sSetup::getBeginPos()) / CHUNK_VOLUME),
+		region_(region) 
+	{ shaderHint = glShader::voxel;}
+	
+	inline void create(size_t size, const glm::ivec3& positionCamera) { 
+		size_ = size;
+		__chunks_.resize(size_ * size_);
+		cameraChunk_ = glm::uvec2(positionCamera.x / CHUNK_W, positionCamera.z / CHUNK_D);
+		extractFromRegion();
 	}
-
-	void create(size_t radius);
-
-	void update(const glm::ivec3& positionCamera);
-
-	void save()const;
+	//определяет сторону сектора в центре которого наблюдатель
+	void setSize(size_t size);
+	void setCameraPos(const glm::ivec3& positionCamera);
 
 	/// <summary>
 	/// 
@@ -40,19 +48,17 @@ public:
 	/// </summary>
 	Chunk* get(const glm::uvec3& coord);
 
-	inline Chunk* getByVoxel(const glm::ivec3& coord) {
-		return get(toLocal(coord));
-	}
+	inline Chunk* getByVoxel(const glm::ivec3& coord) { return get(toLocal(coord));}
 
-	void draw(const View* view, const Shader& shader) {
-		for (size_t i = 0; i < chunks_.size(); i++) {
-			chunks_[i]->draw(view, shader);
-		}
+	inline void draw(const View* view, const Shader& shader) {
+		shader.use();
+		view->useVP(shader);
+		VoxelPack::get()->use(shader);
+		for (size_t i = 0; i < render_chunks.size(); i++) render_chunks[i]->draw(shader);
 	}
 
 	void setVoxel(const Voxel&, const glm::ivec3& coord);
-	/*bool setVoxel(const Voxel&, const glm::vec3& start_ray, const glm::vec3& direction_ray, float maxDistance, bool adMode);*/
-
+	
 	/// <summary>
 	/// 
 	/// </summary>
@@ -83,20 +89,12 @@ public:
 	unsigned char getChannelLight(const glm::uvec3& coord, int channel);
 	inline unsigned char getChannelLight(int x, int y, int z, int channel) { return getChannelLight(glm::ivec3(x, y, z), channel); }
 
-	inline size_t size()const {
-		return size_;
-	}
-	const glm::uvec2& getBegin()const {
-		return begin_;
-	}
-	std::vector<Chunk*>& getChunks() {
-		return chunks_;
-	}
-
-	SupReg region;
+	inline size_t size()const { return size_; }
+	const glm::uvec2& getBegin()const { return begin_; }
+	std::vector<Chunk*>& getChunks() {return __chunks_;}
 
 private:
-
+	
 	void extractFromRegion();
 
 	//Проверяет допустимость локальных кординат
@@ -107,12 +105,14 @@ private:
 	inline glm::uvec3 toLocal(const glm::uvec3& global) {
 		return ( glm::ivec3(global / CHUNK_VOLUME) - glm::ivec3(begin_.x, 0, begin_.y));
 	}
-	void lightFlagUp();
+	void lightFlagUp(ChunkPtrs&);
 	
+	ChunkPtrs __chunks_;
+	ChunkPtrs render_chunks;
 
-	std::vector<Chunk*> chunks_;
 	size_t size_;
 	glm::uvec2 begin_;
 	glm::uvec2 cameraChunk_ = glm::uvec2(2);
+	SupReg* region_;
 };
 #endif

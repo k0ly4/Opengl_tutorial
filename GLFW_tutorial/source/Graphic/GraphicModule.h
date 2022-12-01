@@ -1,12 +1,12 @@
 #ifndef GRAPHIC_MODULE_H
 #define GRAPHIC_MODULE_H
 
-#include "RenderWindow.h"
 #include<list>
-#include"Ui/Sprite.h"
-#include "GBuffer.h"
-#include "PostEffects.h"
 
+#include "Graphic/RenderWindow.h"
+#include "Graphic/PostEffects.h"
+
+#include"Ui/Sprite.h"
 #include "Game/Lib/GameModules.h"
 
 /// <summary>
@@ -23,13 +23,12 @@ public:
     void setBufferFrameSize(const glm::ivec2& size) {
         frame.setSize(size);
         ui.create(size);
-        gBuffer.setSize(size);
+       //gBuffer.setSize(size);
     }
 //
 //protected:
     RenderTexture ui;
     FrameBuffer frame;
-    GBuffer gBuffer;
     Filter filter;
 private:
 

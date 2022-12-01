@@ -22,7 +22,7 @@ public:
 	inline void save()const { for (size_t i = 0; i < SUPREG_VOLUME; i++) if (region[i] != 0)region[i]->save(); }
 
 private:
-
+	void setCloses(int previous_region_index);
 	void translate(const glm::ivec2& new_beg_reg);
 
 	glm::uvec2 beg_reg;

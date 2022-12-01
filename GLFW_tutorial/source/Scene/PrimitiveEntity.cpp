@@ -21,7 +21,7 @@ void sBuffer::Quad2D::initializeVBO(){
     VBO_.data(sizeof(vertices), vertices);
 }
 
-sBuffer::Quad2D sBuffer::quad2D;
+sBuffer::Quad2D* sBuffer::quad2D=0;
 
 
 //Quad2D
@@ -48,7 +48,7 @@ void sBuffer::Quad::initializeVBO() {
     VBO_.data(sizeof(vertices), vertices);
 }
 
-sBuffer::Quad sBuffer::quad;
+sBuffer::Quad* sBuffer::quad =0;
 
 
 //Cube
@@ -116,7 +116,7 @@ void sBuffer::Cube::initializeVBO() {
     VBO_.data(sizeof(vertices), vertices);
 }
 
-sBuffer::Cube sBuffer::cube;
+sBuffer::Cube* sBuffer::cube=0;
 
 //Plane
 //
@@ -145,7 +145,7 @@ void sBuffer::Plane::initializeVBO() {
     VBO_.data(sizeof(vertices), vertices);
 }
 
-sBuffer::Plane sBuffer::plane;
+sBuffer::Plane *sBuffer::plane = 0;
 
 
 

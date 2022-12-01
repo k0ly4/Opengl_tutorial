@@ -1,4 +1,5 @@
 #include "GLFW.h"
+#include <thread>
 struct PreSetupContext {
 
     int width = 800;
@@ -20,7 +21,7 @@ bool GLFW::Context::initialize() {
             exit(1);
             return 0;
         }
-
+      
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -28,6 +29,7 @@ bool GLFW::Context::initialize() {
         PreSetupContext setup;
         window = glfwCreateWindow(setup.width, setup.height, setup.name.c_str(), setup.monitor, setup.share);
         //Контекст и дебаг
+        setActive(true);        
         glfwMakeContextCurrent(window);
         glfwSetErrorCallback(error_callback);
 
@@ -43,5 +45,15 @@ bool GLFW::Context::initialize() {
 GLFWwindow* GLFW::Context::get() {
         return window;
     }
+
+void GLFW::Context::setActive(bool enable) {
+    if (lastStateThread == enable && lastThread == std::this_thread::get_id()) return;
+    lastThread = std::this_thread::get_id();
+    lastStateThread = enable;
+    if (lastStateThread) {
+        glfwMakeContextCurrent(window);
+    }
+    else glfwMakeContextCurrent(NULL);
+}
 
 GLFW::Context GLFW::lib;

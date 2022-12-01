@@ -1,19 +1,25 @@
 #include "PhysicsSolver.h"
 
-#define E 0.03
+#define E 0.03f
 
 void PhysicsSolver::test_step(Hitbox& hitbox) {
-	hitbox.grounded = false;
+	
 	float dt = timeStep;
 	//float linear_damping = hitbox.linear_damping;
-
+ 
 	glm::vec3& pos = hitbox.position;
 	glm::vec3& half = hitbox.halfsize;
 	glm::vec3& vel = hitbox.velocity;
 	float px = pos.x;
 	float pz = pos.z;
-	vel = vel + gravity * dt * hitbox.getGravityScale();
+	
+	vel += gravity * dt * hitbox.getGravityScale();
+	hitbox.grounded = false;
+	
+		
+	
 	ChunkSectorRender& chunks = world->chunks;
+	pos.x += vel.x * dt;
 	if (vel.x < 0.0) {
 		for (size_t y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
 			for (size_t z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
@@ -39,7 +45,7 @@ void PhysicsSolver::test_step(Hitbox& hitbox) {
 			}
 		}
 	}
-
+	pos.z += vel.z * dt;
 	if (vel.z < 0.0) {
 		for (size_t y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
 			for (size_t x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
@@ -65,7 +71,7 @@ void PhysicsSolver::test_step(Hitbox& hitbox) {
 			}
 		}
 	}
-
+	pos.y += vel.y * dt;
 	if (vel.y < 0.0) {
 		for (size_t x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
 			for (size_t z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
@@ -96,12 +102,6 @@ void PhysicsSolver::test_step(Hitbox& hitbox) {
 			}
 		}
 	}
-	//vel = vel + gravity * dt * hitbox.getGravityScale();
-
-	pos.x += vel.x * dt;
-	pos.y += vel.y * dt;
-	pos.z += vel.z * dt;
-
 }
 
 void PhysicsSolver::step(Hitbox& hitbox) {

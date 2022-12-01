@@ -1,7 +1,6 @@
 #ifndef EVENT_MODULE_H
 #define EVENT_MODULE_H
 
-#include "Scene/CascadedShadow.h"
 #include "Input/Input.h"
 #include "Input/InputHandler.h"
 #include "Game/Lib/GameModules.h"

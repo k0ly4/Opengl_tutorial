@@ -25,12 +25,11 @@ namespace com {
 
 	};
 
-	class LightSeter :public Command {
+	class UpdateMeshChunks :public Command {
 	public:
-		LightSeter(Scene* s) :scene(s) {}
+		UpdateMeshChunks(Scene* s) :scene(s) {}
 		void execute(Event& event);
-	private:
-		Scene* scene;
+	private: Scene* scene;
 	};
 
 	namespace pl {

@@ -4,49 +4,14 @@
 #include "Input/EventModule.h"
 
 void Scene::initialize3DScene(RenderWindow& window) {
-	sphere.setRadius(3.0f);
-	sphere.setCountSector(8);
-	sphere.setCountStack(8);
-
-	sphere.setPosition(glm::vec3(10.f, 10.f, 10.f));
-	sphere.setTexture(filin);
-
-	wall.genMesh(1.f);
-	wall.setPosition(glm::vec3(6.f));
-	wall.setScale(glm::vec3(1.f, 3.f, 3.f));
-	wall.getGraphic()->material.setBaseColor(Color::RED);
-
-	cube.genMesh(1.f);
-	cube.setPosition(glm::vec3(10.f));
-	cube.getGraphic()->material.setBaseColor(glm::vec3(1.f));
-	cube.getGraphic()->material.setTexture(filin);
-	cube.setRotate(AngleAxis(20.f, glm::vec3(1.f, 0.5f, 0.5f)));
-	cube2.genMesh(1.f);
-	cube2.setPosition(glm::vec3(11.f, 6.6f, 13.f));
-	cube2.getGraphic()->material.setTexture(filin);
-
-	auto& points = light.getPoints();
-	points.push_back(PointLight(glm::vec3(0.5f), glm::vec3(5.f, 13.f, 5.f), glm::vec2(0.032f, 0.09f)), &camera);
-	light.getDirs().setColor(glm::vec3(0.1f));
-	light.getDirs().setDirection(glm::vec3(1.f, 1.f, 0.f));
-	light.getDirs().setSizeMap(glm::ivec2(1024));
-	light.setAmbientFactor(0.01f);
-
 	player.setCamera(camera);
-	player.hitbox->position = glm::vec3(1100, 60, 1100);
-	camera.setPosition(glm::vec3(1100, 60, 1100));
+	player.hitbox->position = sSetup::getBeginPos();
+	camera.setPosition(sSetup::getBeginPos());
 	camera.setProjection(GAME::PROJECTION);
 	camera.cur_pos_mouse = Mouse::getPosition();
 
 	ImageLoader::flipVerticallyOnLoad(1);
 	filin.getPath("asset\\image\\favor.jpg");
-
-	gBufferObjects.resize(2);
-	
-	gBufferObjects[0] = (&wall);
-	gBufferObjects[1] = (&cube);
-	//LOG("this is%d exams\n",100u)
-	
 	world.init(camera);
 }
 
@@ -83,48 +48,46 @@ void Scene::inGBuffer(RenderTarget& target) {
 	}
 }
 
-void Scene::inForward(RenderTarget& target) {
+inline void forwardSetupContext() {
 	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 	Blend::Enable(true);
 	Depth::Enable(true);
-
 	CullFace::Mode(CullFace::Back);
+}
+
+void Scene::inForward(RenderTarget& target) {
+	
+	forwardSetupContext();
 
 	CullFace::Enable(false);
 	target.draw(world.chunks);
-	sphere.displayLine(target);
 	player.cursor.draw(target);
-	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
-
-	CullFace::Enable(true);
-	target.draw(light.getPoints());
-	light.draw(target, camera, sphere);
-	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
-	light.draw(target,camera,cube2);
-	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
+	/*Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
+	CullFace::Enable(true);*/
+	//target.draw(light.getPoints());
+	//DrawObject
+	//Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
+	//DrawObject
+	//Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 }
 
 
-void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
-
-	Blend::Enable(false);
-	Depth::Enable(true);
-	CullFace::Mode(CullFace::Back);
-	CullFace::Enable(false);
-	
-	CullFace::Enable(true); 
-	target.draw(cube, shader);
-	target.draw(wall, shader);
-	target.draw(sphere, shader);
-	target.draw(cube2, shader);
-}
-
-void Scene::inUI(RenderTarget& target) {
-	target.setView(view2D);
+//void Scene::inShadowMap(RenderTarget& target, glShader::Object shader) {
+//
+//	Blend::Enable(false);
+//	Depth::Enable(true);
+//	CullFace::Mode(CullFace::Back);
+//	CullFace::Enable(false);
+//	CullFace::Enable(true); 
+//}
+inline void uiSetupContext() {
 	Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 	CullFace::Enable(false);
 	Depth::Enable(false);
 	Blend::Enable(true);
+}
+void Scene::inUI(RenderTarget& target) {
+	target.setView(view2D);
+	uiSetupContext();
 	target.draw(sCowBoy);
-
 }

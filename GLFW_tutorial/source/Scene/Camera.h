@@ -113,66 +113,42 @@ public:
         view = _view.view;
     }
   
-    inline  glm::mat4 getInverseVP()const {
-        return view.getInverse() * proj.getInverse();
-    }
-    inline glm::mat4 getVP()const {
-        return proj.get() * view.get();
-    }
+    inline  glm::mat4 getInverseVP()const           {return view.getInverse() * proj.getInverse(); }
+    inline glm::mat4 getVP()const                   {return proj.get() * view.get();}
 
-    inline const MatrixShell& getProjection()const {
-        return proj.getMatrixShell();
-    }
-    inline const MatrixShell& getView() const {
-         return view.getMatrixShell();
-    }
+    inline const MatrixShell& getProjection()const  {return proj.getMatrixShell(); }
+    inline const MatrixShell& getView() const       {return view.getMatrixShell(); }
 
     inline void toGlobal(glm::vec3& window_coord)const {
         glm::vec4 res = getInverseVP() * glm::vec4(window_coord, 1.f);
         window_coord = res / res.w;
     }
 
-    inline void setProjection(const FloatRect& rect,float near,float far) {
-        proj.set(rect, near, far);
-    }
-    inline void setProjection(float ratio_screen, float angle_fov = 45.f, float near = 0.1f, float far = 150.f) { 
+    inline void setProjection(const FloatRect& rect,float near,float far) {proj.set(rect, near, far);}
+    inline void setProjection(float ratio_screen, float angle_fov = 45.f, float near = 0.1f, float far = 150.f) {
         proj.set(ratio_screen, angle_fov, near, far);
     }
-    inline void setProjection(const Perspective& persp) {
-        proj.set(persp);
-    }
-    inline void setProjection(const Box& box) {
-        proj.set(box);
-    }
+    inline void setProjection(const Perspective& persp) { proj.set(persp); }
+    inline void setProjection(const Box& box) {proj.set(box);}
 
     inline void use(const Shader& shader)const {
         shader.uniform("projection", proj.get());
         shader.uniform("camera", view.get());
     }
 
-    inline void setPosition(const glm::vec3& position) {
-        view.setPosition(position);
-    }
-    inline void setPosition(float x, float y, float z) {
-        view.setPosition(glm::vec3(x, y, z));
-    }
-    inline const glm::vec3& getPosition()const {
-        return view.getBasis().position;
-    }
+    inline void setPosition(const glm::vec3& position) {view.setPosition(position); }
 
-    inline const BasisMatrix& getTransform()const {
-        return view;
-    }
-    inline const ProjData& getProjectionData()const {
-        return proj.getData();
-    }
-    inline const Basis& getBasis()const {
-        return view.getBasis();
-    }
-    inline const float getRenderDistance()const {
-        return proj.getData().persp.far;
-    }
+    inline void setPosition(float x, float y, float z) {view.setPosition(glm::vec3(x, y, z));}
 
+    inline const glm::vec3& getPosition()const      {return view.getBasis().position; }
+
+    inline const BasisMatrix& getTransform()const   {return view;}
+
+    inline const ProjData& getProjectionData()const {return proj.getData();}
+
+    inline const Basis& getBasis()const             {return view.getBasis();}
+
+    inline const float getRenderDistance()const     {return proj.getData().persp.far;}
 
 protected:
 

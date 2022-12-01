@@ -4,13 +4,13 @@
 #include "Game/Voxels/Chunk.h"
 
 #define REGION_SIZE 12
-#define REGION_VEC glm::uvec2(REGION_SIZE,REGION_SIZE)
+#define REGION_VEC	glm::uvec2(REGION_SIZE,REGION_SIZE)
 #define REGION_IVEC glm::ivec2(REGION_SIZE,REGION_SIZE)
 #define REGION_VOLUME REGION_SIZE*REGION_SIZE
 #define REGION_RADIUS REGION_SIZE / 2
 
 /////ReaderChunk----------------------------------
-class sSaveF {
+class sFile {
 public:
 
 	static inline std::string pathRegion(const glm::uvec2& beg) {
@@ -23,8 +23,8 @@ public:
 
 private:
 	
-	sSaveF() {}
-	~sSaveF() {}
+	sFile() {}
+	~sFile() {}
 
 	static const std::string DIRECTORY;
 	static const std::string EXTENSION;
@@ -54,40 +54,38 @@ struct ChunkRLE {
 	inline size_t sizeInByte()const { return (v_.size() * sizeof(VoxelRLE)); }
 	std::vector<VoxelRLE> v_;
 };
+
 ////RegionRLE--------------------------
 struct RegionRLE {
-
 	inline bool empty(size_t index)const { return c_[index].empty(); }
-
 	ChunkRLE c_[REGION_VOLUME];
 };
 
-////RLE--------------------------
+////RLE--------------------------------------------------
 class RLE {
-
 public:
 
 	static bool uncompress(std::vector<Voxel>& voxels, const std::vector<VoxelRLE>& buffer);
 	static void compress(ChunkRLE& chunk, const std::vector<Voxel>& data);
 	constexpr static inline size_t beginChunkBlock() { return sizeof(size_t[REGION_VOLUME]); }
-private:
 
+private:
 	RLE() {}
 	~RLE() {}
-
 };
-////WriterChunk--------------------------
-class WriterRLE :public Writer {
+
+////WriterChunk-------------------------------------------
+class WriterRLE :public WriterBin {
 
 public:
-
+	WriterRLE(const std::string& path) :WriterBin(path) {}
 	inline void writeVoxels(const std::vector<Voxel>& data) { process(data); }
 
 	inline void writeChunk(const ChunkRLE& chunk) {
-		for(size_t i=0; i < chunk.v_.size(); i++){
-			write(chunk.v_[i]);
-		}
-		//write(chunk.v_[0], chunk.sizeInByte());!!!!!!!!!!!!!!!!!!
+		//for(size_t i=0; i < chunk.v_.size(); i++){
+		//	write(chunk.v_[i]);
+		//}
+		write(chunk.v_[0], chunk.sizeInByte());
 	}
 
 	inline void writeRegion(const RegionRLE& region) {
@@ -108,9 +106,7 @@ public:
 
 	inline void fillNull() {
 		size_t pos_buffer[REGION_VOLUME];
-		for (size_t i = 0; i < REGION_VOLUME; i++)
-			pos_buffer[i] = RLE::beginChunkBlock();
-
+		for (size_t i = 0; i < REGION_VOLUME; i++)pos_buffer[i] = RLE::beginChunkBlock();
 		write(0,pos_buffer);
 	}
 
@@ -120,14 +116,13 @@ private:
 
 };
 
-
 /////ReaderRLE----------------------------------
-class ReaderRLE :public ReaderFile {
+class ReaderRLE :public ReaderBin{
 public:
 	ReaderRLE() {}
-	ReaderRLE(const std::string& path):ReaderFile(path) {}
+	ReaderRLE(const std::string& path):ReaderBin(path) {}
 	//x,z - global world coord 
-	inline void openForChunk(size_t x, size_t z) { open(sSaveF::pathRegion(x / REGION_SIZE, z / REGION_SIZE)); }
+	inline void openForChunk(size_t x, size_t z) { open(sFile::pathRegion(x / REGION_SIZE, z / REGION_SIZE)); }
 
 	template<typename CH>
 	inline bool readChunk(CH& chunk, size_t index) {
@@ -147,11 +142,7 @@ public:
 		//end
 		readFromPos(index * sizeof(size_t), end);
 	}
-
-	
-
 private:
-
 
 };
 #endif

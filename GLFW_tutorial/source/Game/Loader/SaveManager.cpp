@@ -2,8 +2,8 @@
 
 
 ///sSaveF-----------------------------------------------
-const std::string sSaveF::DIRECTORY = "saves\\";
-const std::string sSaveF::EXTENSION = ".region";
+const std::string sFile::DIRECTORY = "saves\\";
+const std::string sFile::EXTENSION = ".region";
 
 
 ///RLE-----------------------------------------------

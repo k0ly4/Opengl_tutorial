@@ -10,12 +10,12 @@ public:
     World();
     void save();
     inline void init(Camera& camera) {
-        chunks.update(camera.getPosition());
-        chunks.create(sGameSetup::distance_render);
+        chunks.create(sSetup::distance_render, camera.getPosition());
     }
     //Generation
     LightHandle light;
     ChunkSectorRender chunks;
     ResourceVoxelPack atlas;
+    SupReg region;
 };
 #endif

@@ -2,7 +2,7 @@
 
 
 
-World::World() :light(&chunks) {
+World::World() :chunks(&region),light(&chunks) {
     VoxelPack::set(&atlas);
     if (atlas.load("asset\\image\\") == 0)exit(0);
     chunks.pushObserver(&light);
@@ -10,5 +10,5 @@ World::World() :light(&chunks) {
 }
 
 void World::save() {
-	chunks.save();
+	region.save();
 }

@@ -5,39 +5,17 @@
 /// 
 /// </summary>
 
-bool Chunk::load(const glm::uvec3& global) {
+//void gChunk::setCloses(gChunk* chunks,size_t size) {
+//	closes.clear();
+//	for (size_t i = 0; i < size; i++) {
+//		glm::ivec3 dist = (glm::ivec3)chunks[i].local_ - (glm::ivec3)local_;
+//		if (((abs(dist.x) + abs(dist.y) + abs(dist.z)) != 1))
+//			continue;
+//		closes.chunks[getSide(dist)] = &chunks[i];
+//	}
+//}
 
-	setPosition(global);
-
-	if (FileManager::read(getFilePath(), voxels)) {
-		modified = 1;
-		closes.setModified();
-		return 1;
-
-	}
-	return 0;
-}
-
-bool Chunk::save()const {
-	if (FileManager::write(getFilePath(), voxels)) {
-		return 1;
-	}
-	return 0;
-}
-
-void Chunk::setCloses(Chunk* chunks,size_t size) {
-	closes.clear();
-	for (size_t i = 0; i < size; i++) {
-		glm::ivec3 dist = (glm::ivec3)chunks[i].local_ - (glm::ivec3)local_;
-		if (((abs(dist.x) + abs(dist.y) + abs(dist.z)) != 1))
-			continue;
-		closes.chunks[getSide(dist)] = &chunks[i];
-	}
-}
-
-
-
-bool Chunk::setVoxel(const Voxel& voxel, const glm::uvec3& coord) {
+bool gChunk::setVoxel(const Voxel& voxel, const glm::uvec3& coord) {
 	Voxel* voxel_ = getFromGlobalCoord(coord);
 	if (voxel_ == 0) return 0;
 	if (*voxel_ == voxel) return 1;
@@ -48,16 +26,9 @@ bool Chunk::setVoxel(const Voxel& voxel, const glm::uvec3& coord) {
 	return 1;
 }
 
-inline void push_back(std::vector<unsigned>& indices,size_t begin) {
-	indices.push_back(begin);
-	indices.push_back(begin + 1);
-	indices.push_back(begin + 2);
-	indices.push_back(begin);
-	indices.push_back(begin + 2);
-	indices.push_back(begin + 3);
-}
 
-inline void push_back(TypeConvex<VoxelVertex>& convex, const glm::vec3& pos, const glm::vec2& uv,const glm::vec4& light) {
+
+inline void push_back(iGeometry<VoxelVertex>& convex, const glm::vec3& pos, const glm::vec2& uv,const glm::vec4& light) {
 	convex.push_back(VoxelVertex(pos, uv, light));
 }
 
@@ -72,8 +43,8 @@ glm::vec4 Chunk::getFastLight(int x, int y, int z) {
 }
 
 void Chunk::upMesh() {	
-	buffer.clear();
-	indices.clear();
+	mesh.vertices.clear();
+	mesh.indices.clear();
 	for (size_t y = 0; y < CHUNK_H; y++) {
 		for (size_t z = 0; z < CHUNK_D; z++) {
 			for (size_t x = 0; x < CHUNK_W; x++) {
@@ -119,11 +90,11 @@ void Chunk::upMesh() {
 
 					const glm::vec2& uv = VoxelPack::get(voxel, ::top);
 
-					push_back(indices, buffer.size());
-					push_back(buffer,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(buffer,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(buffer,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x,			uv.y + uvsize), glm::vec4(lr2, lg2, lb2, ls2));
-					push_back(buffer,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x,			uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
+					mesh.pushIndices(mesh.vertices.size());
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x,			uv.y + uvsize), glm::vec4(lr2, lg2, lb2, ls2));
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x,			uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
 				}
 
 				if (isFree(x, y - 1, z, drawGroup)) {
@@ -156,11 +127,11 @@ void Chunk::upMesh() {
 
 					const glm::vec2& uv = VoxelPack::get(voxel, ::bottom);
 
-					push_back(indices, buffer.size());
-					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(buffer,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
-					push_back(buffer,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),  glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
+					mesh.pushIndices(mesh.vertices.size());
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),  glm::vec4(lr1, lg1, lb1, ls1));
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
 				}
 
 				if (isFree(x + 1, y, z, drawGroup)) {
@@ -192,11 +163,11 @@ void Chunk::upMesh() {
 
 					const glm::vec2& uv = VoxelPack::get(voxel, ::right);
 
-					push_back(indices, buffer.size());
-					push_back(buffer,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(buffer,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(buffer,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
-					push_back(buffer,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr3, lg3, lb3, ls3));
+					mesh.pushIndices(mesh.vertices.size());
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr3, lg3, lb3, ls3));
 				}
 
 				if (isFree(x - 1, y, z, drawGroup)) {
@@ -230,11 +201,11 @@ void Chunk::upMesh() {
 			
 					const glm::vec2& uv = VoxelPack::get(voxel, ::left);
 
-					push_back(indices, buffer.size());
-					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
-					push_back(buffer,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(buffer,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
+					mesh.pushIndices(mesh.vertices.size());
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
 				}
 
 				if (isFree(x, y, z + 1, drawGroup)) {
@@ -267,11 +238,11 @@ void Chunk::upMesh() {
 
 					const glm::vec2& uv = VoxelPack::get(voxel, ::front);
 
-					push_back(indices, buffer.size());
-					push_back(buffer,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(buffer,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
-					push_back(buffer,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(buffer,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
+					mesh.pushIndices(mesh.vertices.size());
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
 				}
 				if (isFree(x, y, z - 1, drawGroup)) {
 					l = 0.8f;
@@ -302,11 +273,11 @@ void Chunk::upMesh() {
 
 					const glm::vec2& uv = VoxelPack::get(voxel, ::back);
 
-					push_back(indices, buffer.size());
-					push_back(buffer,glm::vec3( x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(buffer,glm::vec3( x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(buffer,glm::vec3( x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
-					push_back(buffer,glm::vec3( x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr3, lg3, lb3, ls3));
+					mesh.pushIndices(mesh.vertices.size());
+					push_back(mesh,glm::vec3( x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
+					push_back(mesh,glm::vec3( x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), glm::vec4(lr1, lg1, lb1, ls1));
+					push_back(mesh,glm::vec3( x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
+					push_back(mesh,glm::vec3( x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr3, lg3, lb3, ls3));
 				}							 					 		
 			}
 		}
@@ -315,8 +286,9 @@ void Chunk::upMesh() {
 }
 
 void Chunk::fastUpMesh() {
-	buffer.clear();
-	indices.clear();
+	modified = 0;
+	mesh.vertices.clear();
+	mesh.indices.clear();
 	for (size_t y = 0; y < CHUNK_H; y++) {
 		for (size_t z = 0; z < CHUNK_D; z++) {
 			for (size_t x = 0; x < CHUNK_W; x++) {
@@ -333,11 +305,11 @@ void Chunk::fastUpMesh() {
 				
 					const glm::vec2& uv = VoxelPack::get(voxel, ::top);
 
-					push_back(indices, buffer.size());
-					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
-					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
-					push_back(buffer, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
-					push_back(buffer, glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
+					mesh.pushIndices(mesh.vertices.size());
+					push_back(mesh, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
+					push_back(mesh, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
+					push_back(mesh, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
+					push_back(mesh, glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
 				}
 
 				if (isFree(x, y - 1, z, drawGroup)) {
@@ -345,11 +317,11 @@ void Chunk::fastUpMesh() {
 				
 					const glm::vec2& uv = VoxelPack::get(voxel, ::bottom);
 
-					push_back(indices, buffer.size());
-					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
-					push_back(buffer, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
-					push_back(buffer, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
-					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
+					mesh.pushIndices(mesh.vertices.size());
+					push_back( mesh, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
+					push_back( mesh, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
+					push_back( mesh, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
+					push_back( mesh, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
 				}
 
 				if (isFree(x + 1, y, z, drawGroup)) {
@@ -357,11 +329,11 @@ void Chunk::fastUpMesh() {
 				
 					const glm::vec2& uv = VoxelPack::get(voxel, ::right);
 
-					push_back(indices, buffer.size());
-					push_back(buffer, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
-					push_back(buffer, glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
-					push_back(buffer, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
-					push_back(buffer, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					light);
+					mesh.pushIndices(mesh.vertices.size());
+					push_back(mesh, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
+					push_back(mesh, glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
+					push_back(mesh, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
+					push_back(mesh, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					light);
 				}
 
 				if (isFree(x - 1, y, z, drawGroup)) {
@@ -369,11 +341,11 @@ void Chunk::fastUpMesh() {
 
 					const glm::vec2& uv = VoxelPack::get(voxel, ::left);
 
-					push_back(indices, buffer.size());
-					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
-					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
-					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
-					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
+					mesh.pushIndices(mesh.vertices.size());
+					push_back( mesh, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
+					push_back( mesh, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
+					push_back( mesh, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
+					push_back( mesh, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
 				}
 
 				if (isFree(x, y, z + 1, drawGroup)) {
@@ -381,38 +353,49 @@ void Chunk::fastUpMesh() {
 					
 					const glm::vec2& uv = VoxelPack::get(voxel, ::front);
 
-					push_back(indices, buffer.size());
-					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					light);
-					push_back(buffer, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
-					push_back(buffer, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
-					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
+					mesh.pushIndices(mesh.vertices.size());
+					push_back( mesh, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					light);
+					push_back( mesh, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
+					push_back( mesh, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
+					push_back( mesh, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
 				}
 				if (isFree(x, y, z - 1, drawGroup)) {
 					glm::vec4 light = getFastLight(x, y, z - 1);
 					
 					const glm::vec2& uv = VoxelPack::get(voxel, ::back);
 
-					push_back(indices, buffer.size());
-					push_back(buffer, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
-					push_back(buffer, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
-					push_back(buffer, glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
-					push_back(buffer, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
+					mesh.pushIndices(mesh.vertices.size());
+					push_back( mesh, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			light);
+					push_back( mesh, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), light);
+					push_back( mesh, glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			light);
+					push_back( mesh, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					light);
 				}
 			}
 		}
 	}
-	modified = 0;
+	
 }
 
-void Chunk:: draw(const View* view, const Shader& shader) {
-	if (modified) upMesh();
+void Chunk::draw(const Shader& shader) {
+	if (modified) {
+		modified = 0;
+		upMesh();
+		mesh.saveInBuffer();
+	}
+	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_) + glm::vec3(0.5f)));
+	mesh.draw();
+}
+
+void Chunk::draw(const View* view, const Shader& shader) {
+	if (modified) {
+		modified = 0;
+		upMesh();
+		mesh.saveInBuffer();
+	}
 	shader.use();
 	view->useVP(shader);
 	VoxelPack::get()->use(shader);
 	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_) + glm::vec3(0.5f)  ));
-	buffer.getVAO().begin();
-	glDrawElements(GlRender::TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
+	mesh.draw();
 }
-
-
 //////ReaderChunk----------------------------------

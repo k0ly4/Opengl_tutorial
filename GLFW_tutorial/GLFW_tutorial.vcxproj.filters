@@ -171,33 +171,6 @@
     <ClCompile Include="source\UI\Sprite.cpp">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="source\Graphic\Mesh.cpp">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Resource\bMesh.cpp">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\Model.cpp">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Resource\Assimp.cpp">
-      <Filter>Файлы ресурсов\assimp</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Resource\AssimpLib.cpp">
-      <Filter>Файлы ресурсов\assimp</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Graphic\DepthFrameBuffer.cpp">
-      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\CascadedShadow.cpp">
-      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\LightManager.cpp">
-      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\Light.cpp">
-      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
-    </ClCompile>
     <ClCompile Include="source\Resource\ImageLoader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
@@ -212,12 +185,6 @@
     </ClCompile>
     <ClCompile Include="source\Scene\Sphere.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\ShadowMap.cpp">
-      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Graphic\GBuffer.cpp">
-      <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClCompile>
     <ClCompile Include="source\Game\Voxels\World.cpp">
       <Filter>Исходные файлы\Game</Filter>
@@ -302,12 +269,6 @@
     <ClInclude Include="lib\stb_image.h">
       <Filter>Файлы ресурсов\stb</Filter>
     </ClInclude>
-    <ClInclude Include="source\Scene\Model.h">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\CascadedShadow.h">
-      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="source\Scene\TypeObject.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
@@ -319,15 +280,6 @@
     </ClInclude>
     <ClInclude Include="source\Scene\DirectionLight.h">
       <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\LightManager.h">
-      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\PointLight.h">
-      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\ShadowMap.h">
-      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="source\Resource\Buffer.h">
       <Filter>Исходные файлы\Resources</Filter>
@@ -440,23 +392,8 @@
     <ClInclude Include="source\Scene\Convex.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="source\Resource\bMesh.h">
-      <Filter>Исходные файлы\Resources\ModelLoading</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Resource\Assimp.h">
-      <Filter>Файлы ресурсов\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Graphic\DepthFrameBuffer.h">
-      <Filter>Исходные файлы\Scene\LightSystem\Shadow</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\Light.h">
-      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
-    </ClInclude>
     <ClInclude Include="source\Resource\ImageLoader.h">
       <Filter>Исходные файлы\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Graphic\GBuffer.h">
-      <Filter>Исходные файлы\Graphics\Render</Filter>
     </ClInclude>
     <ClInclude Include="source\Graphic\PostEffects.h">
       <Filter>Исходные файлы\Graphics</Filter>

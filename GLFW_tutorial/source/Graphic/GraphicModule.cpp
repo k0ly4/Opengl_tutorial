@@ -14,35 +14,42 @@ inline void display(const Texture2D& texture) {
 void GraphicPipeline::initialize(RenderWindow& window) {
 
     frame.create(window.getSize(), TextureData(GL_RGBA16F, GL_RGBA, GL_NEAREST));
-    gBuffer.create(window.getSize());
+  /*  gBuffer.create(window.getSize());*/
     ui.create(window.getSize(), TextureData(GL_RGBA, GL_RGBA, GL_NEAREST));
-
 }
 
 void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& event) {
-
+    ///--------------------------------------------
     //Shadow ------------------
-    scene.light.upShadowMap(scene, scene.camera);
-    //gBuffer-------------------
-    // in gbuffer
-    window.setDefaultHintShader(glShader::gb_texture);
-    gBuffer.render(window, scene);
-    //out gbuffer
+    if (false) {
+    //    scene.light.upShadowMap(scene, scene.camera); //нет необходимости
+    ////gBuffer-------------------
+    //// in gbuffer //нет необходимости
+    //    window.setDefaultHintShader(glShader::gb_texture);
+    //    gBuffer.render(window, scene); 
+    //    //out gbuffer
+    //    GlRender::bind(frame);
+    //    glClear(GL_COLOR_BUFFER_BIT);
+    //    gBuffer.display(scene.light, scene.camera);
+    //    gBuffer.implementDepth(frame);
+    }
+    ////////////////---------------------------------
+    else {
     GlRender::bind(frame);
-    glClear(GL_COLOR_BUFFER_BIT);
-    gBuffer.display(scene.light, scene.camera);
-
+    GlRender::setClearColor(0.7f, 0.7f, 1.f,1.f);
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+    }
     //Forward render ----------------------
     window.setDefaultHintShader(glShader::any_light_texture);
-    gBuffer.implementDepth(frame);
     scene.inForward(window);
+
     //UI----------------------
     GlRender::bind(ui);
     GlRender::setClearColor(0.f,0.f,0.f,0.f);
     glClear(GL_COLOR_BUFFER_BIT);
     scene.inUI(ui);
 
-    //Mix----------------------
+    //Постобработка - гамма коррекция----------------------
     GlRender::unbind();
     Blend::Enable(true);
     Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
@@ -51,15 +58,10 @@ void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& ev
 
     //if (event.f.shadow_view) filter.displayRed(scene.light.getDirLight().getShadowMap(), event.f.shadow_level);
     ////else 
-    if (event.f.debugGbuffer) {
-        filter.displayRed(scene.light.lightTest.map_.getTexture());
-    }
-    else filter.drawExposure(frame.getTexture());
-   
-    if (event.f.shadow_view) 
-        display(ui.getTexture());
-   
-
+    filter.drawExposure(frame.getTexture());
+    //ui render
+    if (event.f.shadow_view) display(ui.getTexture());
+    //
     window.display();
 }
 //

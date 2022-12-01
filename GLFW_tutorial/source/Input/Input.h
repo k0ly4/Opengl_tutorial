@@ -1,5 +1,5 @@
-#ifndef CLIPBOARD_H
-#define CLIPBOARD_H
+#ifndef INPUT_H
+#define INPUT_H
 
 #include "Input/Cursor.h"
 #include "Input/Mouse.h"

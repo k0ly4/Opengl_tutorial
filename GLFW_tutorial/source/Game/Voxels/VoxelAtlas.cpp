@@ -4,35 +4,10 @@
 /// <summary>
 /// 
 /// </summary>
-void ResourceVoxelPack::load(const std::string& path, size_t sizeVoxelUV) {
-	texture_.getPath(path, 4);
-	texture_.filter(TextureFilter::Nearest, TextureFilter::NearestMipmapNearest);
-	sizeVoxel_ = sizeVoxelUV;
-	uvSize_ = (float)sizeVoxel_ / (float)texture_.getSize().x;
-
-	//scan
-	blocks.resize(id_max);
-	blocks[id_turf].idSide[bottom] = uv_earth;
-	blocks[id_turf].idSide[front] = blocks[id_turf].idSide[left] = blocks[id_turf].idSide[right] = blocks[id_turf].idSide[back] = uv_side_turf;
-	blocks[id_turf].idSide[top] = uv_turf;
-
-	blocks[id_earth].setSolid(uv_earth);
-	blocks[id_light].setSolid(uv_light);
-	//uv
-	uv.resize(uv_max);
-	for (size_t i = 0; i < uv_max; i++) {
-		uv[i] = getUV(i);
-	}
-}
-
-//VoxelAtlas-------------------------------------
-/// <summary>
-/// 
-/// </summary>
 bool ResourceVoxelPack::load(const std::string& directory) {
 	JSON json;
-
 	if (FileManager::read(directory+"atlas.json", json) == 0)return 0;
+	ImageLoader::flipVerticallyOnLoad(1);
 	if (texture_.getPath(directory +json.value("path", ""), 4) == 0) return 0;
 
 	texture_.filter(TextureFilter::Nearest, TextureFilter::NearestMipmapNearest);

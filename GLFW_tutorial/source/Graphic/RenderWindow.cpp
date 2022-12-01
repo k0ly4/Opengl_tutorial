@@ -60,6 +60,7 @@
 	}
 	
 	bool RenderWindow::pollEvent(Event& event) {
+		glfwPollEvents();
 		if (ContextWindow::events.isEmpty()) return 0;
 		event = ContextWindow::events.get();
 		ContextWindow::events.next();

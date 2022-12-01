@@ -22,8 +22,13 @@ void InputHandler::solveKey(Event& event) {
 	case Keyboard::D:
 		command[kD]->execute(event);
 	break;
+
 	case Keyboard::Space:
 		command[kSpace]->execute(event);
+	break;
+
+	case Keyboard::U:
+		command[kU]->execute(event);
 	break;
 
 	default:
@@ -56,9 +61,10 @@ void sCommandHandler::init(InputHandler& input,Scene* scene, Player* player) {
 	input.command[input.kD] =		new com::pl::Right(player);
 	input.command[input.kS] =		new com::pl::Back(player);
 	input.command[input.kW] =		new com::pl::Forward(player);
+	input.command[input.kU] =		new com::UpdateMeshChunks(scene);
 	input.command[input.kSpace] =	new com::pl::Jump(player);
 	input.command[input.mLeft] =	new com::pl::HandDestroy(player, scene);
 	input.command[input.mRight] =	new com::pl::HandCreate(player, scene);
-	input.command[input.mMiddle] =	new com::LightSeter(scene);
+	input.command[input.mMiddle] =	&com::Null;
 	
 }

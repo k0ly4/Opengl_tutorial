@@ -4,16 +4,15 @@
 #include "Scene/Scene.h"
 namespace com {
 
-	void LightSeter::execute(Event& event) {
-
-		if (event.type == Event::MouseButtonPressed) {
-			scene->light.getDirs().setDirection(-scene->camera.getBasis().front);
-			scene->light.getPoints()[0].setPosition(scene->camera.getPosition());
-			scene->light.lightTest.setDirection(scene->camera);
+	
+	void UpdateMeshChunks::execute(Event& event) {
+		std::vector<Chunk*>& chunks = scene->world.chunks.getChunks();
+		for (size_t i = 0; i < chunks.size(); i++) {
+			chunks[i]->setModified();
 		}
+		
 
 	}
-
 	namespace pl {
 
 		void Jump::execute(Event& event) {

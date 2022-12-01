@@ -15,7 +15,7 @@ public:
         view->use(shader);
         uniformTransform(shader);
         uniformMaterial(shader);
-        sBuffer::plane.getVAO().draw();
+        sBuffer::plane->getVAO().draw();
     }
 
 private:
@@ -32,7 +32,7 @@ public:
         view->use(shader);
         uniformTransform(shader);
         uniformMaterial(shader);
-        sBuffer::plane.getVAO_gb().draw();
+        sBuffer::plane->getVAO_gb().draw();
     }
 
 private:

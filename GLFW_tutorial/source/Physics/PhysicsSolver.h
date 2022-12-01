@@ -31,6 +31,9 @@ public:
 	}
 	void testSolve(float time, Hitbox& hitbox) {
 		time += remTime;
+
+		int physStep = time/ timeStep; if(physStep>5) LOG("Physstep>5:%d\n", physStep);
+
 		while (time >= timeStep) {
 			test_step(hitbox);
 			time -= timeStep;
@@ -45,7 +48,7 @@ private:
 
 	glm::vec3 gravity;
 
-	float timeStep = 1 / 60.f;;
+	float timeStep = 1 / 70.f;;
 	float remTime = 0.f;
 };
 #endif

@@ -13,7 +13,7 @@ public:
 
 	enum CommandInterface:size_t
 	{
-		kW,kS,kA,kD,kSpace, mLeft, mRight, mMiddle,size_com
+		kW,kS,kA,kD,kU,kSpace, mLeft, mRight, mMiddle,size_com
 	};
 
 	InputHandler() {

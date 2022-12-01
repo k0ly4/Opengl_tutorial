@@ -2,7 +2,7 @@
 #include"Scene/Scene.h"
 
 void PhysicsModule::init(Scene& scene) {
-	core.setGravity(glm::vec3(0.f, -350.f, 0.f));
+	core.setGravity(glm::vec3(0.f, -90.f, 0.f));
 	core.setWorld(&scene.world);
 }
 

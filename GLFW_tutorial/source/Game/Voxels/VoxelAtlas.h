@@ -99,7 +99,7 @@ public:
 		return blocks[id.id];
 	}
 
-	void load(const std::string& path, size_t sizeVoxel);
+	
 	//path to json file
 	bool load(const std::string& directory);
 

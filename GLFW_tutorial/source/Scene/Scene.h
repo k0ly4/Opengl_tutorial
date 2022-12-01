@@ -10,35 +10,38 @@
 #include "Game/Lib/GameModules.h"
 #include "Scene/Text.h"
 #include "Scene/Sphere.h"
-#include "Scene/LightManager.h"
 #include "Game/Voxels/World.h"
 #include "Game/Entities/Player.h"
 
 /// <summary>
 /// Scene
 /// </summary>
-class Scene :public RenderScene {
+class Scene:public RenderScene{
 public:
 
 	Scene():
-		cube(glShader::any),
-		cube2(glShader::any),
-		wall(glShader::any),
-		player(texCowBoy) {
-		
-	}
+		player(texCowBoy) {}
+
 	void initialize(RenderWindow& window) {
 		initialize3DScene(window);
 		initializeUI(window);
 	}
+
 	void inGBuffer(RenderTarget& target);
+
 	void inForward(RenderTarget& target);
+
 	void inUI(RenderTarget& target);
-	void inShadowMap(RenderTarget& target, glShader::Object shader);
+	
 	void upSizeViews(const glm::ivec2& size) {
-		camera.setProjection((float)size.x / (float)size.y, GAME::PROJECTION.fov, GAME::PROJECTION.near, GAME::PROJECTION.far);
+		
+		camera.setProjection((float)size.x / (float)size.y, sSetup::camera_proj.fov, sSetup::camera_proj.near, sSetup::camera_proj.far);
 		view2D.setProjection(FloatRect(0.f, 0.f, size));
 	}
+
+	//устаревший
+	void inShadowMap(RenderTarget& target, glShader::Object shader) {}
+
 //protected:
 //
 //	friend class Engine;
@@ -47,11 +50,6 @@ public:
 	Texture2D texError;
 	Texture2D filin;
 	//Object3D
-	LightSystem light;
-	Cube cube;
-	Cube cube2;
-	Cube wall;
-	Sphere sphere;
 	std::vector<Drawable*>gBufferObjects;
 	World world;
 	//Object2D

@@ -1,13 +1,16 @@
 #include "Buffer.h"
 
+GlBuffer::Pull GlBuffer::pull;
+
 void GlBuffer::resize(GeneralBuffer& buffer, size_t new_size, GLenum mode) {
+        static GeneralBuffer temp;
         bindVBO(**temp.ID);
         glBufferData(GL_ARRAY_BUFFER, buffer.cur_size, NULL, GL_STATIC_DRAW);
         copy(buffer, temp);
         bindVBO(**buffer.ID);
         glBufferData(GL_ARRAY_BUFFER, new_size, NULL, mode);
         copy(temp, buffer);
-    }
+   }
  void GlBuffer::copy(GeneralBuffer& read, GeneralBuffer& write) {
         glBindBuffer(GL_COPY_READ_BUFFER, **read.ID);
         glBindBuffer(GL_COPY_WRITE_BUFFER, **write.ID);
@@ -36,10 +39,11 @@ void GlBuffer::resize(GeneralBuffer& buffer, size_t new_size, GLenum mode) {
             glBindVertexArray(last_vao);
         }
     }
+
 unsigned int GlBuffer::last_vao = 0;
 unsigned int GlBuffer::last_vbo = 0;
 unsigned int GlBuffer::last_ebo = 0;
-GeneralBuffer GlBuffer::temp;
+
 
 DataDraw::DataDraw() {
         data = Data(0, 0, GL_TRIANGLES);
