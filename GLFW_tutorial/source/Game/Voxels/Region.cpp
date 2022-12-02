@@ -68,10 +68,16 @@ void Region::clear() {
 		Chunk::Closes& cl = buffer[i].closes;
 		cl.clear();
 		glm::ivec2 coord(toCoord2(i, REGION_SIZE));
-		set(glm::ivec2(coord.x-1, coord.y), cl.chunks[left], buffer);
-		set(glm::ivec2(coord.x+1, coord.y), cl.chunks[right], buffer);
-		set(glm::ivec2(coord.x, coord.y-1), cl.chunks[back], buffer);
-		set(glm::ivec2(coord.x, coord.y+1), cl.chunks[front], buffer);
+
+		set(glm::ivec2(coord.x-1, coord.y),			 cl.chunks[Side2D::left],	buffer);
+		set(glm::ivec2(coord.x+1, coord.y),			 cl.chunks[Side2D::right],	buffer);
+		set(glm::ivec2(coord.x, coord.y-1),			 cl.chunks[Side2D::bottom], buffer);
+		set(glm::ivec2(coord.x, coord.y+1),			 cl.chunks[Side2D::top],	buffer);
+
+		set(glm::ivec2(coord.x - 1, coord.y - 1),	 cl.chunks[Side2D::left_bottom],	buffer);
+		set(glm::ivec2(coord.x + 1, coord.y - 1),	 cl.chunks[Side2D::right_bottom],	buffer);
+		set(glm::ivec2(coord.x - 1,	coord.y + 1),	 cl.chunks[Side2D::left_top],		buffer);
+		set(glm::ivec2(coord.x + 1, coord.y + 1),	 cl.chunks[Side2D::right_top],		buffer);
 	}
 }
 

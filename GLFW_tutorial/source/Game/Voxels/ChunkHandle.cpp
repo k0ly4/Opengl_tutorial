@@ -11,19 +11,25 @@ void ChunkSectorRender::setSize(size_t size) {
 }
 
 void ChunkSectorRender::extractFromRegion() {
+
+	ChunkMeshQueue::clear();
 	begin_ = cameraChunk_- size_/2;
 	region_->fillSector(__chunks_, size_, begin_);
-	lightFlagUp(__chunks_);
 	render_chunks = __chunks_;
+	LightQueue::addTask(this);
+	ChunkMeshQueue::setChunkCamera(cameraChunk_);
+	for (size_t i = 0; i < render_chunks.size(); i++) ChunkMeshQueue::addQueue(render_chunks[i]);
+
 }
 
-void ChunkSectorRender::lightFlagUp(ChunkPtrs& chunks) {
-	for (size_t i = 0; i < chunks.size(); i++)
-		if (chunks[i]->isInitLightMap == 0) notify(_obs_event::initChunkLight, chunks[i]);
+void ChunkSectorRender::lightFlagUp() {
+	for (size_t i = 0; i < render_chunks.size(); i++)
+		if (render_chunks[i]->isInitLightMap == 0) notify(_obs_event::initChunkLight, render_chunks[i]);
 	notify(_obs_event::solveLight, 0);
 }
 
 void ChunkSectorRender::setCameraPos(const glm::ivec3& positionCamera) {
+	
 	glm::uvec2 posChunk(positionCamera.x / CHUNK_W, positionCamera.z / CHUNK_D);
 	if (cameraChunk_ == posChunk) return;
 	cameraChunk_ = posChunk;

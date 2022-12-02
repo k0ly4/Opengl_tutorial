@@ -74,6 +74,10 @@ void LightSolver::solve() {
 			if (chunk == 0) continue;
 
 			const Voxel* v = chunks->getVoxel(pos);
+			if (v == 0) { 
+				LOG(LogError, "Voxel* == 0\n");
+				continue; 
+			}
 			if (VoxelPack::isOpaque(*v) == 0 &&
 				chunks->getChannelLight(pos, channel) + 1 < entry.light) {
 

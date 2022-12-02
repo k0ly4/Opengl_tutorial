@@ -13,7 +13,7 @@ template<typename T>
 class iGeometry {
 public:
 
-	iGeometry() {
+	iGeometry():size_vertex_to_draw(0){
 		VBO.begin();
 		VAO.begin();
 		T::attrib(VAO);
@@ -25,14 +25,17 @@ public:
 		VAO.begin();
 		VBO.begin();
 		VBO.data(vertices);
+		EBO.begin();
+		EBO.data(indices);
 		T::attrib(VAO);
 		VAO.end();
-		VBO.end();
+		EBO.end();
+		size_vertex_to_draw = indices.size();
 	}
 
 	inline void draw() {
 		VAO.begin();
-		glDrawElements(GlRender::TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
+		glDrawElements(GlRender::TRIANGLES, size_vertex_to_draw, GL_UNSIGNED_INT,0);
 	}
 
 	inline void pushIndices(size_t begin) {
@@ -50,10 +53,15 @@ public:
 
 	ArrayBufferObject VAO;
 	VertexBufferObject VBO;
+	ElementBufferObject EBO;
+
+	size_t size_vertex_to_draw;
 	std::vector<unsigned int> indices;
 	std::vector<T> vertices;
 private:
 };
+
+
 ///Chunk---------------------------------------------
 /// <summary>
 /// 
@@ -65,37 +73,45 @@ public:
 
 	class Closes {
 
-		public:
-			inline void clear() {
-				for (size_t i = 0; i < 6; i++) {
-					chunks[i] = nullptr;
-				}
+	public:
+
+		Closes() {clear();}
+
+		inline void clear() {
+			for (size_t i = 0; i < Side2D::NuN; i++) {
+				chunks[i] = nullptr;
+			}
+		}
+
+		inline void setModified(size_t index) {
+			if (chunks[index]) chunks[index]->modified = 1;
+		}
+
+		inline void setModified() {
+			for (size_t i = 0; i < Side2D::NuN; i++) setModified(i);
+		}
+
+		inline void setModified(size_t x, size_t y) {
+
+			if (x == CHUNK_W - 1) {
+				setModified(Side2D::right);
+				if (y == CHUNK_D - 1)setModified(Side2D::right_top);
+				else if (y == 0) setModified(Side2D::right_bottom);
+			}
+			else if (x == 0) {
+				setModified(Side2D::left);
+				if (y == CHUNK_D - 1)setModified(Side2D::left_top);
+				else if (y == 0) setModified(Side2D::left_bottom);
 			}
 
-			inline void setModified(size_t index) {
-				if (chunks[index]) chunks[index]->modified = 1;
+			if (y == CHUNK_D - 1)setModified(Side2D::top);
+			else if (y == 0) setModified(Side2D::bottom);	
+			
 			}
 
-			inline void setModified() {
-				for (size_t i = 0; i < 6; i++) {
-					setModified(i);
-				}
-			}
+			inline gChunk* get(size_t index) {return chunks[index];}
 
-			inline void setModified(const glm::uvec3& local) {
-
-				if (local.x == CHUNK_W - 1) setModified(right);
-				else if (local.x == 0) setModified(left);
-
-				if (local.z == CHUNK_D - 1) setModified(front);
-				else if (local.z == 0) setModified(back);
-			}
-
-			inline gChunk* get(size_t index) {
-				return chunks[index];
-			}
-
-			gChunk* chunks[6];
+			gChunk* chunks[Side2D::NuN];
 
 	private:
 			
@@ -103,7 +119,6 @@ public:
 
 	gChunk(): global_(0)
 	{
-		closes.clear();
 		voxels.resize(CHUNK_SIZE);
 	}
 
@@ -170,6 +185,8 @@ public:
 	std::vector<Voxel>& getVoxels()				{ return voxels;}
 	const std::vector<Voxel>& getVoxels()const	{ return voxels;}
 
+	inline bool isModified()const { return modified; }
+
 	inline void setNull() {
 		isInitLightMap = isGenerated = 0;
 		modified = 1;
@@ -185,7 +202,7 @@ public:
 
 protected:
 
-	inline bool isFree(Voxel voxel, byte drawGroup) {
+	static inline bool isFree(Voxel voxel, byte drawGroup) {
 		return !VoxelPack::isRender(voxel) || (VoxelPack::get(voxel).drawGroup != drawGroup);
 	}
 
@@ -193,7 +210,8 @@ protected:
 		///Local test
 		if (isChunkBelong(x, y, z)) return isFree(getFromLocalCoord(x, y, z),drawGroup);
 		//Global
-		const gChunk* chunk = closes.get(getSide(x, y, z, CHUNK_VOLUME));
+		if ((size_t)y >= CHUNK_H) return 1;//66 66 [1]-67 66
+		const gChunk* chunk = closes.get( Side2D::toSideI( x , z, CHUNK_W - 1));
 		if (chunk == nullptr) return 0;
 		return isFree( chunk->getFromLocalCoord( ::clip(x , CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D) ), drawGroup);
 	}
@@ -203,12 +221,18 @@ protected:
 	glm::uvec3 local_, global_;
 
 };
+class Chunk;
 
+///Chunk---------------------------------------------
+/// <summary>
+/// 
+/// </summary>
 class Chunk:public gChunk,public Drawable {
 public:
 
 	Chunk():gChunk(){
 		mesh.VBO.setMode(GBO::DYNAMIC);
+		mesh.EBO.setMode(GBO::DYNAMIC);
 		shaderHint = glShader::voxel;
 	}
 	//render
@@ -221,18 +245,18 @@ private:
 	unsigned char LIGHT(int x, int y, int z, int channel) {
 		
 		if (isChunkBelong(x, y, z)) return lightMap.get(x, y, z, channel);
-		gChunk* chunk = closes.get(getSide(x, y, z, CHUNK_VOLUME));
+		if ((size_t)y >= CHUNK_H) return 0;//66 66 [1]-67 66
+		gChunk* chunk = closes.get(Side2D::toSideI(x, z, CHUNK_W - 1));
 		return chunk != 0 ? chunk->lightMap.get(::clip(x, CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D), channel) : 0;
 	}
 
 	glm::vec4 getFastLight(int x, int y, int z);
 	glm::vec4 getSoftLight(int x, int y, int z);
 
-	void upMesh();
+	friend class ChunkMeshQueue;
+	bool needUpBuffer = 0;
+	void buildMesh();
 	void fastUpMesh();
-	
-	/*TypeConvex<VoxelVertex> buffer;*/
-	/*std::vector<unsigned int> indices;*/
 };
 #endif
 

@@ -22,8 +22,13 @@ public:
 	inline void save()const { for (size_t i = 0; i < SUPREG_VOLUME; i++) if (region[i] != 0)region[i]->save(); }
 
 private:
-	void setCloses(int previous_region_index);
+	void setCloses(int new_region);
+	void setCloses(int reg1, int reg2);
 	void translate(const glm::ivec2& new_beg_reg);
+	inline void initRegion(size_t index,const glm::uvec2& begin) {
+		region[index] = std::make_shared<Region>(begin);
+		setCloses(index);
+	}
 
 	glm::uvec2 beg_reg;
 	glm::uvec2 beg_ch;

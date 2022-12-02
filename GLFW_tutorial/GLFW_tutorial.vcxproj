@@ -216,6 +216,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Game\Entities\ProcessQueue.cpp" />
+    <ClCompile Include="source\Game\Voxels\ChunkMeshQueue.cpp" />
     <ClCompile Include="source\Input\Command.cpp" />
     <ClCompile Include="source\Input\InputHandler.cpp" />
     <ClCompile Include="source\Physics\PhysicsSolver.cpp" />
@@ -287,6 +289,8 @@
     <ClCompile Include="source\Physics\sPhysics.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Game\Entities\ProcessQueue.h" />
+    <ClInclude Include="source\Game\Voxels\ChunkMeshQueue.h" />
     <ClInclude Include="source\Game\Lib\Engine.h" />
     <ClInclude Include="source\Input\Command.h" />
     <ClInclude Include="source\Input\InputHandler.h" />

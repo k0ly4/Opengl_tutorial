@@ -17,45 +17,25 @@ void SupReg::fillSector(std::vector<Chunk*>& target, size_t size_sector, const g
 			glm::uvec2 loc_rg = (glm::uvec2(x, z) - beg_ch) / REGION_VEC;
 			size_t index = toInt(loc_rg,SUPREG_SIZE);
 	
-			if (region[index] == 0) 
-				region[index] = std::make_shared<Region>(loc_rg * REGION_VEC + beg_ch);
+			if (region[index] == 0) initRegion(index, loc_rg * REGION_VEC + beg_ch);
+			
 			target[toInt(glm::uvec2(x, z) - sec_beg_ch, size_sector)] = &region[index]->getChunkGlobal(glm::uvec2(x, z));
 
 		}
 	}
 }
 
-void SupReg::setCloses(int prev_i) {
-	// 678
-	// 345
-	// 012
-	Chunk* cur = region[4]->getChunks();
-	Chunk* prev = region[prev_i]->getChunks();
-	//Back
-	if (prev_i == 1) {
-		for (size_t i = 0; i < REGION_SIZE; i++) {
-			cur[toInt(i, 0, REGION_SIZE)].closes.chunks[back] = &prev[toInt(i, REGION_SIZE - 1, REGION_SIZE)];
+void SupReg::setCloses(int new_region) {
+
+	for (size_t i = 0; i < SUPREG_VOLUME; i++) {
+		if (i == new_region) continue;
+		if (region[i]) {
+			if ((size_t)((int)i + 4 - new_region) < SUPREG_VOLUME) {
+				setCloses(new_region, i);
+			}
 		}
 	}
-	//Left
-	else if (prev_i == 3) {
-		for (size_t i = 0; i < REGION_SIZE; i++) {
-			cur[toInt(0, i, REGION_SIZE)].closes.chunks[left] = &prev[toInt(REGION_SIZE - 1, i, REGION_SIZE)];
-		}
-	}
-	//Right
-	else if (prev_i == 5) {
-		for (size_t i = 0; i < REGION_SIZE; i++) {
-			cur[toInt(REGION_SIZE - 1, i, REGION_SIZE)].closes.chunks[right] = &prev[toInt(0, i, REGION_SIZE)];
-		}
-	}
-	//Front
-	else if (prev_i == 7) {
-		for (size_t i = 0; i < REGION_SIZE; i++) {
-			cur[toInt(i, REGION_SIZE - 1, REGION_SIZE)].closes.chunks[front] = &prev[toInt(i, 0, REGION_SIZE)];
-		}
-	}
-	else LOG("SupReg::setCloses::Diagonal %d\n", prev_i);
+	
 }
 
 void SupReg::translate(const glm::ivec2& new_beg_reg) {
@@ -79,5 +59,59 @@ void SupReg::translate(const glm::ivec2& new_beg_reg) {
 	}
 
 	for (size_t i = 0; i < SUPREG_VOLUME; i++) region[i] = region_buffer[i];
-	setCloses(4 + offsetInd);
+}
+
+
+void SupReg::setCloses(int reg1, int reg2) {
+	// 678
+	// 345
+	// 012
+	Chunk* cur	=	region[reg1]->getChunks();
+	Chunk* prev =	region[reg2]->getChunks();
+	reg2 = 4 + reg2  - reg1;
+	//Back
+  	if (reg2 == 1) {
+		for (size_t i = 0; i < REGION_SIZE; i++) {
+			Chunk& ch_cen =		 cur[toInt(i, 0, REGION_SIZE)];
+			Chunk& ch_prev =	prev[toInt(i, REGION_SIZE - 1, REGION_SIZE)];
+			ch_cen.closes.chunks[Side2D::bottom] = &ch_prev;
+			ch_prev.closes.chunks[Side2D::top] =	&ch_cen;
+			ch_cen.setModified();
+			ch_prev.setModified();
+		}
+	}
+	//Left
+	else if (reg2 == 3) {
+		for (size_t i = 0; i < REGION_SIZE; i++) {
+			Chunk& ch_cen =		 cur[toInt(0, i, REGION_SIZE)];
+			Chunk& ch_prev =	prev[toInt(REGION_SIZE - 1, i, REGION_SIZE)];
+			ch_cen.closes.chunks[Side2D::left] =	&ch_prev;
+			ch_prev.closes.chunks[Side2D::right] =	&ch_cen;
+			ch_cen.setModified();
+			ch_prev.setModified();
+		}
+	}
+	//Right
+	else if (reg2 == 5) {
+		for (size_t i = 0; i < REGION_SIZE; i++) {
+			Chunk& ch_cen =		 cur[toInt(REGION_SIZE - 1, i, REGION_SIZE)];
+			Chunk& ch_prev =	prev[toInt(0, i, REGION_SIZE)];
+			ch_cen.closes.chunks[Side2D::right] = &ch_prev;
+			ch_prev.closes.chunks[Side2D::left] = &ch_cen;
+			ch_cen.setModified();
+			ch_prev.setModified();
+		}
+	}
+	//Front
+	else if (reg2 == 7) {
+		for (size_t i = 0; i < REGION_SIZE; i++) {
+			Chunk& ch_cen =		 cur[toInt(i, REGION_SIZE - 1, REGION_SIZE)];
+			Chunk& ch_prev =	prev[toInt(i, 0, REGION_SIZE)];
+			ch_cen.closes.chunks[Side2D::top] =		&ch_prev;
+			ch_prev.closes.chunks[Side2D::bottom] = &ch_cen;
+			ch_cen.setModified();
+			ch_prev.setModified();
+		}
+	}
+	else LOG("SupReg::setCloses::Diagonal %d\n", reg2);
 }

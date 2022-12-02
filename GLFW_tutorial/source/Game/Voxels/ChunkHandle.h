@@ -4,6 +4,7 @@
 #include "Game/Entities/Observer.h"
 #include "Region.h"
 #include "Game/Voxels/SuperRegion.h"
+#include "Game/Voxels/ChunkMeshQueue.h"
 ///ChunkHandle---------------------------------------------
 /// <summary>
 ///  
@@ -94,7 +95,9 @@ public:
 	std::vector<Chunk*>& getChunks() {return __chunks_;}
 
 private:
-	
+
+	friend class LightQueue;
+
 	void extractFromRegion();
 
 	//ѕровер€ет допустимость локальных кординат
@@ -105,7 +108,7 @@ private:
 	inline glm::uvec3 toLocal(const glm::uvec3& global) {
 		return ( glm::ivec3(global / CHUNK_VOLUME) - glm::ivec3(begin_.x, 0, begin_.y));
 	}
-	void lightFlagUp(ChunkPtrs&);
+	void lightFlagUp();
 	
 	ChunkPtrs __chunks_;
 	ChunkPtrs render_chunks;

@@ -7,7 +7,7 @@
 #include "Scene/Scene.h"
 #include "System/Clock.h"
 #include "Physics/sPhysics.h"
-
+#include "Game/Entities/ProcessQueue.h"
 #include <thread>
 RenderWindow window;
 
@@ -27,10 +27,10 @@ public:
     void launch() {
        GLFW::setActive(false);
        thread_render = new std::thread(&Engine::render, this);
+       procQueue.launch();
        clock.restart();
        update();
     }
-
 private:
 
     void update() {
@@ -40,7 +40,7 @@ private:
             event.update(time, window, graphic, scene);
             physics.update(time, scene);
         }
-        
+        procQueue.kill();
         thread_render->join();
         delete thread_render;
     }
@@ -66,7 +66,7 @@ private:
         GlRender::setClearColor(Color::ColorU(150, 199, 196));
 
     }
-
+    ProcessQueue procQueue;
     Scene scene;
     GraphicPipeline graphic;
     EventModule event;

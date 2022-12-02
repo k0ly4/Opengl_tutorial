@@ -5,45 +5,63 @@
 #include "Graphic/Texture.h"
 #include "System/Exception.h"
 #include "Resource/Shader.h"
+namespace Side2D {
 
-enum Side :byte
-{
-	left,
-	right,
-	bottom,
-	top,
-	back,
-	front,
-};
+	enum eSide2D :byte
+	{
+		left,
+		right,
+		bottom,
+		top,
+		//corner
+		left_bottom,
+		right_bottom,
+		left_top,
+		right_top,
 
-inline Side getSide(const glm::ivec3& dist) {
-	Side side;
-	if (dist.x == -1) side = left;
-	else if (dist.x == 1) side = right;
-	else if (dist.y == -1) side = bottom;
-	else if (dist.y == 1) side = top;
-	else if (dist.z == -1) side = back;
-	else if (dist.z == 1) side = front;
-	else LOG(LogError, "Exit setcloses::side not init\n");
-	return side;
+		NuN,
+	};
+	inline eSide2D getCornerNorm(bool x,bool y) {
+		if (x) return	y ? right_top : right_bottom;
+		else return		y ? left_top : left_bottom;
+	}
+
+	inline eSide2D getMainSide(int x, int y) {
+		if (x > 0)return right;
+		if (x < 0)return left;
+		if (y < 0)return bottom;
+		return top;
+	}
+	//normalize from [0;maxX] to [-1;1] 
+	inline int normalizeU(size_t x, size_t maxX) {
+		return x == maxX ? 1 : x == 0 ? -1 : 0;
+	}
+	//normalize from [-infinity; +infinity] to [-1;1]
+	inline int normalizeI(int coord_x, int maxX) {
+		return (coord_x > maxX) ? 1 : (coord_x < 0) ? -1 : 0;
+	}
+
+	inline eSide2D toSide(int norm_x, int norm_y) {
+			if ((bool)norm_x == (bool)norm_y) return getCornerNorm((norm_x + 1), (norm_y + 1));
+			return getMainSide(norm_x, norm_y);
+	}
+
+	inline eSide2D toSideU(size_t x, size_t y, size_t max) {	return toSide(normalizeU(x, max), normalizeU(y, max));}
+
+	inline eSide2D toSideI(int x, int y, size_t max)		{	return toSide(normalizeI(x, max), normalizeI(y, max));}
 }
+namespace Side {
+	enum eSide:size_t
+	{
+		left,
+		right,
+		bottom,
+		top,
+		back,
+		front,
+	};
 
-inline Side getSide(int x, int y, int z) {
-	return getSide(glm::ivec3(x, y, z));
 }
-
-inline int normalizeSign(int x, int max) {
-	return x >= max ? 1 : x < 0 ? -1 : 0;
-}
-
-inline Side	getSide(int x, int y, int z, const glm::uvec3& max) {
-	return getSide(normalizeSign(x,max.x),normalizeSign(y,max.y),normalizeSign(z,max.z));
-}
-inline Side	getSide(int x, int y, int z, const glm::ivec3& max) {
-	return getSide(normalizeSign(x, max.x), normalizeSign(y, max.y), normalizeSign(z, max.z));
-}
-
-
 
 ///VoxelType----------------------------------------------
 /// <summary>
@@ -98,8 +116,6 @@ public:
 	const Block& get(Voxel id)const  {
 		return blocks[id.id];
 	}
-
-	
 	//path to json file
 	bool load(const std::string& directory);
 
