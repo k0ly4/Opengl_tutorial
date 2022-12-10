@@ -12,7 +12,7 @@
 #include "Scene/Sphere.h"
 #include "Game/Voxels/World.h"
 #include "Game/Entities/Player.h"
-
+#include "Game/Interface/GameUi.h"
 /// <summary>
 /// Scene
 /// </summary>
@@ -20,7 +20,9 @@ class Scene:public RenderScene{
 public:
 
 	Scene():
-		player(texCowBoy) {}
+		player(texCowBoy) {
+		gameUi.setPlayer(&player);
+	}
 
 	void initialize(RenderWindow& window) {
 		initialize3DScene(window);
@@ -59,6 +61,7 @@ public:
 	Camera camera;
 	View2D view2D;
 	Player player;
+	GameUi gameUi;
 	std::vector<Drawable*>shadowObjects;
 	std::vector<Drawable*>forwardObjects;
 

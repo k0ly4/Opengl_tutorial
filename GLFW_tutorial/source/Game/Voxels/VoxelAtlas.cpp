@@ -20,7 +20,6 @@ bool ResourceVoxelPack::load(const std::string& directory) {
 
 	uvSize_ = (float)sizeVoxel_ / (float)texture_.getSize().x;
 	//scan
-	
 	blocks.resize(json.value("max_size_blocks",0));
 	JSON& json_blocks = json["blocks"];
 	for (size_t i = 0; i < blocks.size(); i++) {
@@ -40,8 +39,8 @@ bool ResourceVoxelPack::load(const std::string& directory) {
 		
 	}
 	//uv
-	size_t size_side = texture_.getSize().x / sizeVoxel_;
-	uv.resize(size_side * size_side);
+	voxelInSide = texture_.getSize().x / sizeVoxel_;
+	uv.resize(voxelInSide * voxelInSide);
 	for (size_t i = 0; i < uv.size(); i++) {
 		uv[i] = getUV(i);
 	}

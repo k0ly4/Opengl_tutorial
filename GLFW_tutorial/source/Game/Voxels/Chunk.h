@@ -9,6 +9,38 @@
 #include "Game/Voxels/VoxelAtlas.h"
 #include "Game/Light/LightMap.h"
 
+///SortableShell---------------------------------------------
+/// <summary>
+/// 
+/// </summary>
+template <typename object, typename key>
+class SortableShell {
+public:
+	SortableShell(object* obj_, key value_) :
+		obj(obj_), value(value_)
+	{}
+	SortableShell() {}
+
+	key value;
+	object* obj;
+
+	inline bool operator > (const SortableShell& str) const
+	{
+		return (value > str.value);
+	}
+
+	inline bool operator < (const SortableShell& str) const
+	{
+		return (value < str.value);
+	}
+
+private:
+};
+
+///iGeometry---------------------------------------------
+/// <summary>
+/// 
+/// </summary>
 template<typename T>
 class iGeometry {
 public:
@@ -190,7 +222,7 @@ public:
 	inline void setNull() {
 		isInitLightMap = isGenerated = 0;
 		modified = 1;
-		for (size_t i = 0; i < CHUNK_SIZE; i++) voxels[i].id = ResourceVoxelPack::id_air;
+		for (size_t i = 0; i < CHUNK_SIZE; i++) voxels[i] = Voxel(vox::air);
 	}
 
 	bool isGenerated = 0;
@@ -245,16 +277,57 @@ private:
 	unsigned char LIGHT(int x, int y, int z, int channel) {
 		
 		if (isChunkBelong(x, y, z)) return lightMap.get(x, y, z, channel);
-		if ((size_t)y >= CHUNK_H) return 0;//66 66 [1]-67 66
+		if ((size_t)y >= CHUNK_H) return 0;
 		gChunk* chunk = closes.get(Side2D::toSideI(x, z, CHUNK_W - 1));
 		return chunk != 0 ? chunk->lightMap.get(::clip(x, CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D), channel) : 0;
 	}
+	inline unsigned char LIGHT(const glm::ivec3& coord, int channel) {LIGHT(coord.x, coord.y, coord.z, channel);}
 
 	glm::vec4 getFastLight(int x, int y, int z);
 	glm::vec4 getSoftLight(int x, int y, int z);
 
+	struct Vec4M {
+		union
+		{	
+			struct { glm::vec4 v; };
+			struct { float m[4]; };
+		};
+		Vec4M(const glm::vec4& v_) :v(v_) {}
+	};
+
+	struct LightFace {
+		union
+		{
+			glm::vec4 l0;
+			struct { float l0m[4]; };
+		};
+		union
+		{
+			glm::vec4 l1;
+			struct { float l1m[4]; };
+		};
+		union
+		{
+			glm::vec4 l2;
+			struct { float l2m[4]; };
+		};
+		union
+		{
+			glm::vec4 l3;
+			struct { float l3m[4]; };
+		};
+	};
+	
+	void getLightTop(int x, int y, int z,		LightFace& face);
+	void getLightBottom(int x, int y, int z,	LightFace& face);
+	void getLightRight(int x, int y, int z,		LightFace& face);
+	void getLightLeft(int x, int y, int z,		LightFace& face);
+	void getLightForward(int x, int y, int z,	LightFace& face);
+	void getLightBack(int x, int y, int z,		LightFace& face);
+
 	friend class ChunkMeshQueue;
 	bool needUpBuffer = 0;
+
 	void buildMesh();
 	void fastUpMesh();
 };

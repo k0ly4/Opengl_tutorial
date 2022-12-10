@@ -32,7 +32,7 @@ bool FileManager::read(const std::string& path, std::vector<Voxel>& data) {
 	Reader::read(in, size);
 	data.resize(size);
 	for (size_t i = 0; i < size; i++) {
-		Reader::read(in, data[i].id);
+		Reader::read(in, data[i].id_);
 	}
 	in.close(); //Закрываем файл
 	return 1;
@@ -45,7 +45,7 @@ bool FileManager::write(const std::string& path, const std::vector<Voxel>& data)
 	}
 	Writer::write(out, data.size());
 	for (size_t i = 0; i < data.size(); i++) {
-		Writer::write(out, data[i].id);
+		Writer::write(out, data[i].id_);
 	}
 	out.close(); //Закрываем файл
 	return 1;

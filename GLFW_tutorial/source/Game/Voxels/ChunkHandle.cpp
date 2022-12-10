@@ -12,8 +12,10 @@ void ChunkSectorRender::setSize(size_t size) {
 
 void ChunkSectorRender::extractFromRegion() {
 
-	ChunkMeshQueue::clear();
+	ChunkMeshQueue::needClear =1;
 	begin_ = cameraChunk_- size_/2;
+	ChunkMeshQueue::waitForEmpty();
+
 	region_->fillSector(__chunks_, size_, begin_);
 	render_chunks = __chunks_;
 	LightQueue::addTask(this);

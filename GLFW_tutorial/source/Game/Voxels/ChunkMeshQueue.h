@@ -4,31 +4,6 @@
 #include"Game/Voxels/Chunk.h"
 #include <queue>
 
-template <typename object, typename key>
-class SortableShell {
-public:
-	SortableShell(object* obj_, key value_) :
-		obj(obj_), value(value_)
-	{}
-	SortableShell() {}
-
-	key value;
-	object* obj;
-
-	inline bool operator > (const SortableShell& str) const
-	{
-		return (value > str.value);
-	}
-
-	inline bool operator < (const SortableShell& str) const
-	{
-		return (value < str.value);
-	}
-
-private:
-};
-
-
 ///GeneratorChunkMesh---------------------------------------------
 /// <summary>
 /// 
@@ -45,26 +20,38 @@ public:
 	}
 
 	static void stepSolveChunkMesh() {
-
-		if (isModified || messages.size()) {
+		if (needClear) {
+			messages = std::queue<Chunk*>();
+			needClear = 0;
+			sBuffer.clear();			
+		}
+		else if (isModified || messages.size()) {
 			isModified = 0;
 			sort();
 		}
 		if(sBuffer.size()) step();
 	}
+	inline static void waitForClear() {
+		needClear = 1;
+		while (isEmpty()==0)
+		{
+			std::this_thread::yield();
+		}
 
-	static void clear() { needClear = 1; }
+	}
 
+	inline static bool isEmpty() {return messages.empty();}
+
+	inline static void waitForEmpty() {
+		while (isEmpty() == 0)std::this_thread::yield();
+		needClear = 0;
+	}
+	static bool needClear;
 private:
 
 	static void sort() {
-		if (needClear) {
-			needClear = 0;
-			sBuffer.clear();
-		}
-
 		for (; messages.size();) {
-			Chunk* chunk = messages.front();
+ 			Chunk* chunk = messages.front();
 			sBuffer.push_back(ShellChunk(
 				chunk,
 				length(chunk->getLocalPos())
@@ -94,7 +81,7 @@ private:
 		}
 	}
 
-	static bool needClear;
+	
 	static bool isModified;
 
 	static std::queue<Chunk*> messages;

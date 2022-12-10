@@ -22,14 +22,78 @@ inline void push_back(iGeometry<VoxelVertex>& convex, const glm::vec3& pos, cons
 	convex.push_back(VoxelVertex(pos, uv, light));
 }
 
-glm::vec4 Chunk::getFastLight(int x, int y, int z) {
-	glm::vec4 l_(
-		(float)LIGHT(x, y, z, 0) / 15.0f,
-		(float)LIGHT(x, y, z, 1) / 15.0f,
-		(float)LIGHT(x, y, z, 2) / 15.0f,
-		(float)LIGHT(x, y, z, 3) / 15.0f
+inline glm::vec4 Chunk::getFastLight(int x, int y, int z) {
+	return 
+	glm::vec4(
+		(float)LIGHT(x, y, z, 0),
+		(float)LIGHT(x, y, z, 1),
+		(float)LIGHT(x, y, z, 2),
+		(float)LIGHT(x, y, z, 3)
 	);
-	return l_;
+}
+
+const float cLight = 1.f / 70.f;
+//Top-------------------------
+void Chunk::getLightTop(int x, int yT, int z, LightFace& face) {
+	Vec4M l(getFastLight(x, yT, z));
+	for (size_t i = 0; i < 4; i++) {
+		face.l0m[i] = (LIGHT(x - 1, yT, z, i) + l.m[i] + LIGHT(x - 1, yT, z - 1, i) + LIGHT(x, yT, z - 1, i)) * cLight;
+		face.l1m[i] = (LIGHT(x - 1, yT, z, i) + l.m[i] + LIGHT(x - 1, yT, z + 1, i) + LIGHT(x, yT, z + 1, i)) * cLight;
+		face.l2m[i] = (LIGHT(x + 1, yT, z, i) + l.m[i] + LIGHT(x + 1, yT, z + 1, i) + LIGHT(x, yT, z + 1, i)) * cLight;
+		face.l3m[i] = (LIGHT(x + 1, yT, z, i) + l.m[i] + LIGHT(x + 1, yT, z - 1, i) + LIGHT(x, yT, z - 1, i)) * cLight;
+	}
+}
+//Bottom-------------------------
+void  Chunk::getLightBottom(int x, int yB, int z, LightFace& face) {
+	Vec4M l(getFastLight(x, yB, z));
+	for (size_t i = 0; i < 4; i++) {
+		face.l0m[i] = (LIGHT(x - 1, yB, z, i) + l.m[i] + LIGHT(x - 1, yB, z - 1, i) + LIGHT(x, yB, z - 1, i)) * cLight;
+		face.l2m[i] = (LIGHT(x - 1, yB, z, i) + l.m[i] + LIGHT(x - 1, yB, z + 1, i) + LIGHT(x, yB, z + 1, i)) * cLight;
+		face.l1m[i] = (LIGHT(x + 1, yB, z, i) + l.m[i] + LIGHT(x + 1, yB, z + 1, i) + LIGHT(x, yB, z + 1, i)) * cLight;
+		face.l3m[i] = (LIGHT(x + 1, yB, z, i) + l.m[i] + LIGHT(x + 1, yB, z - 1, i) + LIGHT(x, yB, z - 1, i)) * cLight;
+	}
+}
+//Right-------------------------
+void  Chunk::getLightRight(int xR, int y, int z, LightFace& face) {
+
+	Vec4M l(getFastLight(xR, y, z));
+	for (size_t i = 0; i < 4; i++) {
+		face.l0m[i] = (LIGHT(xR, y - 1, z - 1, i) + l.m[i] + LIGHT(xR, y, z - 1, i) + LIGHT(xR, y - 1, z, i)) * cLight;
+		face.l1m[i] = (LIGHT(xR, y + 1, z - 1, i) + l.m[i] + LIGHT(xR, y, z - 1, i) + LIGHT(xR, y + 1, z, i)) * cLight;
+		face.l2m[i] = (LIGHT(xR, y + 1, z + 1, i) + l.m[i] + LIGHT(xR, y, z + 1, i) + LIGHT(xR, y + 1, z, i)) * cLight;
+		face.l3m[i] = (LIGHT(xR, y - 1, z + 1, i) + l.m[i] + LIGHT(xR, y, z + 1, i) + LIGHT(xR, y - 1, z, i)) * cLight;
+	}
+
+}
+//Left-------------------------
+void  Chunk::getLightLeft(int xL, int y, int z, LightFace& face) {
+	Vec4M l(getFastLight(xL, y, z));
+	for (size_t i = 0; i < 4; i++) {
+		face.l0m[i] = (LIGHT(xL, y - 1, z - 1, i) + l.m[i] + LIGHT(xL, y, z - 1, i) + LIGHT(xL, y - 1, z, i)) * cLight;
+		face.l1m[i] = (LIGHT(xL, y + 1, z + 1, i) + l.m[i] + LIGHT(xL, y, z + 1, i) + LIGHT(xL, y + 1, z, i)) * cLight;
+		face.l2m[i] = (LIGHT(xL, y + 1, z - 1, i) + l.m[i] + LIGHT(xL, y, z - 1, i) + LIGHT(xL, y + 1, z, i)) * cLight;
+		face.l3m[i] = (LIGHT(xL, y - 1, z + 1, i) + l.m[i] + LIGHT(xL, y, z + 1, i) + LIGHT(xL, y - 1, z, i)) * cLight;
+	}
+}
+//Forward-------------------------
+void  Chunk::getLightForward(int x, int y, int zF, LightFace& face) {
+	Vec4M l(getFastLight(x, y, zF));
+	for (size_t i = 0; i < 4; i++) {
+		face.l0m[i] = (LIGHT(x - 1, y - 1, zF, i) + l.m[i] + LIGHT(x, y - 1, zF, i) + LIGHT(x - 1, y, zF, i)) * cLight;
+		face.l1m[i] = (LIGHT(x + 1, y + 1, zF, i) + l.m[i] + LIGHT(x, y + 1, zF, i) + LIGHT(x + 1, y, zF, i)) * cLight;
+		face.l2m[i] = (LIGHT(x - 1, y + 1, zF, i) + l.m[i] + LIGHT(x, y + 1, zF, i) + LIGHT(x - 1, y, zF, i)) * cLight;
+		face.l3m[i] = (LIGHT(x + 1, y - 1, zF, i) + l.m[i] + LIGHT(x, y - 1, zF, i) + LIGHT(x + 1, y, zF, i)) * cLight;
+	}
+}
+//Back-------------------------
+void  Chunk::getLightBack(int x, int y, int zB, LightFace& face) {
+	Vec4M l(getFastLight(x, y, zB));
+	for (size_t i = 0; i < 4; i++) {
+		face.l0m[i] = (LIGHT(x - 1, y - 1, zB, i) + l.m[i] + LIGHT(x, y - 1, zB, i) + LIGHT(x - 1, y, zB, i)) * cLight;
+		face.l1m[i] = (LIGHT(x - 1, y + 1, zB, i) + l.m[i] + LIGHT(x, y + 1, zB, i) + LIGHT(x - 1, y, zB, i)) * cLight;
+		face.l2m[i] = (LIGHT(x + 1, y + 1, zB, i) + l.m[i] + LIGHT(x, y + 1, zB, i) + LIGHT(x + 1, y, zB, i)) * cLight;
+		face.l3m[i] = (LIGHT(x + 1, y - 1, zB, i) + l.m[i] + LIGHT(x, y - 1, zB, i) + LIGHT(x + 1, y, zB, i)) * cLight;
+	}
 }
 
 void Chunk::buildMesh() {	
@@ -44,230 +108,77 @@ void Chunk::buildMesh() {
 					continue;
 				}
 				float uvsize = VoxelPack::get()->getVoxelSize();
-				
+
 				float l;
+				LightFace lFace;
 				byte drawGroup = VoxelPack::get(voxel).drawGroup;
 				//top
 				if (isFree(x, y + 1, z, drawGroup)) {
-
-					l = 1.0f;
-					glm::vec4 l_(
-						(float)LIGHT(x, y + 1, z, 0) / 15.0f,
-						(float)LIGHT(x, y + 1, z, 1) / 15.0f,
-						(float)LIGHT(x, y + 1, z, 2) / 15.0f,
-						(float)LIGHT(x, y + 1, z, 3) / 15.0f
-					);
-	
-					float lr0 = (LIGHT(x - 1, y + 1, z, 0) + l_.r * 30 + LIGHT(x - 1, y + 1, z - 1, 0) + LIGHT(x, y + 1, z - 1, 0)) / 5.0f / 15.0f;
-					float lr1 = (LIGHT(x - 1, y + 1, z, 0) + l_.r * 30 + LIGHT(x - 1, y + 1, z + 1, 0) + LIGHT(x, y + 1, z + 1, 0)) / 5.0f / 15.0f;
-					float lr2 = (LIGHT(x + 1, y + 1, z, 0) + l_.r * 30 + LIGHT(x + 1, y + 1, z + 1, 0) + LIGHT(x, y + 1, z + 1, 0)) / 5.0f / 15.0f;
-					float lr3 = (LIGHT(x + 1, y + 1, z, 0) + l_.r * 30 + LIGHT(x + 1, y + 1, z - 1, 0) + LIGHT(x, y + 1, z - 1, 0)) / 5.0f / 15.0f;
-
-					float lg0 = (LIGHT(x - 1, y + 1, z, 1) + l_.g * 30 + LIGHT(x - 1, y + 1, z - 1, 1) + LIGHT(x, y + 1, z - 1, 1)) / 5.0f / 15.0f;
-					float lg1 = (LIGHT(x - 1, y + 1, z, 1) + l_.g * 30 + LIGHT(x - 1, y + 1, z + 1, 1) + LIGHT(x, y + 1, z + 1, 1)) / 5.0f / 15.0f;
-					float lg2 = (LIGHT(x + 1, y + 1, z, 1) + l_.g * 30 + LIGHT(x + 1, y + 1, z + 1, 1) + LIGHT(x, y + 1, z + 1, 1)) / 5.0f / 15.0f;
-					float lg3 = (LIGHT(x + 1, y + 1, z, 1) + l_.g * 30 + LIGHT(x + 1, y + 1, z - 1, 1) + LIGHT(x, y + 1, z - 1, 1)) / 5.0f / 15.0f;
-
-					float lb0 = (LIGHT(x - 1, y + 1, z, 2) + l_.b * 30 + LIGHT(x - 1, y + 1, z - 1, 2) + LIGHT(x, y + 1, z - 1, 2)) / 5.0f / 15.0f;
-					float lb1 = (LIGHT(x - 1, y + 1, z, 2) + l_.b * 30 + LIGHT(x - 1, y + 1, z + 1, 2) + LIGHT(x, y + 1, z + 1, 2)) / 5.0f / 15.0f;
-					float lb2 = (LIGHT(x + 1, y + 1, z, 2) + l_.b * 30 + LIGHT(x + 1, y + 1, z + 1, 2) + LIGHT(x, y + 1, z + 1, 2)) / 5.0f / 15.0f;
-					float lb3 = (LIGHT(x + 1, y + 1, z, 2) + l_.b * 30 + LIGHT(x + 1, y + 1, z - 1, 2) + LIGHT(x, y + 1, z - 1, 2)) / 5.0f / 15.0f;
-
-					float ls0 = (LIGHT(x - 1, y + 1, z, 3) + l_.a * 30 + LIGHT(x - 1, y + 1, z - 1, 3) + LIGHT(x, y + 1, z - 1, 3)) / 5.0f / 15.0f;
-					float ls1 = (LIGHT(x - 1, y + 1, z, 3) + l_.a * 30 + LIGHT(x - 1, y + 1, z + 1, 3) + LIGHT(x, y + 1, z + 1, 3)) / 5.0f / 15.0f;
-					float ls2 = (LIGHT(x + 1, y + 1, z, 3) + l_.a * 30 + LIGHT(x + 1, y + 1, z + 1, 3) + LIGHT(x, y + 1, z + 1, 3)) / 5.0f / 15.0f;
-					float ls3 = (LIGHT(x + 1, y + 1, z, 3) + l_.a * 30 + LIGHT(x + 1, y + 1, z - 1, 3) + LIGHT(x, y + 1, z - 1, 3)) / 5.0f / 15.0f;
-
+					getLightTop(x, y + 1, z, lFace);
 					const glm::vec2& uv = VoxelPack::get(voxel, Side::top);
 
 					mesh.pushIndices(mesh.vertices.size());
-					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x,			uv.y + uvsize), glm::vec4(lr2, lg2, lb2, ls2));
-					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x,			uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			lFace.l0);
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),lFace.l1);
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x,			uv.y + uvsize), lFace.l2);
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x,			uv.y),			lFace.l3);
 				}
 
-				if (isFree(x, y - 1, z, drawGroup)) {
-					l = 0.75f;
-
-					float lr = LIGHT(x, y - 1, z, 0) / 15.0f;
-					float lg = LIGHT(x, y - 1, z, 1) / 15.0f;
-					float lb = LIGHT(x, y - 1, z, 2) / 15.0f;
-					float ls = LIGHT(x, y - 1, z, 3) / 15.0f;
-
-					float lr0 = (LIGHT(x - 1, y - 1, z - 1, 0) + lr * 30 + LIGHT(x - 1, y - 1, z, 0) + LIGHT(x, y - 1, z - 1, 0)) / 5.0f / 15.0f;
-					float lr1 = (LIGHT(x + 1, y - 1, z + 1, 0) + lr * 30 + LIGHT(x + 1, y - 1, z, 0) + LIGHT(x, y - 1, z + 1, 0)) / 5.0f / 15.0f;
-					float lr2 = (LIGHT(x - 1, y - 1, z + 1, 0) + lr * 30 + LIGHT(x - 1, y - 1, z, 0) + LIGHT(x, y - 1, z + 1, 0)) / 5.0f / 15.0f;
-					float lr3 = (LIGHT(x + 1, y - 1, z - 1, 0) + lr * 30 + LIGHT(x + 1, y - 1, z, 0) + LIGHT(x, y - 1, z - 1, 0)) / 5.0f / 15.0f;
-
-					float lg0 = (LIGHT(x - 1, y - 1, z - 1, 1) + lg * 30 + LIGHT(x - 1, y - 1, z, 1) + LIGHT(x, y - 1, z - 1, 1)) / 5.0f / 15.0f;
-					float lg1 = (LIGHT(x + 1, y - 1, z + 1, 1) + lg * 30 + LIGHT(x + 1, y - 1, z, 1) + LIGHT(x, y - 1, z + 1, 1)) / 5.0f / 15.0f;
-					float lg2 = (LIGHT(x - 1, y - 1, z + 1, 1) + lg * 30 + LIGHT(x - 1, y - 1, z, 1) + LIGHT(x, y - 1, z + 1, 1)) / 5.0f / 15.0f;
-					float lg3 = (LIGHT(x + 1, y - 1, z - 1, 1) + lg * 30 + LIGHT(x + 1, y - 1, z, 1) + LIGHT(x, y - 1, z - 1, 1)) / 5.0f / 15.0f;
-
-					float lb0 = (LIGHT(x - 1, y - 1, z - 1, 2) + lb * 30 + LIGHT(x - 1, y - 1, z, 2) + LIGHT(x, y - 1, z - 1, 2)) / 5.0f / 15.0f;
-					float lb1 = (LIGHT(x + 1, y - 1, z + 1, 2) + lb * 30 + LIGHT(x + 1, y - 1, z, 2) + LIGHT(x, y - 1, z + 1, 2)) / 5.0f / 15.0f;
-					float lb2 = (LIGHT(x - 1, y - 1, z + 1, 2) + lb * 30 + LIGHT(x - 1, y - 1, z, 2) + LIGHT(x, y - 1, z + 1, 2)) / 5.0f / 15.0f;
-					float lb3 = (LIGHT(x + 1, y - 1, z - 1, 2) + lb * 30 + LIGHT(x + 1, y - 1, z, 2) + LIGHT(x, y - 1, z - 1, 2)) / 5.0f / 15.0f;
-
-					float ls0 = (LIGHT(x - 1, y - 1, z - 1, 3) + ls * 30 + LIGHT(x - 1, y - 1, z, 3) + LIGHT(x, y - 1, z - 1, 3)) / 5.0f / 15.0f;
-					float ls1 = (LIGHT(x + 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x + 1, y - 1, z, 3) + LIGHT(x, y - 1, z + 1, 3)) / 5.0f / 15.0f;
-					float ls2 = (LIGHT(x - 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x - 1, y - 1, z, 3) + LIGHT(x, y - 1, z + 1, 3)) / 5.0f / 15.0f;
-					float ls3 = (LIGHT(x + 1, y - 1, z - 1, 3) + ls * 30 + LIGHT(x + 1, y - 1, z, 3) + LIGHT(x, y - 1, z - 1, 3)) / 5.0f / 15.0f;
-
+				if (isFree(x, y-1, z, drawGroup)) {
+					getLightBottom(x, y - 1, z, lFace);
 					const glm::vec2& uv = VoxelPack::get(voxel, Side::bottom);
 
 					mesh.pushIndices(mesh.vertices.size());
-					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
-					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),  glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					lFace.l0);
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			lFace.l3);
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),lFace.l1);
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			lFace.l2);
 				}
 
 				if (isFree(x + 1, y, z, drawGroup)) {
-					l = 0.95f;
-					float lr = LIGHT(x + 1, y, z, 0) / 15.0f;
-					float lg = LIGHT(x + 1, y, z, 1) / 15.0f;
-					float lb = LIGHT(x + 1, y, z, 2) / 15.0f;
-					float ls = LIGHT(x + 1, y, z, 3) / 15.0f;
-
-					float lr0 = (LIGHT(x + 1, y - 1, z - 1, 0) + lr * 30 + LIGHT(x + 1, y, z - 1, 0) + LIGHT(x + 1, y - 1, z, 0)) / 5.0f / 15.0f;
-					float lr1 = (LIGHT(x + 1, y + 1, z - 1, 0) + lr * 30 + LIGHT(x + 1, y, z - 1, 0) + LIGHT(x + 1, y + 1, z, 0)) / 5.0f / 15.0f;
-					float lr2 = (LIGHT(x + 1, y + 1, z + 1, 0) + lr * 30 + LIGHT(x + 1, y, z + 1, 0) + LIGHT(x + 1, y + 1, z, 0)) / 5.0f / 15.0f;
-					float lr3 = (LIGHT(x + 1, y - 1, z + 1, 0) + lr * 30 + LIGHT(x + 1, y, z + 1, 0) + LIGHT(x + 1, y - 1, z, 0)) / 5.0f / 15.0f;
-
-					float lg0 = (LIGHT(x + 1, y - 1, z - 1, 1) + lg * 30 + LIGHT(x + 1, y, z - 1, 1) + LIGHT(x + 1, y - 1, z, 1)) / 5.0f / 15.0f;
-					float lg1 = (LIGHT(x + 1, y + 1, z - 1, 1) + lg * 30 + LIGHT(x + 1, y, z - 1, 1) + LIGHT(x + 1, y + 1, z, 1)) / 5.0f / 15.0f;
-					float lg2 = (LIGHT(x + 1, y + 1, z + 1, 1) + lg * 30 + LIGHT(x + 1, y, z + 1, 1) + LIGHT(x + 1, y + 1, z, 1)) / 5.0f / 15.0f;
-					float lg3 = (LIGHT(x + 1, y - 1, z + 1, 1) + lg * 30 + LIGHT(x + 1, y, z + 1, 1) + LIGHT(x + 1, y - 1, z, 1)) / 5.0f / 15.0f;
-
-					float lb0 = (LIGHT(x + 1, y - 1, z - 1, 2) + lb * 30 + LIGHT(x + 1, y, z - 1, 2) + LIGHT(x + 1, y - 1, z, 2)) / 5.0f / 15.0f;
-					float lb1 = (LIGHT(x + 1, y + 1, z - 1, 2) + lb * 30 + LIGHT(x + 1, y, z - 1, 2) + LIGHT(x + 1, y + 1, z, 2)) / 5.0f / 15.0f;
-					float lb2 = (LIGHT(x + 1, y + 1, z + 1, 2) + lb * 30 + LIGHT(x + 1, y, z + 1, 2) + LIGHT(x + 1, y + 1, z, 2)) / 5.0f / 15.0f;
-					float lb3 = (LIGHT(x + 1, y - 1, z + 1, 2) + lb * 30 + LIGHT(x + 1, y, z + 1, 2) + LIGHT(x + 1, y - 1, z, 2)) / 5.0f / 15.0f;
-
-					float ls0 = (LIGHT(x + 1, y - 1, z - 1, 3) + ls * 30 + LIGHT(x + 1, y, z - 1, 3) + LIGHT(x + 1, y - 1, z, 3)) / 5.0f / 15.0f;
-					float ls1 = (LIGHT(x + 1, y + 1, z - 1, 3) + ls * 30 + LIGHT(x + 1, y, z - 1, 3) + LIGHT(x + 1, y + 1, z, 3)) / 5.0f / 15.0f;
-					float ls2 = (LIGHT(x + 1, y + 1, z + 1, 3) + ls * 30 + LIGHT(x + 1, y, z + 1, 3) + LIGHT(x + 1, y + 1, z, 3)) / 5.0f / 15.0f;
-					float ls3 = (LIGHT(x + 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x + 1, y, z + 1, 3) + LIGHT(x + 1, y - 1, z, 3)) / 5.0f / 15.0f;
-
+					getLightRight(x + 1, y, z, lFace);
 					const glm::vec2& uv = VoxelPack::get(voxel, Side::right);
 
 					mesh.pushIndices(mesh.vertices.size());
-					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
-					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr3, lg3, lb3, ls3));
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			lFace.l0);
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),lFace.l1);
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			lFace.l2);
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					lFace.l3);
 				}
 
 				if (isFree(x - 1, y, z, drawGroup)) {
-					l = 0.85f;
-
-					float lr = LIGHT(x - 1, y, z, 0) / 15.0f;
-					float lg = LIGHT(x - 1, y, z, 1) / 15.0f;
-					float lb = LIGHT(x - 1, y, z, 2) / 15.0f;
-					float ls = LIGHT(x - 1, y, z, 3) / 15.0f;
-
-					float lr0 = (LIGHT(x - 1, y - 1, z - 1, 0) + lr * 30 + LIGHT(x - 1, y, z - 1, 0) + LIGHT(x - 1, y - 1, z, 0)) / 5.0f / 15.0f;
-					float lr1 = (LIGHT(x - 1, y + 1, z + 1, 0) + lr * 30 + LIGHT(x - 1, y, z + 1, 0) + LIGHT(x - 1, y + 1, z, 0)) / 5.0f / 15.0f;
-					float lr2 = (LIGHT(x - 1, y + 1, z - 1, 0) + lr * 30 + LIGHT(x - 1, y, z - 1, 0) + LIGHT(x - 1, y + 1, z, 0)) / 5.0f / 15.0f;
-					float lr3 = (LIGHT(x - 1, y - 1, z + 1, 0) + lr * 30 + LIGHT(x - 1, y, z + 1, 0) + LIGHT(x - 1, y - 1, z, 0)) / 5.0f / 15.0f;
-
-					float lg0 = (LIGHT(x - 1, y - 1, z - 1, 1) + lg * 30 + LIGHT(x - 1, y, z - 1, 1) + LIGHT(x - 1, y - 1, z, 1)) / 5.0f / 15.0f;
-					float lg1 = (LIGHT(x - 1, y + 1, z + 1, 1) + lg * 30 + LIGHT(x - 1, y, z + 1, 1) + LIGHT(x - 1, y + 1, z, 1)) / 5.0f / 15.0f;
-					float lg2 = (LIGHT(x - 1, y + 1, z - 1, 1) + lg * 30 + LIGHT(x - 1, y, z - 1, 1) + LIGHT(x - 1, y + 1, z, 1)) / 5.0f / 15.0f;
-					float lg3 = (LIGHT(x - 1, y - 1, z + 1, 1) + lg * 30 + LIGHT(x - 1, y, z + 1, 1) + LIGHT(x - 1, y - 1, z, 1)) / 5.0f / 15.0f;
-
-					float lb0 = (LIGHT(x - 1, y - 1, z - 1, 2) + lb * 30 + LIGHT(x - 1, y, z - 1, 2) + LIGHT(x - 1, y - 1, z, 2)) / 5.0f / 15.0f;
-					float lb1 = (LIGHT(x - 1, y + 1, z + 1, 2) + lb * 30 + LIGHT(x - 1, y, z + 1, 2) + LIGHT(x - 1, y + 1, z, 2)) / 5.0f / 15.0f;
-					float lb2 = (LIGHT(x - 1, y + 1, z - 1, 2) + lb * 30 + LIGHT(x - 1, y, z - 1, 2) + LIGHT(x - 1, y + 1, z, 2)) / 5.0f / 15.0f;
-					float lb3 = (LIGHT(x - 1, y - 1, z + 1, 2) + lb * 30 + LIGHT(x - 1, y, z + 1, 2) + LIGHT(x - 1, y - 1, z, 2)) / 5.0f / 15.0f;
-
-					float ls0 = (LIGHT(x - 1, y - 1, z - 1, 3) + ls * 30 + LIGHT(x - 1, y, z - 1, 3) + LIGHT(x - 1, y - 1, z, 3)) / 5.0f / 15.0f;
-					float ls1 = (LIGHT(x - 1, y + 1, z + 1, 3) + ls * 30 + LIGHT(x - 1, y, z + 1, 3) + LIGHT(x - 1, y + 1, z, 3)) / 5.0f / 15.0f;
-					float ls2 = (LIGHT(x - 1, y + 1, z - 1, 3) + ls * 30 + LIGHT(x - 1, y, z - 1, 3) + LIGHT(x - 1, y + 1, z, 3)) / 5.0f / 15.0f;
-					float ls3 = (LIGHT(x - 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x - 1, y, z + 1, 3) + LIGHT(x - 1, y - 1, z, 3)) / 5.0f / 15.0f;
-
-			
+					getLightLeft(x - 1, y, z, lFace);
 					const glm::vec2& uv = VoxelPack::get(voxel, Side::left);
 
 					mesh.pushIndices(mesh.vertices.size());
-					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
-					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					lFace.l0);
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			lFace.l3);
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),lFace.l1);
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			lFace.l2);
 				}
 
 				if (isFree(x, y, z + 1, drawGroup)) {
 					l = 0.9f;
-
-					float lr = LIGHT(x, y, z + 1, 0) / 15.0f;
-					float lg = LIGHT(x, y, z + 1, 1) / 15.0f;
-					float lb = LIGHT(x, y, z + 1, 2) / 15.0f;
-					float ls = LIGHT(x, y, z + 1, 3) / 15.0f;
-
-					float lr0 = l * (LIGHT(x - 1, y - 1, z + 1, 0) + lr * 30 + LIGHT(x, y - 1, z + 1, 0) + LIGHT(x - 1, y, z + 1, 0)) / 5.0f / 15.0f;
-					float lr1 = l * (LIGHT(x + 1, y + 1, z + 1, 0) + lr * 30 + LIGHT(x, y + 1, z + 1, 0) + LIGHT(x + 1, y, z + 1, 0)) / 5.0f / 15.0f;
-					float lr2 = l * (LIGHT(x - 1, y + 1, z + 1, 0) + lr * 30 + LIGHT(x, y + 1, z + 1, 0) + LIGHT(x - 1, y, z + 1, 0)) / 5.0f / 15.0f;
-					float lr3 = l * (LIGHT(x + 1, y - 1, z + 1, 0) + lr * 30 + LIGHT(x, y - 1, z + 1, 0) + LIGHT(x + 1, y, z + 1, 0)) / 5.0f / 15.0f;
-
-					float lg0 = l * (LIGHT(x - 1, y - 1, z + 1, 1) + lg * 30 + LIGHT(x, y - 1, z + 1, 1) + LIGHT(x - 1, y, z + 1, 1)) / 5.0f / 15.0f;
-					float lg1 = l * (LIGHT(x + 1, y + 1, z + 1, 1) + lg * 30 + LIGHT(x, y + 1, z + 1, 1) + LIGHT(x + 1, y, z + 1, 1)) / 5.0f / 15.0f;
-					float lg2 = l * (LIGHT(x - 1, y + 1, z + 1, 1) + lg * 30 + LIGHT(x, y + 1, z + 1, 1) + LIGHT(x - 1, y, z + 1, 1)) / 5.0f / 15.0f;
-					float lg3 = l * (LIGHT(x + 1, y - 1, z + 1, 1) + lg * 30 + LIGHT(x, y - 1, z + 1, 1) + LIGHT(x + 1, y, z + 1, 1)) / 5.0f / 15.0f;
-
-					float lb0 = l * (LIGHT(x - 1, y - 1, z + 1, 2) + lb * 30 + LIGHT(x, y - 1, z + 1, 2) + LIGHT(x - 1, y, z + 1, 2)) / 5.0f / 15.0f;
-					float lb1 = l * (LIGHT(x + 1, y + 1, z + 1, 2) + lb * 30 + LIGHT(x, y + 1, z + 1, 2) + LIGHT(x + 1, y, z + 1, 2)) / 5.0f / 15.0f;
-					float lb2 = l * (LIGHT(x - 1, y + 1, z + 1, 2) + lb * 30 + LIGHT(x, y + 1, z + 1, 2) + LIGHT(x - 1, y, z + 1, 2)) / 5.0f / 15.0f;
-					float lb3 = l * (LIGHT(x + 1, y - 1, z + 1, 2) + lb * 30 + LIGHT(x, y - 1, z + 1, 2) + LIGHT(x + 1, y, z + 1, 2)) / 5.0f / 15.0f;
-
-					float ls0 = l * (LIGHT(x - 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x, y - 1, z + 1, 3) + LIGHT(x - 1, y, z + 1, 3)) / 5.0f / 15.0f;
-					float ls1 = l * (LIGHT(x + 1, y + 1, z + 1, 3) + ls * 30 + LIGHT(x, y + 1, z + 1, 3) + LIGHT(x + 1, y, z + 1, 3)) / 5.0f / 15.0f;
-					float ls2 = l * (LIGHT(x - 1, y + 1, z + 1, 3) + ls * 30 + LIGHT(x, y + 1, z + 1, 3) + LIGHT(x - 1, y, z + 1, 3)) / 5.0f / 15.0f;
-					float ls3 = l * (LIGHT(x + 1, y - 1, z + 1, 3) + ls * 30 + LIGHT(x, y - 1, z + 1, 3) + LIGHT(x + 1, y, z + 1, 3)) / 5.0f / 15.0f;
-
+					getLightForward(x, y, z+1, lFace);
 					const glm::vec2& uv = VoxelPack::get(voxel, Side::front);
 
 					mesh.pushIndices(mesh.vertices.size());
-					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr3, lg3, lb3, ls3));
-					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
+					push_back(mesh,glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y),						lFace.l0);
+					push_back(mesh,glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y),				lFace.l3);
+					push_back(mesh,glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	lFace.l1);
+					push_back(mesh,glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize),				lFace.l2);
 				}
+
 				if (isFree(x, y, z - 1, drawGroup)) {
 					l = 0.8f;
-					float lr = LIGHT(x, y, z - 1, 0) / 15.0f;
-					float lg = LIGHT(x, y, z - 1, 1) / 15.0f;
-					float lb = LIGHT(x, y, z - 1, 2) / 15.0f;
-					float ls = LIGHT(x, y, z - 1, 3) / 15.0f;
-
-					float lr0 = l * (LIGHT(x - 1, y - 1, z - 1, 0) + lr * 30 + LIGHT(x, y - 1, z - 1, 0) + LIGHT(x - 1, y, z - 1, 0)) / 5.0f / 15.0f;
-					float lr1 = l * (LIGHT(x - 1, y + 1, z - 1, 0) + lr * 30 + LIGHT(x, y + 1, z - 1, 0) + LIGHT(x - 1, y, z - 1, 0)) / 5.0f / 15.0f;
-					float lr2 = l * (LIGHT(x + 1, y + 1, z - 1, 0) + lr * 30 + LIGHT(x, y + 1, z - 1, 0) + LIGHT(x + 1, y, z - 1, 0)) / 5.0f / 15.0f;
-					float lr3 = l * (LIGHT(x + 1, y - 1, z - 1, 0) + lr * 30 + LIGHT(x, y - 1, z - 1, 0) + LIGHT(x + 1, y, z - 1, 0)) / 5.0f / 15.0f;
-
-					float lg0 = l * (LIGHT(x - 1, y - 1, z - 1, 1) + lg * 30 + LIGHT(x, y - 1, z - 1, 1) + LIGHT(x - 1, y, z - 1, 1)) / 5.0f / 15.0f;
-					float lg1 = l * (LIGHT(x - 1, y + 1, z - 1, 1) + lg * 30 + LIGHT(x, y + 1, z - 1, 1) + LIGHT(x - 1, y, z - 1, 1)) / 5.0f / 15.0f;
-					float lg2 = l * (LIGHT(x + 1, y + 1, z - 1, 1) + lg * 30 + LIGHT(x, y + 1, z - 1, 1) + LIGHT(x + 1, y, z - 1, 1)) / 5.0f / 15.0f;
-					float lg3 = l * (LIGHT(x + 1, y - 1, z - 1, 1) + lg * 30 + LIGHT(x, y - 1, z - 1, 1) + LIGHT(x + 1, y, z - 1, 1)) / 5.0f / 15.0f;
-
-					float lb0 = l * (LIGHT(x - 1, y - 1, z - 1, 2) + lb * 30 + LIGHT(x, y - 1, z - 1, 2) + LIGHT(x - 1, y, z - 1, 2)) / 5.0f / 15.0f;
-					float lb1 = l * (LIGHT(x - 1, y + 1, z - 1, 2) + lb * 30 + LIGHT(x, y + 1, z - 1, 2) + LIGHT(x - 1, y, z - 1, 2)) / 5.0f / 15.0f;
-					float lb2 = l * (LIGHT(x + 1, y + 1, z - 1, 2) + lb * 30 + LIGHT(x, y + 1, z - 1, 2) + LIGHT(x + 1, y, z - 1, 2)) / 5.0f / 15.0f;
-					float lb3 = l * (LIGHT(x + 1, y - 1, z - 1, 2) + lb * 30 + LIGHT(x, y - 1, z - 1, 2) + LIGHT(x + 1, y, z - 1, 2)) / 5.0f / 15.0f;
-
-					float ls0 = l * (LIGHT(x - 1, y - 1, z - 1, 3) + ls * 30 + LIGHT(x, y - 1, z - 1, 3) + LIGHT(x - 1, y, z - 1, 3)) / 5.0f / 15.0f;
-					float ls1 = l * (LIGHT(x - 1, y + 1, z - 1, 3) + ls * 30 + LIGHT(x, y + 1, z - 1, 3) + LIGHT(x - 1, y, z - 1, 3)) / 5.0f / 15.0f;
-					float ls2 = l * (LIGHT(x + 1, y + 1, z - 1, 3) + ls * 30 + LIGHT(x, y + 1, z - 1, 3) + LIGHT(x + 1, y, z - 1, 3)) / 5.0f / 15.0f;
-					float ls3 = l * (LIGHT(x + 1, y - 1, z - 1, 3) + ls * 30 + LIGHT(x, y - 1, z - 1, 3) + LIGHT(x + 1, y, z - 1, 3)) / 5.0f / 15.0f;
-
+					getLightBack(x, y, z - 1, lFace);
 					const glm::vec2& uv = VoxelPack::get(voxel, Side::back);
 
 					mesh.pushIndices(mesh.vertices.size());
-					push_back(mesh,glm::vec3( x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			glm::vec4(lr0, lg0, lb0, ls0));
-					push_back(mesh,glm::vec3( x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), glm::vec4(lr1, lg1, lb1, ls1));
-					push_back(mesh,glm::vec3( x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			glm::vec4(lr2, lg2, lb2, ls2));
-					push_back(mesh,glm::vec3( x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),					glm::vec4(lr3, lg3, lb3, ls3));
+					push_back(mesh,glm::vec3( x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y),			lFace.l0);
+					push_back(mesh,glm::vec3( x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize),	lFace.l1);
+					push_back(mesh,glm::vec3( x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize),			lFace.l2);
+					push_back(mesh,glm::vec3( x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y),						lFace.l3);
 				}							 					 		
 			}
 		}

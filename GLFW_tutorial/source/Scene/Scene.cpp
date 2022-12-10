@@ -90,4 +90,5 @@ void Scene::inUI(RenderTarget& target) {
 	target.setView(view2D);
 	uiSetupContext();
 	target.draw(sCowBoy);
+	gameUi.draw(target);
 }

@@ -6,6 +6,7 @@
 /// 
 /// </summary>
 struct extendedID {
+
 	short id;
 	byte m1;
 	byte m2;
@@ -28,31 +29,47 @@ struct Voxel {
 	union
 	{
 
-		int id;
+		int id_;
 		extendedID e;
 
 	};
 	
-	Voxel(int id_) :id(id_) {}
-	Voxel(short id,byte m1,byte m2):e(id,m1,m2)
+	//Voxel(int id_) :id(id_) {}
+	Voxel(short id,byte m1=0,byte m2=0):e(id,m1,m2)
 	{}
 	Voxel() {}
 };
 
 static bool operator==(const Voxel& left, const Voxel& right) {
-	return (right.id == left.id);
+	return (right.e.id== left.e.id);
 }
 
-
 namespace vox {
-	enum Type:int
+
+	enum TypeVoxel:short
 	{
 		air = -1,
 		turf = 0,
 		earth = 1,
-		stone = 2
+		stone = 2,
+		bedrock = 6,
+		oak = 8,
+		oak_wood = 9,
+		snow = 10,
+		sand = 11,
 	};
 }
+class Biom {
+public:
+	enum Type:size_t
+	{
+		plain,
+		tundra,
+		mountains,
+		desert,
+	};
+private:
 
+};
 
 #endif

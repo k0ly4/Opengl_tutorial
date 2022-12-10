@@ -25,10 +25,10 @@ void InputPlayer::setVoxel(World& world, bool isModAdd) {
 	if (isModAdd) {
 		glm::ivec3 pos(posCursor + glm::ivec3(normCursor));
 		world.chunks.setVoxel(curVoxel, pos);
-		world.light.add(pos, curVoxel.id);
+		world.light.add(pos, curVoxel);
 	}
 	else {
-		world.chunks.setVoxel(Voxel(-1), posCursor);
+		world.chunks.setVoxel(vox::air, posCursor);
 		world.light.remove(posCursor);
 	}
 }

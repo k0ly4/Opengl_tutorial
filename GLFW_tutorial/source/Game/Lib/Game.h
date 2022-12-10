@@ -12,7 +12,7 @@ public:
     static const glm::vec3 start_pos;
     static const char* title;
     static int distance_render;
-    static constexpr glm::vec3 getBeginPos() { return glm::ivec3(1100, 60, 1100); }
+    static constexpr glm::vec3 getBeginPos() { return glm::ivec3(1100, 100, 1100); }
 
 private:
 

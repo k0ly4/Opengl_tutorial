@@ -114,17 +114,17 @@ public:
 	};
 
 	const Block& get(Voxel id)const  {
-		return blocks[id.id];
+		return blocks[id.e.id];
 	}
 	//path to json file
 	bool load(const std::string& directory);
 
-	inline const glm::vec2& get(int id, int side)const {
+	inline const glm::vec2& get(short id, int side)const {
 		return uv[blocks[id].idSide[side]];
 	}
 
 	inline const glm::vec2& get(Voxel id, int side)const {
-		return get(id.id, side);
+		return get(id.e.id, side);
 	}
 
 	inline float getVoxelSize()const {
@@ -136,12 +136,14 @@ public:
 		shader.uniform("baseColor", glm::vec3(1.f));
 		texture_.use(0);
 	}
-
+	const Texture2D& getTexture()const {
+		return texture_;
+	}
 private:
 
 	inline glm::vec2 getUV(int id) {
-		float u = (id % sizeVoxel_) * uvSize_;
-		float v = 1.f - ((1.f + id / sizeVoxel_) * uvSize_);
+		float u = (id % voxelInSide) * uvSize_;
+		float v = 1.f - ((1.f + id / voxelInSide) * uvSize_);
 		return glm::vec2(u, v);
 	}
 
@@ -149,6 +151,7 @@ private:
 	std::vector<Block> blocks;
 
 	float uvSize_;
+	size_t voxelInSide;
 	size_t sizeVoxel_;
 	Texture2D texture_;
 
@@ -172,19 +175,19 @@ public:
 	}
 
 	static inline bool isEmission(Voxel id) {
-		return (id.id > -1) && (get(id).emissionFlag == 1);
+		return (id.e.id > vox::air) && (get(id).emissionFlag == 1);
 	}
 	static inline bool isRender(Voxel id) {
-		return id.id > -1;
+		return id.e.id > vox::air;
 	}
 	static inline bool isSelectable(Voxel voxel) {
-		return (voxel.id != -1);
+		return (voxel.e.id != vox::air);
 	}
 	static inline bool isOpaque(Voxel id) {
 		return isRender(id) && (get(id).drawGroup == 0);
 	}
 	static inline bool isObstacle(Voxel id) {
-		if (id.id < 0)return 0;
+		if (id.e.id < 0)return 0;
 		return get(id).physGroup == 1;
 	}
 

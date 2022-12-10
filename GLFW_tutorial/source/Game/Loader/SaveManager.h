@@ -3,7 +3,7 @@
 
 #include "Game/Voxels/Chunk.h"
 
-#define REGION_SIZE 12
+#define REGION_SIZE 24
 #define REGION_VEC	glm::uvec2(REGION_SIZE,REGION_SIZE)
 #define REGION_IVEC glm::ivec2(REGION_SIZE,REGION_SIZE)
 #define REGION_VOLUME REGION_SIZE*REGION_SIZE
