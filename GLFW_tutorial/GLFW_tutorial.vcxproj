@@ -292,6 +292,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Game\Interface\GameUi.h" />
+    <ClInclude Include="source\Game\Voxels\Declare.h" />
+    <ClInclude Include="source\Graphic\Geometry.h" />
+    <ClInclude Include="source\System\Arrays.h" />
     <ClInclude Include="source\System\LuaFIle.h" />
     <ClInclude Include="source\Game\Entities\ProcessQueue.h" />
     <ClInclude Include="source\Game\Voxels\ChunkMeshQueue.h" />

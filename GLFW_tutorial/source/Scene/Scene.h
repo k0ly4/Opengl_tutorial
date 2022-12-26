@@ -55,7 +55,6 @@ public:
 	std::vector<Drawable*>gBufferObjects;
 	World world;
 	//Object2D
-	Sprite sCowBoy;
 	Sprite sError;
 	//Views
 	Camera camera;

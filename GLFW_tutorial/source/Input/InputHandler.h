@@ -13,13 +13,13 @@ public:
 
 	enum CommandInterface:size_t
 	{
-		kW,kS,kA,kD,kU,kSpace, mLeft, mRight, mMiddle,size_com
+		kW,kS,kA,kD,kU,kSpace, mLeft, mRight,mScroll, mMiddle,size_com
 	};
 
 	InputHandler() {
 		for (size_t i = 0; i < size_com; i++)command[i] = &com::Null;
 	}
-
+	void solveScroll(Event& event);
 	void solveMouse(Event& event);
 	void solveKey(Event& event);
 

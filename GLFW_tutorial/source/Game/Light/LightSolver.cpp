@@ -8,7 +8,7 @@ void LightSolver::add(const glm::ivec3& pos, unsigned char emission) {
 	LightUint8 entry(pos, emission);
 	addqueue.push(entry);
 
-	Chunk* chunk = chunks->getByVoxel(entry.pos);
+	Chunk* chunk = chunks->getByVoxel(entry.pos.x, entry.pos.y, entry.pos.z);
 	chunk->setLightGlobal(entry, channel);
 }
 
@@ -17,13 +17,11 @@ void LightSolver::add(const glm::ivec3& pos) {
 }
 
 void LightSolver::remove(const glm::ivec3& pos) {
-	Chunk* chunk = chunks->getByVoxel(pos);
-	if (chunk == nullptr)
-		return;
+	Chunk* chunk = chunks->getByVoxel(pos.x, pos.y,pos.z);
+	if (chunk == nullptr) return;
 
 	unsigned char light = chunk->getLightGlobal(pos, channel);
-	if (light == 0) 
-		return;
+	if (light == 0) return;
 
 	LightUint8 entry(pos, light);
 	remqueue.push(entry);
@@ -47,7 +45,7 @@ void LightSolver::solve() {
 
 		for (size_t i = 0; i < 6; i++) {
 			glm::uvec3 pos = glm::ivec3(entry.pos) + coords[i];
-			Chunk* chunk = chunks->getByVoxel(pos);
+			Chunk* chunk = chunks->getByVoxel(pos.x, pos.y,pos.z);
 			if (chunk == 0) continue;
 
 			unsigned char light = chunks->getChannelLight(pos, channel);

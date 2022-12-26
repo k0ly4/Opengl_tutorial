@@ -49,11 +49,15 @@ void InputHandler::solveMouse(Event& event) {
 	case Mouse::Middle:
 		command[mMiddle]->execute(event);
 		break;
+	
 	default:
 		break;
 	}
 }
 
+void InputHandler::solveScroll(Event& event) {
+	command[mScroll]->execute(event);
+}
 
 void sCommandHandler::init(InputHandler& input,Scene* scene, Player* player) {
 	
@@ -66,5 +70,5 @@ void sCommandHandler::init(InputHandler& input,Scene* scene, Player* player) {
 	input.command[input.mLeft] =	new com::pl::HandDestroy(player, scene);
 	input.command[input.mRight] =	new com::pl::HandCreate(player, scene);
 	input.command[input.mMiddle] =	&com::Null;
-	
+	input.command[input.mScroll] =	new com::pl::SwitchBlock(player);
 }

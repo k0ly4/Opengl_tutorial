@@ -21,13 +21,13 @@ void RLE::compress(ChunkRLE& chunk, const std::vector<Voxel>& data) {
 	chunk.v_.push_back(VoxelRLE(amount, data[j]));
 }
 
-bool RLE::uncompress(std::vector<Voxel>& voxels, const std::vector<VoxelRLE>& buffer) {
+bool RLE::uncompress(Voxels& voxels, const std::vector<VoxelRLE>& buffer) {
 	size_t voxI = 0;
 	for (size_t i = 0; i < buffer.size(); i++)
 		for (size_t j = 0; j < buffer[i].amount; j++, voxI++)
 			voxels[voxI].e = buffer[i].e;
 
-	if (voxI != CHUNK_SIZE) {
+	if (voxI != CHUNK_VOL) {
 		LOG("!!!!voxI ==%d\n", voxI);
 		return 0;
 	}
@@ -37,7 +37,7 @@ bool RLE::uncompress(std::vector<Voxel>& voxels, const std::vector<VoxelRLE>& bu
 
 
 ///WriterRLE-----------------------------------------------
-void WriterRLE::process(const std::vector<Voxel>& data) {
+void WriterRLE::process(const Voxels& data) {
 	twobyte amount = 1;
 	size_t j = 0;
 	for (size_t i = 1; i < data.size(); i++) {
@@ -60,9 +60,9 @@ bool ReaderRLE::readChunk(Chunk& chunk, size_t begin, size_t end) {
 		chunk.isGenerated = 0;
 		return 0;
 	}
-	if (RLE::uncompress(chunk.getVoxels(), buffer.v_) == 0)LOG("begin =%d,end=%d\n", begin, end);
+	if (RLE::uncompress(chunk.voxels(), buffer.v_) == 0)LOG("begin =%d,end=%d\n", begin, end);
 	//Set flags
-	chunk.setModified(); chunk.isInitLightMap = 0; chunk.isGenerated = 1;
+	chunk.setModified(); chunk.isInitLight = 0; chunk.isGenerated = 1;
 	return 1;
 }
 

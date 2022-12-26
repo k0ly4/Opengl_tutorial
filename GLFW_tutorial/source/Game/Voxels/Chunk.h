@@ -1,19 +1,15 @@
 #ifndef CHUNK_CLASS_H
 #define CHUNK_CLASS_H
-
-#include <stack>
-#include "Scene/Camera.h"
-#include "Math/Math.h"
-#include "Graphic/Texture.h"
-#include "Scene/Convex.h"
+#include "Graphic/Geometry.h"
 #include "Game/Voxels/VoxelAtlas.h"
 #include "Game/Light/LightMap.h"
-
+#include "Scene/Convex.h"
+typedef Array3d<CHUNK_W, CHUNK_H, CHUNK_D, Voxel> Voxels;
 ///SortableShell---------------------------------------------
 /// <summary>
 /// 
 /// </summary>
-template <typename object, typename key>
+/*template <typename object, typename key>
 class SortableShell {
 public:
 	SortableShell(object* obj_, key value_) :
@@ -35,63 +31,9 @@ public:
 	}
 
 private:
-};
+}*/;
 
-///iGeometry---------------------------------------------
-/// <summary>
-/// 
-/// </summary>
-template<typename T>
-class iGeometry {
-public:
 
-	iGeometry():size_vertex_to_draw(0){
-		VBO.begin();
-		VAO.begin();
-		T::attrib(VAO);
-		VAO.end();
-		VBO.end();
-	}
-
-	inline void saveInBuffer() {
-		VAO.begin();
-		VBO.begin();
-		VBO.data(vertices);
-		EBO.begin();
-		EBO.data(indices);
-		T::attrib(VAO);
-		VAO.end();
-		EBO.end();
-		size_vertex_to_draw = indices.size();
-	}
-
-	inline void draw() {
-		VAO.begin();
-		glDrawElements(GlRender::TRIANGLES, size_vertex_to_draw, GL_UNSIGNED_INT,0);
-	}
-
-	inline void pushIndices(size_t begin) {
-		indices.push_back(begin);
-		indices.push_back(begin + 1);
-		indices.push_back(begin + 2);
-		indices.push_back(begin);
-		indices.push_back(begin + 2);
-		indices.push_back(begin + 3);
-	}
-
-	inline void push_back(const T& vertex) {
-		vertices.push_back(vertex);
-	}
-
-	ArrayBufferObject VAO;
-	VertexBufferObject VBO;
-	ElementBufferObject EBO;
-
-	size_t size_vertex_to_draw;
-	std::vector<unsigned int> indices;
-	std::vector<T> vertices;
-private:
-};
 
 
 ///Chunk---------------------------------------------
@@ -110,9 +52,7 @@ public:
 		Closes() {clear();}
 
 		inline void clear() {
-			for (size_t i = 0; i < Side2D::NuN; i++) {
-				chunks[i] = nullptr;
-			}
+			for (size_t i = 0; i < Side2D::NuN; i++) chunks[i] = nullptr;
 		}
 
 		inline void setModified(size_t index) {
@@ -121,6 +61,14 @@ public:
 
 		inline void setModified() {
 			for (size_t i = 0; i < Side2D::NuN; i++) setModified(i);
+		}
+		inline void setModifiedFast() {
+			for (size_t i = 0; i < Side2D::left_bottom; i++) {
+				if (chunks[i]) {
+					//chunks[i]->isInitLightMap = 0;
+					chunks[i]->modified = 1;
+				}
+			}
 		}
 
 		inline void setModified(size_t x, size_t y) {
@@ -149,86 +97,53 @@ public:
 			
 	};
 
-	gChunk(): global_(0)
-	{
-		voxels.resize(CHUNK_SIZE);
-	}
+	gChunk(): global_(0){}
 
-	inline void setPosition(const glm::uvec3&global) {
-		local_ = global;
-		global_ = global * CHUNK_VOLUME;
+	inline void init(size_t x,size_t z) {
+		local_ = glm::uvec3(x, 0, z);
+		global_ = local_ * CHUNK_VEC;
+		isGenerated = 0;
 	}
 
 	inline void setModified(){ modified = 1; }
-	
 	//Local
-	inline bool isUnVisible(size_t x, size_t y, size_t z)const {
-		return !(!isChunkBelong(x, y, z) || VoxelPack::isRender(getFromLocalCoord(x, y, z)));
-	}
+	inline bool isUnVisible(size_t x, size_t y, size_t z)const { return !(!voxs.is(x, y, z) || VoxelPack::isRender(voxs(x, y, z)));}
 	
 	//Global
-	inline const Voxel* getFromGlobalCoord(const glm::uvec3& coord) const{
-		glm::uvec3 local = coord - glm::uvec3(global_);
-		return isChunkBelong(local) ? &voxels[getIndex(local)] : 0;
-	}
+	inline const Voxel* getGlobal(const glm::uvec3& coord) const{return voxs.get(coord - glm::uvec3(global_));}
+	inline Voxel* getGlobal(const glm::uvec3& coord) {return voxs.get(coord - glm::uvec3(global_));}
 
-	inline Voxel* getFromGlobalCoord(const glm::uvec3& coord) {
-		glm::uvec3 local = coord - glm::uvec3(global_);
-		return isChunkBelong(local) ? &voxels[getIndex(local)] : 0;
-	}
-	//Local
-	inline Voxel& getFromLocalCoord(size_t x, size_t y, size_t z) {return voxels[getIndex(x, y, z)];}
-
-	inline const Voxel& getFromLocalCoord(size_t x, size_t y, size_t z)const {return voxels[getIndex(x, y, z)];}
-
-	inline const glm::uvec3& getGlobalPos()const { return global_; }
-
-	inline const glm::uvec3& getLocalPos()const { return local_; }
+	inline const glm::uvec3& globalPos()const { return global_; }
+	inline const glm::uvec3& localPos()const { return local_; }
 
 	/// <summary>
 	/// Изменяет заданный в глобальных кординатах coord воксель, устанавливая себе и 6 ближайшим чанкам modified в true
 	/// </summary>
 	bool setVoxel(const Voxel& voxel, const glm::uvec3& coord);
 
-	/// <summary>
-	/// Lightning-------------------------------------------------------------------------------------
-	/// </summary>
-	inline unsigned char getLightLocal(const glm::uvec3& local, int channel_) {
-		return isChunkBelong(local) ? lightMap.get(local, channel_) : 0;
-	}
-	inline unsigned char getLightLocal(size_t x,size_t y,size_t z, int channel_) {
-		return getLightLocal(glm::uvec3(x, y, z), channel_);
-	}
-
-	inline unsigned char getLightGlobal(const glm::uvec3& coord, int channel_) {
-		return lightMap.get(
-			coord - global_,
-			channel_);
-	}
+	inline byte getLight(const glm::uvec3& local, int channel_)		const{	return voxs.is(local) ? lightMap.get(local, channel_) : 0;}
+	inline byte getLight(size_t x,size_t y,size_t z, int channel_)	const { return getLight(glm::uvec3(x, y, z), channel_);}
+	inline byte getLightGlobal(const glm::uvec3& coord, int channel_)const {	return lightMap.get(coord - global_,channel_);}
 
 	inline void setLightGlobal(const LightUint8& light, int channel_) {
-		modified = 1;
-		lightMap.set(
-			light.pos - global_,
-			channel_,
-			light.light);
+		setModified();
+		lightMap.set(light.pos - global_, channel_, light.light);
 	}
 
-	std::vector<Voxel>& getVoxels()				{ return voxels;}
-	const std::vector<Voxel>& getVoxels()const	{ return voxels;}
+	Voxels& voxels()				{ return voxs;}
+	const Voxels& voxels()const		{ return voxs;}
 
 	inline bool isModified()const { return modified; }
 
 	inline void setNull() {
-		isInitLightMap = isGenerated = 0;
-		modified = 1;
-		for (size_t i = 0; i < CHUNK_SIZE; i++) voxels[i] = Voxel(vox::air);
+		isInitLight = isGenerated = 0;
+		setModified();
+		for (size_t i = 0; i < voxs.size(); i++) voxs[i] = Voxel(vox::air);
 	}
 
 	bool isGenerated = 0;
-	bool isInitLightMap = 0;
+	bool isInitLight = 0;
 
-	
 	Closes closes;
 	LightMap lightMap;
 
@@ -240,18 +155,17 @@ protected:
 
 	inline bool isFree(int x, int y, int z, byte drawGroup) {
 		///Local test
-		if (isChunkBelong(x, y, z)) return isFree(getFromLocalCoord(x, y, z),drawGroup);
+		if (voxs.is(x, y, z)) return isFree(voxs(x, y, z),drawGroup);
 		//Global
 		if ((size_t)y >= CHUNK_H) return 1;//66 66 [1]-67 66
 		const gChunk* chunk = closes.get( Side2D::toSideI( x , z, CHUNK_W - 1));
 		if (chunk == nullptr) return 0;
-		return isFree( chunk->getFromLocalCoord( ::clip(x , CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D) ), drawGroup);
+		return isFree( chunk->voxels().clip(x,y,z), drawGroup);
 	}
 	//render
-	std::vector<Voxel>voxels;
 	mutable bool modified = 1;
 	glm::uvec3 local_, global_;
-
+	Voxels voxs;
 };
 class Chunk;
 
@@ -259,24 +173,42 @@ class Chunk;
 /// <summary>
 /// 
 /// </summary>
-class Chunk:public gChunk,public Drawable {
+class Chunk:public gChunk {
 public:
+	struct SortableVoxel {
+		glm::uvec3 pos;
+		size_t d;
+		SortableVoxel(const glm::uvec3& pos_) :pos(pos_) {}
+		SortableVoxel() {}
+	};
 
-	Chunk():gChunk(){
+	struct ShellGeometry:public iGeometry<VoxelVertex> {
+		bool needUpBuffer = 0;
+	};
+	Chunk():
+		gChunk(), 
+		curPosView(0.f)
+	{
 		mesh.VBO.setMode(GBO::DYNAMIC);
 		mesh.EBO.setMode(GBO::DYNAMIC);
-		shaderHint = glShader::voxel;
+		sort_mesh.VBO.setMode(GBO::DYNAMIC);
+		sort_mesh.EBO.setMode(GBO::DYNAMIC);
 	}
 	//render
-	void draw(const View* view, const Shader& shader);
-	void draw(const Shader& shader);
-	iGeometry<VoxelVertex> mesh;
+	//void draw(const View* view, const Shader& shader);
+	void drawOpaqueMesh(const Shader& shader);
+	void drawSortMesh(const Shader& shader);
+
+	ShellGeometry mesh;
+	ShellGeometry sort_mesh;
 
 private:
+	glm::ivec3 curPosView;
+	std::vector<SortableVoxel> sort_vox;
 
 	unsigned char LIGHT(int x, int y, int z, int channel) {
 		
-		if (isChunkBelong(x, y, z)) return lightMap.get(x, y, z, channel);
+		if (voxs.is(x, y, z)) return lightMap.get(x, y, z, channel);
 		if ((size_t)y >= CHUNK_H) return 0;
 		gChunk* chunk = closes.get(Side2D::toSideI(x, z, CHUNK_W - 1));
 		return chunk != 0 ? chunk->lightMap.get(::clip(x, CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D), channel) : 0;
@@ -324,12 +256,15 @@ private:
 	void getLightLeft(int x, int y, int z,		LightFace& face);
 	void getLightForward(int x, int y, int z,	LightFace& face);
 	void getLightBack(int x, int y, int z,		LightFace& face);
-
+	
 	friend class ChunkMeshQueue;
-	bool needUpBuffer = 0;
-
+	void buildBox(			ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
+	void buildСrossroad(	ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
+	void buildLiquid(		ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
 	void buildMesh();
-	void fastUpMesh();
+	void buildSortMesh(const glm::ivec3& posView);
+	//void createMesh(ShellGeometry& dest, size_t x, size_t y, size_t z);
+	//inline void createMesh(ShellGeometry& dest, const glm::uvec3& pos) { createMesh(dest, pos.x, pos.y, pos.z); }
 };
 #endif
 

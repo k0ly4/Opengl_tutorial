@@ -64,8 +64,8 @@ public:
 
     private:
         bool isInit = 0;
-        static const size_t MAX = 4096;
-        static const size_t bMax = 6000;
+        static const size_t MAX = 1<<14;
+        static const size_t bMax=1<<15;
 
         unsigned stack_buffer[bMax];
         int stack_buffer_forward;

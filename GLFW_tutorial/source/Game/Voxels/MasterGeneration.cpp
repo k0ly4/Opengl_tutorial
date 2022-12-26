@@ -38,7 +38,7 @@ void DefaultGenerator::generate(Chunk& chunk) {
 
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
-			glm::vec2 real = glm::vec2(x+chunk.getGlobalPos().x,z + chunk.getGlobalPos().z) ;
+			glm::vec2 real = glm::vec2(x+chunk.globalPos().x,z + chunk.globalPos().z) ;
 			heights[z * CHUNK_W + x] = calcHeight(real);
 		}
 	}
@@ -49,7 +49,7 @@ void DefaultGenerator::generate(Chunk& chunk) {
 
 			for (size_t y = 0; y < CHUNK_H; y++) {
 
-				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.getGlobalPos();
+				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.globalPos();
 				
 				short id = vox::air;
 				if (real.y == height) {
@@ -64,14 +64,14 @@ void DefaultGenerator::generate(Chunk& chunk) {
 					}
 						
 				}
-				chunk.getFromLocalCoord(x, y, z) = Voxel(id);
+				chunk.voxels()(x, y, z) = Voxel(id);
 			}
 		}
 	}
 
 	chunk.setModified();
 	chunk.isGenerated = 1;
-	chunk.isInitLightMap = 0;
+	chunk.isInitLight = 0;
 
 }
 void setConstants(luascr::LuaInterface& script) {
@@ -176,7 +176,7 @@ void CustomGenerator::generate(Chunk& chunk) {
 
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
-			glm::vec2 real = glm::vec2(x + chunk.getGlobalPos().x, z + chunk.getGlobalPos().z);
+			glm::vec2 real = glm::vec2(x + chunk.globalPos().x, z + chunk.globalPos().z);
 			heights[z * CHUNK_W + x] = calcHeight(real);
 		}
 	}
@@ -184,10 +184,10 @@ void CustomGenerator::generate(Chunk& chunk) {
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
 			size_t height = heights[z * CHUNK_W + x];
-			Biom::Type biom = getBiom(x+ chunk.getGlobalPos().x, z+ chunk.getGlobalPos().z);
+			Biom::Type biom = getBiom(x+ chunk.globalPos().x, z+ chunk.globalPos().z);
 			for (size_t y = 0; y < CHUNK_H; y++) {
 
-				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.getGlobalPos();
+				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.globalPos();
 				short id = 55;
 				if (biom == Biom::plain)
 					id = blockPlain(real, height);
@@ -195,14 +195,14 @@ void CustomGenerator::generate(Chunk& chunk) {
 					id = blockTundra(real, height);
 				else if (biom == Biom::desert)
 					id = blockDesert(real, height);
-				chunk.getFromLocalCoord(x, y, z) = Voxel(id);
+				chunk.voxels()(x, y, z) = Voxel(id);
 			}
 		}
 	}
 
 	chunk.setModified();
 	chunk.isGenerated = 1;
-	chunk.isInitLightMap = 0;
+	chunk.isInitLight = 0;
 
 }
 std::vector< CustomGenerator::Par>CustomGenerator::pars;

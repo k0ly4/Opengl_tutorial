@@ -21,6 +21,12 @@ namespace Side2D {
 
 		NuN,
 	};
+	inline eSide2D opposite(eSide2D side) {
+		if (side == right)return left;
+		if (side == left)return right;
+		if (side == top)return bottom;
+		return top;
+	}
 	inline eSide2D getCornerNorm(bool x,bool y) {
 		if (x) return	y ? right_top : right_bottom;
 		else return		y ? left_top : left_bottom;
@@ -127,18 +133,15 @@ public:
 		return get(id.e.id, side);
 	}
 
-	inline float getVoxelSize()const {
-		return uvSize_;
-	}
+	inline float getNormalizeSizeVoxel()const {return uvSize_;}
+	inline size_t getSizeVoxel()const { return sizeVoxel_; }
 
 	void use(const Shader& shader)const {
 		shader.uniform("configMaterial", 1);
 		shader.uniform("baseColor", glm::vec3(1.f));
 		texture_.use(0);
 	}
-	const Texture2D& getTexture()const {
-		return texture_;
-	}
+	const Texture2D& getTexture()const {return texture_;}
 private:
 
 	inline glm::vec2 getUV(int id) {

@@ -6,58 +6,44 @@
 /// </summary>
 void ChunkSectorRender::setSize(size_t size) {
 	size_ = size;
-	__chunks_.resize(size_ * size_);
+	chunks_.setSize(size_);
 	extractFromRegion();
 }
 
 void ChunkSectorRender::extractFromRegion() {
-
-	ChunkMeshQueue::needClear =1;
-	begin_ = cameraChunk_- size_/2;
-	ChunkMeshQueue::waitForEmpty();
-
-	region_->fillSector(__chunks_, size_, begin_);
-	render_chunks = __chunks_;
-	LightQueue::addTask(this);
-	ChunkMeshQueue::setChunkCamera(cameraChunk_);
-	for (size_t i = 0; i < render_chunks.size(); i++) ChunkMeshQueue::addQueue(render_chunks[i]);
-
+	cProcess::queue.sync();
+	begin_ = viewCh_ - size_ / 2;
+	region_->fillSector(chunks_, size_, begin_);
+	upChunks_sort();
+	cProcess::queue.addToQueue(this);
 }
 
-void ChunkSectorRender::lightFlagUp() {
-	for (size_t i = 0; i < render_chunks.size(); i++)
-		if (render_chunks[i]->isInitLightMap == 0) notify(_obs_event::initChunkLight, render_chunks[i]);
-	notify(_obs_event::solveLight, 0);
-}
-
-void ChunkSectorRender::setCameraPos(const glm::ivec3& positionCamera) {
-	
-	glm::uvec2 posChunk(positionCamera.x / CHUNK_W, positionCamera.z / CHUNK_D);
-	if (cameraChunk_ == posChunk) return;
-	cameraChunk_ = posChunk;
-	LOG("ChunkSectorRender::x=%d,y=%d\n", cameraChunk_.x, cameraChunk_.y);
+void ChunkSectorRender::setCameraPos(const glm::ivec3& posView) {
+	glm::uvec2 posViewCh(posView.x / CHUNK_W, posView.z / CHUNK_D);
+	if (posViewCh == viewCh_) return;
+	viewPos_ = posView;
+	viewCh_ = posViewCh;
+	LOG("ChunkSectorRender::x=%d,y=%d\n", viewCh_.x, viewCh_.y);
 	extractFromRegion();
 }
 
-const Voxel* ChunkSectorRender::getVoxel(const glm::uvec3& coord) {
-	glm::uvec3  local = toLocal(coord);
-	Chunk* chunk = get(local);
-	if (chunk == 0)return 0;
-	return chunk->getFromGlobalCoord(coord);
-}
-
 void ChunkSectorRender::setVoxel(const Voxel& voxel, const glm::ivec3& coord) {
-
-	Chunk* chunk = get(toLocal(coord));
-	if (chunk == 0 || chunk->getFromGlobalCoord(coord) == 0)return;
-	chunk->setVoxel(voxel, coord);
+	Chunk* chunk = getByVoxel(coord);
+	if (chunk) chunk->setVoxel(voxel, coord);
 }
-
-Chunk* ChunkSectorRender::get(const glm::uvec3& coord) {
-	
-	if (isIn(coord) == 0) return 0;
-	return __chunks_[getIndex(coord, glm::uvec3(size_,1,size_))];
-
+inline size_t length(const glm::uvec2& p1,const glm::uvec3& p2) {
+	size_t x = std::abs((int)p1.x - (int)p2.x);
+	size_t y = std::abs((int)p1.y - (int)p2.z);
+	return x * x + y * y;
+}
+void ChunkSectorRender::upChunks_sort() {
+	SortableChunks ch(chunks_.size());
+	for (size_t i = 0; i < ch.size(); i++) {
+		ch[i].ch = chunks_[i];
+		ch[i].d = length(viewCh_, ch[i].ch->localPos());
+	}
+	std::sort(ch.begin(), ch.end(), [](const SortChunk& l, const SortChunk& r) {return r.d > l.d;});
+	ch_sort=ch;
 }
 
 const Voxel* ChunkSectorRender::rayCast(const glm::vec3& a, const glm::vec3& dir, float maxDist, glm::vec3& end, glm::vec3& norm, glm::ivec3& iend) {
@@ -150,11 +136,4 @@ const Voxel* ChunkSectorRender::rayCast(const glm::vec3& a, const glm::vec3& dir
 	end.z = pz + t * dz;
 	norm.x = norm.y = norm.z = 0.0f;
 	return nullptr;
-}
-
-unsigned char ChunkSectorRender::getChannelLight(const glm::uvec3& coord, int channel) {
-	glm::uvec3 local = toLocal(coord);
-
-	if (isIn(local) == 0) return 0;
-	return __chunks_[toInt(local.x, local.z , size_)]->lightMap.get(coord - (local+ glm::uvec3(begin_.x,0,begin_.y)) * CHUNK_VOLUME, channel);
 }

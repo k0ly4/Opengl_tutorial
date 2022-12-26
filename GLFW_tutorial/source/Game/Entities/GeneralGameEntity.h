@@ -57,6 +57,9 @@ namespace vox {
 		oak_wood = 9,
 		snow = 10,
 		sand = 11,
+		grass = 12,
+		water = 13,
+		size,
 	};
 }
 class Biom {

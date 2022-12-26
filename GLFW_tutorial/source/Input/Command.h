@@ -33,6 +33,11 @@ namespace com {
 	};
 
 	namespace pl {
+		class SwitchBlock:public ComPlayer {
+		public:
+			SwitchBlock(Player* p) :ComPlayer(p) {}
+			void execute(Event& event);
+		};
 
 		class Jump :public ComPlayer {
 		public:

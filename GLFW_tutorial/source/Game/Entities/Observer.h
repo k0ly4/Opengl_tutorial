@@ -1,17 +1,18 @@
+#ifndef OBSERVER_H
+#define OBSERVER_H
 
 #include <Math/Math.h>
-
 class _obs_event {
 public:
 	enum ChunkHandleEnum :int
 	{
 		initChunkLight = 0,
 		solveLight = 1,
+		solveQueueLight =2,
 	};
 private:
 	_obs_event() {}
 	~_obs_event() {}
-
 };
 
 ///aObserver---------------------------------------------
@@ -81,3 +82,4 @@ private:
 
 	std::vector< uniObserver<T> *>observers;
 };
+#endif

@@ -12,7 +12,10 @@
 class PhysicsSolver
 {
 public:
-
+	PhysicsSolver() :
+		wTime(1 / 10.f),
+		rTime(1 / 60.f)
+	{}
 	void setWorld(World* world_) {
 		world = world_;
 	}
@@ -22,33 +25,50 @@ public:
 	}
 
 	void solve(float time, Hitbox& hitbox) {
-		time += remTime;
-		while (time >= timeStep) {
+		time += rTime.rem;
+		while (time >= rTime.step) {
 			step(hitbox);
-			time -= timeStep;
+			time -= rTime.step;
 		}
-		remTime = time;
+		rTime.rem = time;
 	}
-	void testSolve(float time, Hitbox& hitbox) {
-		time += remTime;
 
-		int physStep = time/ timeStep; if(physStep>5) LOG("Physstep>5:%d\n", physStep);
-
-		while (time >= timeStep) {
-			test_step(hitbox);
-			time -= timeStep;
+	void solveWorld(float time) {
+		time += wTime.rem;
+		while (time >= wTime.step) {
+			step_world();
+			time -= wTime.step;
 		}
-		remTime = time;
+		wTime.rem = time;
+	}
+
+	void debugSolve(float time, Hitbox& hitbox) {
+		time += rTime.rem;
+
+		int physStep = time / rTime.step; if (physStep > 5) LOG("Physstep>5:%d\n", physStep);
+
+		while (time >= rTime.step) {
+			step(hitbox);
+			time -= rTime.step;
+		}
+		rTime.rem = time;
 	}
 private:
 
 	void step(Hitbox& hibox);
-	void test_step(Hitbox& hibox);
-	World* world;
+	void step_world() {}
 
 	glm::vec3 gravity;
 
-	float timeStep = 1 / 70.f;;
-	float remTime = 0.f;
+	struct UpTime {
+		float step;
+		float rem = 0.f;
+		UpTime() {}
+		UpTime(float step_): step(step_){}
+	};
+
+	UpTime rTime;
+	UpTime wTime;
+	World* world;
 };
 #endif

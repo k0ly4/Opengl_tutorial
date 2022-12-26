@@ -7,5 +7,6 @@ void PhysicsModule::init(Scene& scene) {
 }
 
 void PhysicsModule::update(float time, Scene& scene) {
-	core.testSolve(time, *scene.player.hitbox);
+	core.solveWorld(time);
+	core.debugSolve(time, *scene.player.hitbox);
 }

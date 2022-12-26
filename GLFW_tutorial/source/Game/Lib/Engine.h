@@ -18,6 +18,7 @@ public:
     Engine()
     {
         setupWindow();
+        procQueue.launch();
         scene.initialize(window);
         graphic.initialize(window);
         event.initialize(scene);
@@ -27,7 +28,7 @@ public:
     void launch() {
        GLFW::setActive(false);
        thread_render = new std::thread(&Engine::render, this);
-       procQueue.launch();
+       
        clock.restart();
        update();
     }

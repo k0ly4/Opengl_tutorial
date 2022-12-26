@@ -25,9 +25,6 @@ void Scene::initializeUI(RenderWindow& window) {
 	texError.wrap(TextureWrap::ClampToEdge);
 	sError.setPosition(50.f, 50.f);
 	sError.setOrigin(sError.getTextureRect().w/2.f, sError.getTextureRect().h/2.f);
-
-	sCowBoy.setTexture(texError);
-	sCowBoy.setPosition(700.f, 200.f);
 }
 
 
@@ -89,6 +86,5 @@ inline void uiSetupContext() {
 void Scene::inUI(RenderTarget& target) {
 	target.setView(view2D);
 	uiSetupContext();
-	target.draw(sCowBoy);
 	gameUi.draw(target);
 }

@@ -1,19 +1,19 @@
 #include "ChunkMeshQueue.h"
 #include "ChunkHandle.h"
-bool ChunkMeshQueue::needClear =0;
-bool ChunkMeshQueue::isModified =0;
 
-std::queue<Chunk*> ChunkMeshQueue::messages;
-std::vector<ChunkMeshQueue::ShellChunk> ChunkMeshQueue::sBuffer;
-
-glm::uvec2 ChunkMeshQueue::camera_pos(0.f);
-
-
-void LightQueue::solve() {
-	if (needUpLight) {
-		needUpLight = 0;
-		target->lightFlagUp();
+void ChunkMeshQueue::step() {
+	size_t factMod = 1;
+	SortableChunks& sBuff = target->ch_sort;
+	for (size_t i = 0; i < sBuff.size(); i++) {
+		if (sBuff[i].ch->isInitLight == 0) {
+			notify(_obs_event::initChunkLight, sBuff[i].ch);
+			notify(_obs_event::solveLight, 0);
+		}
+		if (sBuff[i].ch->isModified()) {
+			sBuff[i].ch->buildMesh();
+			if (--factMod == 0)return;
+		}
+		sBuff[i].ch->buildSortMesh(target->viewPos_);
 	}
 }
- bool LightQueue::needUpLight =0;
-ChunkSectorRender* LightQueue::target =0;
+ChunkMeshQueue cProcess::queue;

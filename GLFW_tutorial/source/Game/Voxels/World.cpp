@@ -5,7 +5,8 @@
 World::World() :chunks(&region),light(&chunks) {
     VoxelPack::set(&atlas);
     if (atlas.load("asset\\image\\") == 0)exit(0);
-    chunks.pushObserver(&light);
+    cProcess::queue.pushObserver(&light);
+    //chunks.pushObserver(&light);
    
 }
 

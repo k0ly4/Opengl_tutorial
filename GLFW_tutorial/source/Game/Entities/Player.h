@@ -41,22 +41,16 @@ private:
 class Cursor3D {
 public:
 
-	Cursor3D() :cube(glShader::texture) {
-		cube.getGraphic()->material.setBaseColor(Color::BLACK);
-		cube.setScale(glm::vec3(1.1f));
-		cube.genMesh(0.5f);
-		GlRender::Line::Width(5.f);
-		cube.getGraphic()->VAO.data_draw.data.mode_primitive = GlRender::LINE_STRIP;
-	}
+	Cursor3D();
 
 	void update(ChunkSectorRender& chunks, InputPlayer& input,const Basis& basis);
-	void draw(RenderTarget& target) { target.draw(cube); }
+	void draw(RenderTarget& target);
 
 	float maxDistanceCursor = 10.f;
-	Cube cube;
+	iGeometry <ConvexVertex> mesh;
 
 private:
-
+	glm::vec3 posCursor;
 };
 
 //Player------------------------------------------------------

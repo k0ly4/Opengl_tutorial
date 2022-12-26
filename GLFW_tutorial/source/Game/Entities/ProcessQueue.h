@@ -1,10 +1,12 @@
 #ifndef PROCESS_QUEUE_H
 #define PROCESS_QUEUE_H
 #include"Game/Voxels/ChunkMeshQueue.h"
+
 ///ProcessQueue---------------------------------------------
 /// <summary>
 /// 
 /// </summary>
+/// 
 class ProcessQueue {
 public:
 
@@ -29,8 +31,7 @@ private:
 
 	void update() {
 		while (life) {
-			ChunkMeshQueue::stepSolveChunkMesh();
-			LightQueue::solve();
+			cProcess::queue.stepSolveChunkMesh();
 		}
 	}
 

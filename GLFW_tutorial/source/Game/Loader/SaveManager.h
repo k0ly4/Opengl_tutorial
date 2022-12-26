@@ -2,13 +2,6 @@
 #define SAVE_MANAGER_H
 
 #include "Game/Voxels/Chunk.h"
-
-#define REGION_SIZE 24
-#define REGION_VEC	glm::uvec2(REGION_SIZE,REGION_SIZE)
-#define REGION_IVEC glm::ivec2(REGION_SIZE,REGION_SIZE)
-#define REGION_VOLUME REGION_SIZE*REGION_SIZE
-#define REGION_RADIUS REGION_SIZE / 2
-
 /////ReaderChunk----------------------------------
 class sFile {
 public:
@@ -58,16 +51,16 @@ struct ChunkRLE {
 ////RegionRLE--------------------------
 struct RegionRLE {
 	inline bool empty(size_t index)const { return c_[index].empty(); }
-	ChunkRLE c_[REGION_VOLUME];
+	ChunkRLE c_[REGION_VOL];
 };
 
 ////RLE--------------------------------------------------
 class RLE {
 public:
 
-	static bool uncompress(std::vector<Voxel>& voxels, const std::vector<VoxelRLE>& buffer);
+	static bool uncompress(Voxels& voxels, const std::vector<VoxelRLE>& buffer);
 	static void compress(ChunkRLE& chunk, const std::vector<Voxel>& data);
-	constexpr static inline size_t beginChunkBlock() { return sizeof(size_t[REGION_VOLUME]); }
+	constexpr static inline size_t beginChunkBlock() { return sizeof(size_t[REGION_VOL]); }
 
 private:
 	RLE() {}
@@ -79,7 +72,7 @@ class WriterRLE :public WriterBin {
 
 public:
 	WriterRLE(const std::string& path) :WriterBin(path) {}
-	inline void writeVoxels(const std::vector<Voxel>& data) { process(data); }
+	inline void writeVoxels(const Voxels& data) { process(data); }
 
 	inline void writeChunk(const ChunkRLE& chunk) {
 		//for(size_t i=0; i < chunk.v_.size(); i++){
@@ -89,8 +82,8 @@ public:
 	}
 
 	inline void writeRegion(const RegionRLE& region) {
-		size_t pos_buffer[REGION_VOLUME];
-		for (size_t i = 0; i < REGION_VOLUME; i++) {
+		size_t pos_buffer[REGION_VOL];
+		for (size_t i = 0; i < REGION_VOL; i++) {
 
 			if (region.empty(i)) {
 				pos_buffer[i] = i == 0 ? RLE::beginChunkBlock() : pos_buffer[i - 1];
@@ -105,14 +98,14 @@ public:
 	}
 
 	inline void fillNull() {
-		size_t pos_buffer[REGION_VOLUME];
-		for (size_t i = 0; i < REGION_VOLUME; i++)pos_buffer[i] = RLE::beginChunkBlock();
+		size_t pos_buffer[REGION_VOL];
+		for (size_t i = 0; i < REGION_VOL; i++)pos_buffer[i] = RLE::beginChunkBlock();
 		write(0,pos_buffer);
 	}
 
 private:
 
-	void process(const std::vector<Voxel>& data);
+	void process(const Voxels& data);
 
 };
 

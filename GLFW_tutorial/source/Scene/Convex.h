@@ -7,15 +7,22 @@
 /// </summary>
 struct ConvexVertex {
 
-    glm::vec3 pos = glm::vec3(0.f);
-    glm::vec3 color = glm::vec3(1.f);
+    glm::vec3 pos;
+    glm::vec4 color;
     #define SIZE_CONVEX_VERTEX sizeof(ConvexVertex)
 
     static void attrib(ArrayBufferObject& VAO) {
         VAO.attrib(0, 3, SIZE_CONVEX_VERTEX, 0);
-        VAO.attrib(1, 3, SIZE_CONVEX_VERTEX, sizeof(glm::vec3));
+        VAO.attrib(1, 4, SIZE_CONVEX_VERTEX, sizeof(glm::vec3));
     }
+    ConvexVertex():
+        pos(0.f),
+        color(1.f){}
 
+    ConvexVertex(const glm::vec3& pos_,const glm::vec4& color_):
+        pos(pos_),
+        color(color_)
+    {}
 };
 
 struct UvVertex {
@@ -98,7 +105,7 @@ public:
         vertices.resize(new_size);
     }
 
-    void push_back(const glm::vec3& pos, const glm::vec3& color = glm::vec3(1.f)) {
+    void push_back(const glm::vec3& pos, const glm::vec4& color = glm::vec4(1.f)) {
         need_end_primitive = 1;
         vertices.push_back({ pos, color });
     }

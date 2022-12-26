@@ -26,7 +26,7 @@ void LightHandle::init() {
 				if (VoxelPack::isOpaque(*voxel)) {
 					break;
 				}
-				chunks->getByVoxel(pos)->lightMap.setS(x % CHUNK_W, y % CHUNK_H, z % CHUNK_D, 0xF);
+				chunks->getByVoxel(pos.x,pos.y,pos.z)->lightMap.setS(x % CHUNK_W, y % CHUNK_H, z % CHUNK_D, 0xF);
 			}
 		}
 	}
@@ -48,7 +48,7 @@ void LightHandle::init() {
 					) {
 					solverS.add(pos);
 				}
-				chunks->getByVoxel(pos)->lightMap.setS(x % CHUNK_W, y % CHUNK_H, z % CHUNK_D, 0xF);
+				chunks->getByVoxel(pos.x,pos.y,pos.z)->lightMap.setS(x % CHUNK_W, y % CHUNK_H, z % CHUNK_D, 0xF);
 			}
 		}
 	}
@@ -98,23 +98,19 @@ void LightHandle::add(const glm::ivec3& pos, Voxel voxel) {
 }
 
 void LightHandle::chunkInit(Chunk& chunk) {
+	const glm::uvec3& beg = chunk.globalPos();
+	Voxels& voxels = chunk.voxels();
 	//Light block
-	const glm::uvec3& beg = chunk.getGlobalPos();
-	std::vector<Voxel>& voxels = chunk.getVoxels();
 	for (size_t i = 0; i < voxels.size(); i++) {
 		if (VoxelPack::isEmission(voxels[i])) {
 			addRGB(beg + toCoord3(i), VoxelPack::get(voxels[i]).emission);
 		}
-
 	}
 	//Sun
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
 			for (int y = CHUNK_H - 1; y >= 0; y--) {
-				Voxel voxel = chunk.getFromLocalCoord(x, y, z);
-				if (VoxelPack::isOpaque(voxel)) {
-					break;
-				}
+				if (VoxelPack::isOpaque(voxels(x, y, z))) break;
 				chunk.lightMap.setS(x, y, z, 0xF);
 			}
 		}
@@ -122,18 +118,16 @@ void LightHandle::chunkInit(Chunk& chunk) {
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
 			for (int y = CHUNK_H - 1; y >= 0; y--) {
-				
-				Voxel voxel = chunk.getFromLocalCoord(x, y, z);
-				if (VoxelPack::isOpaque(voxel)) {
-					break;
-				}
+			
+				if (VoxelPack::isOpaque(voxels(x, y, z))) break;
+			
 				if (
-					chunk.getLightLocal(x - 1, y, z, 3) == 0 ||
-					chunk.getLightLocal(x + 1, y, z, 3) == 0 ||
-					chunk.getLightLocal(x, y - 1, z, 3) == 0 ||
-					chunk.getLightLocal(x, y + 1, z, 3) == 0 ||
-					chunk.getLightLocal(x, y, z - 1, 3) == 0 ||
-					chunk.getLightLocal(x, y, z + 1, 3) == 0
+					chunk.getLight(x - 1, y, z, 3) == 0 ||
+					chunk.getLight(x + 1, y, z, 3) == 0 ||
+					chunk.getLight(x, y - 1, z, 3) == 0 ||
+					chunk.getLight(x, y + 1, z, 3) == 0 ||
+					chunk.getLight(x, y, z - 1, 3) == 0 ||
+					chunk.getLight(x, y, z + 1, 3) == 0
 					)
 				{
 					solverS.add(beg + glm::uvec3(x, y, z));
@@ -142,5 +136,6 @@ void LightHandle::chunkInit(Chunk& chunk) {
 			}
 		}
 	}
-	chunk.isInitLightMap = 1;
+	chunk.isInitLight = 1;
+	chunk.setModified();
 }

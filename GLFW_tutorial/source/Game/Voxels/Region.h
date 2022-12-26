@@ -5,6 +5,8 @@
 #include "Game/Loader/SaveManager.h"
 #include "Game/Voxels/MasterGeneration.h"
 
+typedef Array2d<REGION_SIZE, Chunk> Chunks;
+typedef vector2d<Chunk*> ChunkPtrs;
 ///Region---------------------------------------------
 /// <summary>
 ///  Класс файлового взимодействия с игрой
@@ -14,9 +16,8 @@ class Region {
 public:
 
 	Region() {}
-	Region(const glm::uvec2& begin) {
-		init(begin);
-	}
+	Region(const glm::uvec2& begin) {init(begin);}
+
 	inline void init(size_t x, size_t z) { init(x, z); }
 	inline void init(const glm::uvec2& begin) {
 		beg_ch = begin; beg_reg = beg_ch / REGION_VEC;
@@ -24,19 +25,19 @@ public:
 	}
 	bool save();
 
-	inline const glm::uvec2& getPosInChunk() { return beg_ch;  }
+	inline const glm::uvec2& getPosInChunk() {					return beg_ch;  }
 
-	Chunk& getChunkLocal(const glm::uvec2& coord_ch);
-	inline Chunk& getChunkGlobal(const glm::uvec2& coord_ch) { return getChunkLocal(coord_ch - beg_ch); }
+	Chunk& getChunk(const glm::uvec2& coord_ch);
+	inline Chunk& getChunkGlobal(const glm::uvec2& coord_ch) {	return getChunk(coord_ch - beg_ch); }
+	inline Chunk& geChunkGlobal(size_t x, size_t y) {			return getChunkGlobal(glm::uvec2(x,y)); }
 
-	inline Chunk* getChunks() { return buffer; };
+	inline Chunks& chunks() { return buffer; };
 
 private:
+
 	inline void open() {
 		if (reader_.isOpen()) reader_.close();
-		if (reader_.open(getPath())) { 
-			for (size_t i = 0; i < REGION_VOLUME; i++) { load(buffer[i], i); }
-		}
+		if (reader_.open(getPath())) for (size_t i = 0; i < buffer.size(); i++) { reader_.readChunk(buffer[i], i); }
 		else {
 			createRegionFile();
 			reader_.open(getPath());
@@ -52,14 +53,9 @@ private:
 		WriterRLE writer_(path);
 		writer_.fillNull();
 	}
-
-	bool load(Chunk& chunk, size_t x, size_t z);
-	inline void load(Chunk& chunk, size_t index) {reader_.readChunk(chunk, index);}
-
-
 	glm::uvec2 beg_ch = glm::uvec2(0);
 	glm::uvec2 beg_reg = glm::uvec2(0);
-	Chunk buffer[REGION_VOLUME];
+	Chunks buffer;
 	ReaderRLE reader_;
 };
 

@@ -44,6 +44,9 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
     else if (event.type == Event::MouseButtonPressed) {
         inputMain.solveMouse(event);
     }
+    else if (event.type == Event::MouseScrolled) {
+        inputMain.solveScroll(event);
+    }
 }
 
 void EventModule::initialize(Scene& scene) {

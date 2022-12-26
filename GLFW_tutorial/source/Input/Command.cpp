@@ -6,15 +6,19 @@ namespace com {
 
 	
 	void UpdateMeshChunks::execute(Event& event) {
-		std::vector<Chunk*>& chunks = scene->world.chunks.getChunks();
-		for (size_t i = 0; i < chunks.size(); i++) {
-			chunks[i]->setModified();
-		}
-		
-
+		ChunkPtrs& chunks = scene->world.chunks.chunks();
+		for (size_t i = 0; i < chunks.size(); i++) chunks[i]->setModified();
 	}
 	namespace pl {
+		void SwitchBlock::execute(Event& event) {
+			if (event.mouseScroll.yOffset > 0) {
+				if (player->input.curVoxel.e.id < vox::size-1)
+				player->input.curVoxel.e.id++;
+			}
+			else if(player->input.curVoxel.e.id >0)
+				player->input.curVoxel.e.id--;
 
+		}
 		void Jump::execute(Event& event) {
 			player->input.jump();
 		}
@@ -34,7 +38,7 @@ namespace com {
 		void Back::execute(Event& event) {
 		
 		}
-
+		
 		void HandCreate::execute(Event& event) {
 			if (event.type == Event::MouseButtonPressed) {
 				player->input.setVoxel(scene->world, 1);
