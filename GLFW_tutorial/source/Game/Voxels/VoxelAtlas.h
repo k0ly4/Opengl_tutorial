@@ -22,9 +22,9 @@ namespace Side2D {
 		NuN,
 	};
 	inline eSide2D opposite(eSide2D side) {
-		if (side == right)return left;
-		if (side == left)return right;
-		if (side == top)return bottom;
+		if (side == right)	return left;
+		if (side == left)	return right;
+		if (side == top)	return bottom;
 		return top;
 	}
 	inline eSide2D getCornerNorm(bool x,bool y) {
@@ -76,67 +76,49 @@ namespace Side {
 struct Block {
 
 	std::string name;
+	//uv wrap
 	int idSide[6];
+	//emission
 	Uint8RGB emission;
+	//Draw method
 	byte drawGroup;
+	//physiccs
 	byte physGroup;
+	//is emission
+	bool isEmission;
 
-	bool emissionFlag;
-
-	inline void setSolid(int fill) {
-		for (size_t i = 0; i < 6; i++)
-			idSide[i] = fill;
-	}
-
-	inline void setEmissionFlag() {
-			emissionFlag = emission.r || emission.g || emission.b;
-	}
+	inline void setSolid(int fill) { for (size_t i = 0; i < 6; i++) idSide[i] = fill;}
+	inline void setEmissionFlag() {isEmission = emission.r || emission.g || emission.b;}
 };
 
 ///VoxelAtlas---------------------------
 /// <summary>
 /// 
 /// </summary>
-class ResourceVoxelPack {
+class ResourcePack {
 
 public:
-
-	enum IdUV :int
-	{
-		uv_turf = 0,
-		uv_side_turf,
-		uv_earth,
-		uv_light,
-		uv_max,
+	enum eDrawGroup:byte {
+		draw_non =0,
+		draw_opaque,
+		draw_transparent,
+		draw_alpha,
+	};
+	enum ePhysics :byte {
+		ph_gas = 0,
+		ph_solid,
+		ph_liquid,
 	};
 
-	enum IdVoxel :int
-	{
-		id_air = -1,
-		id_turf = 0,
-		id_earth,
-		id_light,
-		id_max,
-	};
-
-	const Block& get(Voxel id)const  {
-		return blocks[id.e.id];
-	}
+	const Block& get(Voxel id)const noexcept { return blocks[id.e.id];}
 	//path to json file
 	bool load(const std::string& directory);
+	inline const glm::vec2& get(Voxel id, int side)const noexcept { return uv[blocks[id.e.id].idSide[side]];}
 
-	inline const glm::vec2& get(short id, int side)const {
-		return uv[blocks[id].idSide[side]];
-	}
+	inline float getNormalizeSizeVoxel()const noexcept {return uvSize_;}
+	inline size_t getSizeVoxel()const noexcept { return sizeVoxel_; }
 
-	inline const glm::vec2& get(Voxel id, int side)const {
-		return get(id.e.id, side);
-	}
-
-	inline float getNormalizeSizeVoxel()const {return uvSize_;}
-	inline size_t getSizeVoxel()const { return sizeVoxel_; }
-
-	void use(const Shader& shader)const {
+	inline void use(const Shader& shader)const {
 		shader.uniform("configMaterial", 1);
 		shader.uniform("baseColor", glm::vec3(1.f));
 		texture_.use(0);
@@ -144,6 +126,7 @@ public:
 	const Texture2D& getTexture()const {return texture_;}
 private:
 
+	inline const glm::vec2& get(twobyte id, int side)const { return uv[blocks[id].idSide[side]];}
 	inline glm::vec2 getUV(int id) {
 		float u = (id % voxelInSide) * uvSize_;
 		float v = 1.f - ((1.f + id / voxelInSide) * uvSize_);
@@ -164,45 +147,34 @@ private:
 /// <summary>
 /// 
 /// </summary>
-class VoxelPack {
+class VoxPack {
 public:
+	
+	static inline const Block& get(Voxel id)				noexcept { return res->get(id);}
+	static inline const glm::vec2& get(Voxel id, byte side)	noexcept { return res->get(id, side);}
+	static inline const ResourcePack* get()					noexcept { return res; }
+	//Light parr
+	static inline bool isEmission(Voxel id)					noexcept { return  get(id).isEmission;}
+	//Draw parr
+	static inline bool isRender(Voxel id)					noexcept { return (get(id).drawGroup != ResourcePack::draw_non); }
+	static inline bool isSelectable(Voxel id)				noexcept { return (get(id).drawGroup != ResourcePack::draw_non); }
+	static inline bool isOpaque(Voxel id)					noexcept { return (get(id).drawGroup == ResourcePack::draw_opaque);}
+	static inline bool isAlpha(Voxel id)					noexcept { return (get(id).drawGroup == ResourcePack::draw_alpha); }
+	//Physics parr
+	static inline bool isGas(Voxel id)						noexcept { return get(id).physGroup == ResourcePack::ph_gas; }
+	static inline bool isSolid(Voxel id)					noexcept { return get(id).physGroup == ResourcePack::ph_solid;}
+	static inline bool isLiquid(Voxel id)					noexcept { return get(id).physGroup == ResourcePack::ph_liquid; }
+	static inline bool isSourceLiquid(Voxel id)				noexcept { return id.e.m1 == maxConcLiquid; }
+	//пока что только если жидкость
+	static inline bool isActive(Voxel id)					noexcept { return get(id).physGroup == ResourcePack::ph_liquid; }
 
-	static inline const Block& get(Voxel id) {
-		return pack->get(id);
-	}
-	static inline const glm::vec2& get(Voxel id, byte side) {
-		return pack->get(id, side);
-	}
-	static inline const ResourceVoxelPack* get() {
-		return pack;
-	}
-
-	static inline bool isEmission(Voxel id) {
-		return (id.e.id > vox::air) && (get(id).emissionFlag == 1);
-	}
-	static inline bool isRender(Voxel id) {
-		return id.e.id > vox::air;
-	}
-	static inline bool isSelectable(Voxel voxel) {
-		return (voxel.e.id != vox::air);
-	}
-	static inline bool isOpaque(Voxel id) {
-		return isRender(id) && (get(id).drawGroup == 0);
-	}
-	static inline bool isObstacle(Voxel id) {
-		if (id.e.id < 0)return 0;
-		return get(id).physGroup == 1;
-	}
-
-	static inline void set(const ResourceVoxelPack* pack_){
-		pack = pack_;
-	}
-
+	static inline void set(const ResourcePack* resource)	noexcept { res = resource;}
+	const static byte maxConcLiquid = 0x07u;
 private:
 
-	VoxelPack() {}
-	~VoxelPack() {}
-	static const ResourceVoxelPack* pack;
+	VoxPack() {}
+	~VoxPack() {}
+	static const ResourcePack* res;
 
 };
 #endif

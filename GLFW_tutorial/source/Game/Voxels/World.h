@@ -15,7 +15,7 @@ public:
     //Generation
     LightHandle light;
     ChunkSectorRender chunks;
-    ResourceVoxelPack atlas;
+    ResourcePack resPack;
     SupReg region;
 };
 #endif

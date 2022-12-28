@@ -13,7 +13,7 @@ class PhysicsSolver
 {
 public:
 	PhysicsSolver() :
-		wTime(1 / 10.f),
+		wTime(1 / 2.f),
 		rTime(1 / 60.f)
 	{}
 	void setWorld(World* world_) {
@@ -45,7 +45,7 @@ public:
 	void debugSolve(float time, Hitbox& hitbox) {
 		time += rTime.rem;
 
-		int physStep = time / rTime.step; if (physStep > 5) LOG("Physstep>5:%d\n", physStep);
+		int physStep = time / rTime.step; if (physStep > 5) LOG("Physstep:%d\n", physStep);
 
 		while (time >= rTime.step) {
 			step(hitbox);
@@ -56,8 +56,8 @@ public:
 private:
 
 	void step(Hitbox& hibox);
-	void step_world() {}
-
+	void step_world();
+	void modelingLuqid(size_t index, Voxels& voxs, Chunk* chunk);
 	glm::vec3 gravity;
 
 	struct UpTime {

@@ -24,6 +24,9 @@ void InputPlayer::setVoxel(World& world, bool isModAdd) {
 
 	if (isModAdd) {
 		glm::ivec3 pos(posCursor + glm::ivec3(normCursor));
+		if (VoxPack::isLiquid(curVoxel)) {
+			curVoxel.e.m1 = VoxPack::maxConcLiquid;
+		}
 		world.chunks.setVoxel(curVoxel, pos);
 		world.light.addToQueue(pos, curVoxel);
 	}

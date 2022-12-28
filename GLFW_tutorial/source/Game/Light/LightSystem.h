@@ -35,7 +35,7 @@ private:
 	inline void solveQueue() {
 		while (queue.size()) {
 			Mods cur = queue.front();
-			if (VoxelPack::isOpaque(cur.vox) == 0) remove(cur.pos);
+			if (VoxPack::isOpaque(cur.vox) == 0) remove(cur.pos);
 			else add(cur.pos, cur.vox);
 			queue.pop();
 		}

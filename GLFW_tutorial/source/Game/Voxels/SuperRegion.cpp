@@ -52,50 +52,26 @@ void setCloses(size_t x, size_t y, size_t cur, Regions& r) {
 	//left
 	if (r.is(x - 1, y)&& r(x - 1, y)) {
 		Chunks& reg_ = r(x - 1, y)->chunks();
-		for (size_t i = 0; i < REGION_SIZE; i++) {
-			Chunk& ch =		reg(0, i);
-			Chunk& ch_ =	reg_(REGION_SIZE - 1, i);
-			ch.	closes.chunks[Side2D::left] = &ch_;
-			ch_.closes.chunks[Side2D::right] = &ch;
-			ch.setModified();
-			ch_.setModified();
-		}
+		for (size_t i = 0; i < REGION_SIZE; i++) 
+			gChunk::Closes::link(reg(0, i), Side2D::left, reg_(REGION_SIZE - 1, i), Side2D::right);
 	}
 	//right
 	if (r.is(x +1, y) && r(x + 1, y)) {
 		Chunks& reg_ = r(x + 1, y)->chunks();
-		for (size_t i = 0; i < REGION_SIZE; i++) {
-			Chunk& ch =		reg(REGION_SIZE - 1, i);
-			Chunk& ch_ =	reg_(0, i);
-			ch.closes.chunks[Side2D::right] = &ch_;
-			ch_.closes.chunks[Side2D::left] = &ch;
-			ch.setModified();
-			ch_.setModified();
-		}
+		for (size_t i = 0; i < REGION_SIZE; i++) 
+			gChunk::Closes::link(reg(REGION_SIZE - 1, i), Side2D::right, reg_(0, i), Side2D::left);
 	}
 	//bottom
 	if (r.is(x, y-1) && r(x, y - 1)) {
 		Chunks& reg_ = r(x, y-1)->chunks();
-		for (size_t i = 0; i < REGION_SIZE; i++) {
-			Chunk& ch =		reg(i, 0);
-			Chunk& ch_ =	reg_(i, REGION_SIZE - 1);
-			ch.closes.chunks[Side2D::bottom] = &ch_;
-			ch_.closes.chunks[Side2D::top] = &ch;
-			ch.setModified();
-			ch_.setModified();
-		}
+		for (size_t i = 0; i < REGION_SIZE; i++) 
+			gChunk::Closes::link(reg(i, 0), Side2D::bottom, reg_(i, REGION_SIZE - 1), Side2D::top);
 	}
 	//top
 	if (r.is(x, y + 1) && r(x, y + 1)) {
 		Chunks& reg_ = r(x, y + 1)->chunks();
-		for (size_t i = 0; i < REGION_SIZE; i++) {
-			Chunk& ch =		reg(i, REGION_SIZE - 1);
-			Chunk& ch_ =	reg_(i, 0);
-			ch.closes.chunks[Side2D::top] = &ch_;
-			ch_.closes.chunks[Side2D::bottom] = &ch;
-			ch.setModified();
-			ch_.setModified();
-		}
+		for (size_t i = 0; i < REGION_SIZE; i++) 
+			gChunk::Closes::link(reg(i, REGION_SIZE - 1), Side2D::top, reg_(i, 0), Side2D::bottom);
 	}
 }
 void SupReg::setCloses(int new_region) {

@@ -5,14 +5,33 @@
 /// 
 /// </summary>
 
-bool gChunk::setVoxel(const Voxel& voxel, const glm::uvec3& coord) {
-	Voxel* voxel_ = getGlobal(coord);
+bool gChunk::setVoxel(Voxel voxel, glm::uvec3 coord) {
+	coord = coord - bg_vox;
+	Voxel* voxel_ =voxs.get(coord);
+	//существует ли воксель
 	if (voxel_ == 0) return 0;
-	if (*voxel_ == voxel) return 1;
-
+	//идентичен ли он данному
+	if (*voxel_ == voxel)return 1;
+	//Определям что потребуется перестроить
+	if (VoxPack::isAlpha(voxel)&&((VoxPack::isAlpha(*voxel_) || VoxPack::isRender(*voxel_) == 0)) ) flag.modifyAlpha();
+	else {
+		flag.modify();
+		closes.modify(coord.x, coord.z);
+	}
+	//Физическая оптимизация
+	size_t index = voxs.ind(coord);
+	if (VoxPack::isActive(*voxel_)) {
+		//удаляем физически активный воксель из вектора
+		if (VoxPack::isActive(voxel) == 0) {
+			nonStatic.voxs_.erase(index);
+		}
+	}
+	//добавляем физически активный воксель в вектора
+	else if (VoxPack::isActive(voxel)) {
+		nonStatic.voxs_.insert(index);
+	}
+	//nonStatic.log();
 	*voxel_ = voxel;
-	modified = 1;
-	closes.setModified(coord.x - global_.x, coord.z- global_.z);
 	return 1;
 }
 
@@ -25,8 +44,7 @@ inline glm::vec4 Chunk::getFastLight(int x, int y, int z) {
 		(float)LIGHT(x, y, z, 3)
 	);
 }
-
-const float cLight = 1.f / 70.f;
+#define cLight 1.f/70.f
 //Top-------------------------
 void Chunk::getLightTop(int x, int yT, int z, LightFace& face) {
 	Vec4M l(getFastLight(x, yT, z));
@@ -93,15 +111,11 @@ void  Chunk::getLightBack(int x, int y, int zB, LightFace& face) {
 inline void push_back(iGeometry<VoxelVertex>& convex, const glm::vec3& pos, const glm::vec2& uv, const glm::vec4& light) {
 	convex.push_back(VoxelVertex(pos, uv, light));
 }
-void Chunk::buildBox(ShellGeometry& mesh, Voxel voxel,size_t x,size_t y,size_t z) {
-	float uvsize = VoxelPack::get()->getNormalizeSizeVoxel();
-
-	LightFace lFace;
-	byte drawGroup = VoxelPack::get(voxel).drawGroup;
-	//top
-	if (isFree(x, y + 1, z, drawGroup)) {
-		getLightTop(x, y + 1, z, lFace);
-		const glm::vec2& uv = VoxelPack::get(voxel, Side::top);
+Chunk::LightFace lFace;
+void Chunk::buildTopFace(ShellGeometry& mesh, int x,int y,int z,byte drawGroup,Voxel voxel,float uvsize) {
+	if (isFree(x, y+1, z, drawGroup)) {
+		getLightTop(x, y+1, z, lFace);
+		const glm::vec2& uv = VoxPack::get(voxel, Side::top);
 
 		mesh.pushIndices(mesh.vertices.size());
 		push_back(mesh, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y), lFace.l0);
@@ -109,10 +123,11 @@ void Chunk::buildBox(ShellGeometry& mesh, Voxel voxel,size_t x,size_t y,size_t z
 		push_back(mesh, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize), lFace.l2);
 		push_back(mesh, glm::vec3(x + 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y), lFace.l3);
 	}
-
-	if (isFree(x, y - 1, z, drawGroup)) {
-		getLightBottom(x, y - 1, z, lFace);
-		const glm::vec2& uv = VoxelPack::get(voxel, Side::bottom);
+}
+void Chunk::buildBottomFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
+	if (isFree(x, y-1, z, drawGroup)) {
+		getLightBottom(x, y-1, z, lFace);
+		const glm::vec2& uv = VoxPack::get(voxel, Side::bottom);
 
 		mesh.pushIndices(mesh.vertices.size());
 		push_back(mesh, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y), lFace.l0);
@@ -120,10 +135,11 @@ void Chunk::buildBox(ShellGeometry& mesh, Voxel voxel,size_t x,size_t y,size_t z
 		push_back(mesh, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), lFace.l1);
 		push_back(mesh, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize), lFace.l2);
 	}
-
-	if (isFree(x + 1, y, z, drawGroup)) {
-		getLightRight(x + 1, y, z, lFace);
-		const glm::vec2& uv = VoxelPack::get(voxel, Side::right);
+}
+void Chunk::buildRightFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
+	if (isFree(x+1, y, z, drawGroup)) {
+		getLightRight(x+1, y, z, lFace);
+		const glm::vec2& uv = VoxPack::get(voxel, Side::right);
 
 		mesh.pushIndices(mesh.vertices.size());
 		push_back(mesh, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y), lFace.l0);
@@ -131,10 +147,11 @@ void Chunk::buildBox(ShellGeometry& mesh, Voxel voxel,size_t x,size_t y,size_t z
 		push_back(mesh, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize), lFace.l2);
 		push_back(mesh, glm::vec3(x + 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y), lFace.l3);
 	}
-
-	if (isFree(x - 1, y, z, drawGroup)) {
-		getLightLeft(x - 1, y, z, lFace);
-		const glm::vec2& uv = VoxelPack::get(voxel, Side::left);
+}
+void Chunk::buildLeftFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
+	if (isFree(x-1, y, z, drawGroup)) {
+		getLightLeft(x-1, y, z, lFace);
+		const glm::vec2& uv = VoxPack::get(voxel, Side::left);
 
 		mesh.pushIndices(mesh.vertices.size());
 		push_back(mesh, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y), lFace.l0);
@@ -142,10 +159,11 @@ void Chunk::buildBox(ShellGeometry& mesh, Voxel voxel,size_t x,size_t y,size_t z
 		push_back(mesh, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), lFace.l1);
 		push_back(mesh, glm::vec3(x - 0.5f, y + 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y + uvsize), lFace.l2);
 	}
-
-	if (isFree(x, y, z + 1, drawGroup)) {
+}
+void Chunk::buildFrontFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
+	if (isFree(x, y, z+1, drawGroup)) {
 		getLightForward(x, y, z + 1, lFace);
-		const glm::vec2& uv = VoxelPack::get(voxel, Side::front);
+		const glm::vec2& uv = VoxPack::get(voxel, Side::front);
 
 		mesh.pushIndices(mesh.vertices.size());
 		push_back(mesh, glm::vec3(x - 0.5f, y - 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y), lFace.l0);
@@ -153,10 +171,11 @@ void Chunk::buildBox(ShellGeometry& mesh, Voxel voxel,size_t x,size_t y,size_t z
 		push_back(mesh, glm::vec3(x + 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x + uvsize, uv.y + uvsize), lFace.l1);
 		push_back(mesh, glm::vec3(x - 0.5f, y + 0.5f, z + 0.5f), glm::vec2(uv.x, uv.y + uvsize), lFace.l2);
 	}
-
-	if (isFree(x, y, z - 1, drawGroup)) {
-		getLightBack(x, y, z - 1, lFace);
-		const glm::vec2& uv = VoxelPack::get(voxel, Side::back);
+}
+void Chunk::buildBackFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
+	if (isFree(x, y, z-1, drawGroup)) {
+		getLightBack(x, y, z-1, lFace);
+		const glm::vec2& uv = VoxPack::get(voxel, Side::back);
 
 		mesh.pushIndices(mesh.vertices.size());
 		push_back(mesh, glm::vec3(x - 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x + uvsize, uv.y), lFace.l0);
@@ -165,13 +184,44 @@ void Chunk::buildBox(ShellGeometry& mesh, Voxel voxel,size_t x,size_t y,size_t z
 		push_back(mesh, glm::vec3(x + 0.5f, y - 0.5f, z - 0.5f), glm::vec2(uv.x, uv.y), lFace.l3);
 	}
 }
+void Chunk::buildBox(ShellGeometry& mesh, Voxel voxel,size_t x,size_t y,size_t z) {
+	float uvsize = VoxPack::get()->getNormalizeSizeVoxel();
+	byte dGroup = VoxPack::get(voxel).drawGroup;
+	buildTopFace(		mesh,x, y, z, dGroup, voxel, uvsize);
+	buildBottomFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	buildRightFace(		mesh,x, y, z, dGroup, voxel, uvsize);
+	buildLeftFace(		mesh,x, y, z, dGroup, voxel, uvsize);
+	buildFrontFace(		mesh,x, y, z, dGroup, voxel, uvsize);
+	buildBackFace(		mesh,x, y, z, dGroup, voxel, uvsize);
+}
+void Chunk::buildSortBox(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z) {
+	float uvsize = VoxPack::get()->getNormalizeSizeVoxel();
+	byte dGroup = VoxPack::get(voxel).drawGroup;
+	bool isR = posView_.x > (int)x;
+	bool isT = posView_.y > (int)y;
+	bool isF = posView_.z > (int)z;
+
+	if (isR == 0)	buildRightFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	else			buildLeftFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	if (isT == 0)	buildTopFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	else			buildBottomFace(mesh,x, y, z, dGroup, voxel, uvsize);
+	if (isF == 0)	buildFrontFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	else			buildBackFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+
+	if (isR)		buildRightFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	else			buildLeftFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	if (isT)		buildTopFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	else			buildBottomFace(mesh,x, y, z, dGroup, voxel, uvsize);
+	if (isF)		buildFrontFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+	else			buildBackFace(	mesh,x, y, z, dGroup, voxel, uvsize);
+
+}
 
 void Chunk::buildСrossroad(ShellGeometry&mesh,Voxel voxel, size_t x, size_t y, size_t z) {
-	float uvsize = VoxelPack::get()->getNormalizeSizeVoxel();
+	float uvsize = VoxPack::get()->getNormalizeSizeVoxel();
 
-	LightFace lFace;
-	byte drawGroup = VoxelPack::get(voxel).drawGroup;
-	const glm::vec2& uv = VoxelPack::get(voxel, Side::top);
+	byte drawGroup = VoxPack::get(voxel).drawGroup;
+	const glm::vec2& uv = VoxPack::get(voxel, Side::top);
 	glm::vec4 l = 
 		glm::vec4(
 		  getFastLight(x, y+1, z) 
@@ -195,80 +245,80 @@ void Chunk::buildСrossroad(ShellGeometry&mesh,Voxel voxel, size_t x, size_t y, s
 }
 
 void Chunk::buildLiquid(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z) {
-
-	if (voxel.e.m1 == 0) {
-		buildBox(mesh,voxel, x, y, z);
+	
+	if (VoxPack::isSourceLiquid(voxel)) {
+		buildSortBox(mesh,voxel, x, y, z);
 	}
 	else {
-		buildBox(mesh, voxel, x, y, z);
-		LOG("Half-Water\n");
+		buildSortBox(mesh, voxel, x, y, z);
+		LOG("H-W\n");
 	}
 }
 
 void Chunk::buildMesh() {	
-	mesh.vertices.clear();
-	mesh.indices.clear();
+	mesh_.vertices.clear();
+	mesh_.indices.clear();
 	sort_vox.clear();
-	for (size_t y = 0; y < CHUNK_H; y++) {
-		for (size_t z = 0; z < CHUNK_D; z++) {
-			for (size_t x = 0; x < CHUNK_W; x++) {
-				Voxel v = voxs(x, y, z);
-				if (VoxelPack::isRender(v) == 0) continue;
-				if (VoxelPack::isOpaque(v)) {
-					if (v.e.id == vox::grass) buildСrossroad(mesh, v, x, y, z);
-					else  buildBox(mesh,v, x, y, z);
-				}
-				else sort_vox.push_back(glm::uvec3(x,y,z));
-			}
+	for(size_t i=0;i<voxs.size();i++){
+		if (VoxPack::isRender(voxs[i]) == 0) continue;
+		glm::uvec3 pos(voxs.coord(i));
+		if (VoxPack::isAlpha(voxs[i])) sort_vox.push_back(pos);
+		else {
+			if (voxs[i].e.id == vox::grass) buildСrossroad(mesh_, voxs[i], pos.x, pos.y, pos.z);
+			else  buildBox(mesh_, voxs[i], pos.x, pos.y, pos.z);
 		}
 	}
-	mesh.needUpBuffer = 1;
-	modified = 0;
+	mesh_.needUpBuffer = 1;
+	flag.modified = 0;
+	flag.modifyAlpha();
 }
 
-void  Chunk::buildSortMesh(const glm::ivec3& posView) {
-	if (curPosView == posView) return;
-
-	curPosView = posView;
+void  Chunk::buildSortMesh(glm::ivec3 pos) {
+	pos = pos- glm::ivec3(bg_vox);
+	if (posView_  == pos && flag.isModifiedAlpha()==0) return;
+	flag.modifiedAlpha = 0;
+	posView_ = pos;
+	//LOG("UP\n");
 	//Math distance
 	for (size_t i = 0; i < sort_vox.size(); i++) {
-		sort_vox[i].d = 
-			abs((int)sort_vox[i].pos.x - curPosView.x) + 
-			abs((int)sort_vox[i].pos.y - curPosView.y) + 
-			abs((int)sort_vox[i].pos.z - curPosView.z);
+		sort_vox[i].d = (
+			abs((int)sort_vox[i].pos.x - posView_.x) +
+			abs((int)sort_vox[i].pos.y - posView_.y) +
+			abs((int)sort_vox[i].pos.z - posView_.z));
 	}
 	//Sort
 	sort(sort_vox.begin(), sort_vox.end(), [](const SortableVoxel& l, const SortableVoxel& r) {return l.d > r.d; });
 	//Creating mesh
+	mesh_sort.vertices.clear();
+	mesh_sort.indices.clear();
 	for (size_t i = 0; i < sort_vox.size(); i++) {
-		glm::uvec3 p = sort_vox[i].pos;
+		const glm::uvec3& p = sort_vox[i].pos;
 		Voxel v = voxs(p);
 
-		if(v.e.id==vox::water)		buildLiquid(	sort_mesh, v, p.x, p.y, p.z);
-		if (v.e.id == vox::grass)	buildСrossroad(	sort_mesh, v, p.x, p.y, p.z);
-		else						buildBox(		sort_mesh,v, p.x, p.y, p.z);
+		if(VoxPack::isLiquid(v))	buildLiquid(mesh_sort, v, p.x, p.y, p.z);
+		else						buildSortBox(mesh_sort,v, p.x, p.y, p.z);
 
 	}
 	//Flags
-	sort_mesh.needUpBuffer = 1;
+	mesh_sort.needUpBuffer = 1;
 }
 
 void Chunk::drawOpaqueMesh(const Shader& shader) {
-	if (mesh.needUpBuffer)
+	if (mesh_.needUpBuffer)
 	{
-		mesh.needUpBuffer = 0;
-		mesh.saveInBuffer();
+		mesh_.needUpBuffer = 0;
+		mesh_.saveInBuffer();
 	}
-	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_) + glm::vec3(0.5f)));
-	mesh.draw();
+	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(bg_vox) + glm::vec3(0.5f)));
+	mesh_.draw();
 }
 
 void Chunk::drawSortMesh(const Shader& shader) {
-	if (sort_mesh.needUpBuffer)
+	if (mesh_sort.needUpBuffer)
 	{
-		sort_mesh.needUpBuffer = 0;
-		sort_mesh.saveInBuffer();
+		mesh_sort.needUpBuffer = 0;
+		mesh_sort.saveInBuffer();
 	}
-	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(global_) + glm::vec3(0.5f)));
-	sort_mesh.draw();
+	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(bg_vox) + glm::vec3(0.5f)));
+	mesh_sort.draw();
 }

@@ -76,7 +76,7 @@ void LightSolver::solve() {
 				LOG(LogError, "Voxel* == 0\n");
 				continue; 
 			}
-			if (VoxelPack::isOpaque(*v) == 0 &&
+			if (VoxPack::isOpaque(*v) == 0 &&
 				chunks->getChannelLight(pos, channel) + 1 < entry.light) {
 
 					LightUint8 outer(pos, entry.light - 1);

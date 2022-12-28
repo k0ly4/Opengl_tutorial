@@ -12,18 +12,18 @@ void ChunkSectorRender::setSize(size_t size) {
 
 void ChunkSectorRender::extractFromRegion() {
 	cProcess::queue.sync();
-	begin_ = viewCh_ - size_ / 2;
-	region_->fillSector(chunks_, size_, begin_);
+	begCh_ = viewCh_ - size_ / 2;
+	region_->fillSector(chunks_, size_, begCh_);
 	upChunks_sort();
 	cProcess::queue.addToQueue(this);
 }
 
 void ChunkSectorRender::setCameraPos(const glm::ivec3& posView) {
-	glm::uvec2 posViewCh(posView.x / CHUNK_W, posView.z / CHUNK_D);
-	if (posViewCh == viewCh_) return;
 	viewPos_ = posView;
+	glm::uvec2 posViewCh(viewPos_.x / CHUNK_W, viewPos_.z / CHUNK_D);
+	if (posViewCh == viewCh_) return;
 	viewCh_ = posViewCh;
-	LOG("ChunkSectorRender::x=%d,y=%d\n", viewCh_.x, viewCh_.y);
+	LOG("CSR::x=%d,y=%d\n", viewCh_.x, viewCh_.y);
 	extractFromRegion();
 }
 
@@ -32,15 +32,14 @@ void ChunkSectorRender::setVoxel(const Voxel& voxel, const glm::ivec3& coord) {
 	if (chunk) chunk->setVoxel(voxel, coord);
 }
 inline size_t length(const glm::uvec2& p1,const glm::uvec3& p2) {
-	size_t x = std::abs((int)p1.x - (int)p2.x);
-	size_t y = std::abs((int)p1.y - (int)p2.z);
-	return x * x + y * y;
+	return std::abs((int)p1.x - (int)p2.x) 
+		+ std::abs((int)p1.y - (int)p2.z);
 }
 void ChunkSectorRender::upChunks_sort() {
 	SortableChunks ch(chunks_.size());
 	for (size_t i = 0; i < ch.size(); i++) {
 		ch[i].ch = chunks_[i];
-		ch[i].d = length(viewCh_, ch[i].ch->localPos());
+		ch[i].d = length(viewCh_, ch[i].ch->chunkPos());
 	}
 	std::sort(ch.begin(), ch.end(), [](const SortChunk& l, const SortChunk& r) {return r.d > l.d;});
 	ch_sort=ch;
@@ -82,7 +81,7 @@ const Voxel* ChunkSectorRender::rayCast(const glm::vec3& a, const glm::vec3& dir
 
 	while (t <= maxDist) {
 		const Voxel* voxel = getVoxel(glm::ivec3(ix, iy, iz));
-		if (voxel != nullptr && VoxelPack::isSelectable(*voxel)) {
+		if (voxel != nullptr && VoxPack::isSelectable(*voxel)) {
 			end.x = px + t * dx;
 			end.y = py + t * dy;
 			end.z = pz + t * dz;

@@ -16,7 +16,7 @@ public:
 
 	ChunkSectorRender(SupReg* region) :
 		size_(sSetup::distance_render),
-		begin_(0.f),
+		begCh_(0),
 		viewCh_(glm::uvec3(sSetup::getBeginPos()) / CHUNK_VEC),
 		region_(region) 
 	{ 
@@ -48,8 +48,7 @@ public:
 	inline const Voxel* getVoxel(int x, int y, int z) { return  getVoxel(glm::uvec3(x, y, z)); }
 	inline bool isObstacle(const glm::uvec3& coord) {
 		const Voxel* voxel = getVoxel(coord);
-		if (voxel && VoxelPack::isObstacle(*voxel))return 1;
-		return 0;
+		return (voxel && VoxPack::isSolid(*voxel));
 	}
 	inline bool isObstacle(size_t x,size_t y,size_t z) { return isObstacle(glm::uvec3(x, y, z)); }
 	/// <summary>
@@ -60,9 +59,9 @@ public:
 	inline void draw(const View* view, const Shader& shader) {
 		shader.use();
 		view->useVP(shader);
-		VoxelPack::get()->use(shader);
-		for (size_t i = 0; i < ch_sort.size(); i++) ch_sort[i].ch->drawOpaqueMesh(shader);
-		for (size_t i = 0; i < ch_sort.size(); i++) ch_sort[i].ch->drawSortMesh(shader);
+		VoxPack::get()->use(shader);
+		for (int i = ch_sort.size() - 1; i > -1; i--)  ch_sort[i].ch->drawOpaqueMesh(shader);
+		for (int i = ch_sort.size()-1; i >-1; i--) ch_sort[i].ch->drawSortMesh(shader);
 
 	}
 
@@ -102,7 +101,7 @@ public:
 	inline unsigned char getChannelLight(int x, int y, int z, int channel) { return getChannelLight(glm::ivec3(x, y, z), channel); }
 
 	inline size_t size()const {				return size_; }
-	const glm::uvec2& getBegin()const {		return begin_; }
+	const glm::uvec2& getBegin()const {		return begCh_; }
 	ChunkPtrs& chunks() {					return chunks_;}
 
 private:
@@ -116,15 +115,17 @@ private:
 	inline bool isIn(const glm::uvec3& local) { return (local.x < size_ && local.z < size_ && local.y == 0);}
 
 	inline glm::uvec3 toLocal(size_t x,size_t y,size_t z) {
-		return glm::uvec3(x / CHUNK_W- begin_.x, y / CHUNK_H, z / CHUNK_D - begin_.y);
+		return glm::uvec3(x / CHUNK_W- begCh_.x, y / CHUNK_H, z / CHUNK_D - begCh_.y);
 	}
 	ChunkPtrs chunks_;
 	SortableChunks ch_sort;
 
 	size_t size_;
-	glm::uvec2 begin_;
+	glm::uvec2 begCh_;
+
 	glm::uvec2 viewCh_;
 	glm::ivec3 viewPos_;
+
 	SupReg* region_;
 };
 #endif

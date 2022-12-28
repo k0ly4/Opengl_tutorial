@@ -10,8 +10,8 @@ void LightHandle::init() {
 			for (size_t x = x0; x < xm; x++) {
 				glm::uvec3 pos(x, y, z);
 				const Voxel* voxel = chunks->getVoxel(pos);
-				if (VoxelPack::isEmission(*voxel)) {
-					addRGB(pos, VoxelPack::get(*voxel).emission);
+				if (VoxPack::isEmission(*voxel)) {
+					addRGB(pos, VoxPack::get(*voxel).emission);
 				}
 			}
 		}
@@ -23,7 +23,7 @@ void LightHandle::init() {
 			for (int y = CHUNK_H - 1; y >= 0; y--) {
 				glm::uvec3 pos(x, y, z);
 				const Voxel* voxel = chunks->getVoxel(pos);
-				if (VoxelPack::isOpaque(*voxel)) {
+				if (VoxPack::isOpaque(*voxel)) {
 					break;
 				}
 				chunks->getByVoxel(pos.x,pos.y,pos.z)->lightMap.setS(x % CHUNK_W, y % CHUNK_H, z % CHUNK_D, 0xF);
@@ -35,7 +35,7 @@ void LightHandle::init() {
 			for (int y = CHUNK_H - 1; y >= 0; y--) {
 				glm::uvec3 pos(x, y, z);
 				const Voxel* voxel = chunks->getVoxel(pos);
-				if (VoxelPack::isOpaque(*voxel)) {
+				if (VoxPack::isOpaque(*voxel)) {
 					break;
 				}
 				if (
@@ -63,7 +63,7 @@ void LightHandle::remove(const glm::ivec3& pos) {
 
 		if (chunks->getChannelLight(pos.x, pos.y + 1, pos.z, 3) == 0xF) {
 			for (int i = pos.y; i >= 0; i--) {
-				if (VoxelPack::isOpaque(*chunks->getVoxel(pos.x, i, pos.z))) break;
+				if (VoxPack::isOpaque(*chunks->getVoxel(pos.x, i, pos.z))) break;
 				solverS.add(pos.x, i, pos.z, 0xF);
 			}
 		}
@@ -84,33 +84,33 @@ void LightHandle::add(const glm::ivec3& pos, Voxel voxel) {
 
 		for (int i = pos.y - 1; i >= 0; i--) {
 			solverS.remove(pos.x, i, pos.z);
-			if (i == 0 || VoxelPack::isOpaque(*chunks->getVoxel(pos.x, i - 1, pos.z)))
+			if (i == 0 || VoxPack::isOpaque(*chunks->getVoxel(pos.x, i - 1, pos.z)))
 			{
 				break;
 			}
 		}
 		solveRGBS();
 
-		if (VoxelPack::isEmission(voxel)) {
-			addRGB(pos, VoxelPack::get(voxel).emission);
+		if (VoxPack::isEmission(voxel)) {
+			addRGB(pos, VoxPack::get(voxel).emission);
 			solveRGB();
 		}
 }
 
 void LightHandle::chunkInit(Chunk& chunk) {
-	const glm::uvec3& beg = chunk.globalPos();
+	const glm::uvec3& beg = chunk.voxelPos();
 	Voxels& voxels = chunk.voxels();
 	//Light block
 	for (size_t i = 0; i < voxels.size(); i++) {
-		if (VoxelPack::isEmission(voxels[i])) {
-			addRGB(beg + toCoord3(i), VoxelPack::get(voxels[i]).emission);
+		if (VoxPack::isEmission(voxels[i])) {
+			addRGB(beg + toCoord3(i), VoxPack::get(voxels[i]).emission);
 		}
 	}
 	//Sun
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
 			for (int y = CHUNK_H - 1; y >= 0; y--) {
-				if (VoxelPack::isOpaque(voxels(x, y, z))) break;
+				if (VoxPack::isOpaque(voxels(x, y, z))) break;
 				chunk.lightMap.setS(x, y, z, 0xF);
 			}
 		}
@@ -119,7 +119,7 @@ void LightHandle::chunkInit(Chunk& chunk) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
 			for (int y = CHUNK_H - 1; y >= 0; y--) {
 			
-				if (VoxelPack::isOpaque(voxels(x, y, z))) break;
+				if (VoxPack::isOpaque(voxels(x, y, z))) break;
 			
 				if (
 					chunk.getLight(x - 1, y, z, 3) == 0 ||
@@ -136,6 +136,5 @@ void LightHandle::chunkInit(Chunk& chunk) {
 			}
 		}
 	}
-	chunk.isInitLight = 1;
-	chunk.setModified();
+	chunk.flag.initLight();
 }

@@ -14,7 +14,6 @@ public:
 	SupReg() :beg_ch(0) { reg.setNull(); }
 	void fillSector(ChunkPtrs& sec, size_t size, const glm::uvec2& center);
 	inline void save() { for (size_t i = 0; i < reg.size(); i++) if (reg[i]) reg[i]->save(); }
-
 protected:
 
 	void setCloses(int new_region);
@@ -29,11 +28,6 @@ protected:
 
 	Regions reg;
 };
-//iSupReg------------------------------------------------------------
-class iSupReg:public SupReg {
-public:
 
-protected:
-};
 #endif
 

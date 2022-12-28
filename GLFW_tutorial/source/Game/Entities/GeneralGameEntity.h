@@ -7,12 +7,12 @@
 /// </summary>
 struct extendedID {
 
-	short id;
+	twobyte id;
 	byte m1;
 	byte m2;
 
 	extendedID() {}
-	extendedID(short id_, byte m1_, byte m2_) :
+	extendedID(twobyte id_, byte m1_, byte m2_) :
 		id(id_),
 		m1(m1_),
 		m2(m2_) {}
@@ -35,30 +35,31 @@ struct Voxel {
 	};
 	
 	//Voxel(int id_) :id(id_) {}
-	Voxel(short id,byte m1=0,byte m2=0):e(id,m1,m2)
+	Voxel(twobyte id,byte m1=0,byte m2=0):e(id,m1,m2)
 	{}
-	Voxel() {}
+	Voxel():e(0,0,0) {}
 };
 
-static bool operator==(const Voxel& left, const Voxel& right) {
-	return (right.e.id== left.e.id);
-}
-
+static bool operator==(const Voxel& left, const Voxel& right) {return (right.e.id== left.e.id);}
+static bool operator!=(const Voxel& left, const Voxel& right) { return (right.e.id != left.e.id); }
 namespace vox {
 
-	enum TypeVoxel:short
+	enum TypeVoxel :short
 	{
-		air = -1,
-		turf = 0,
-		earth = 1,
-		stone = 2,
-		bedrock = 6,
-		oak = 8,
-		oak_wood = 9,
-		snow = 10,
-		sand = 11,
-		grass = 12,
-		water = 13,
+		air = 0,
+		turf = 1,
+		earth = 2,
+		stone = 3,
+		beacon = 4,
+		glass = 5,
+		glowstone = 6,
+		bedrock = 7,
+		oak = 9,
+		oak_wood = 10,
+		snow = 11,
+		sand = 12,
+		grass = 13,
+		water = 14,
 		size,
 	};
 }

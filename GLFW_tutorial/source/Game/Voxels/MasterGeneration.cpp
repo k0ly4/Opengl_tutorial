@@ -38,7 +38,7 @@ void DefaultGenerator::generate(Chunk& chunk) {
 
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
-			glm::vec2 real = glm::vec2(x+chunk.globalPos().x,z + chunk.globalPos().z) ;
+			glm::vec2 real = glm::vec2(x+chunk.voxelPos().x,z + chunk.voxelPos().z) ;
 			heights[z * CHUNK_W + x] = calcHeight(real);
 		}
 	}
@@ -49,7 +49,7 @@ void DefaultGenerator::generate(Chunk& chunk) {
 
 			for (size_t y = 0; y < CHUNK_H; y++) {
 
-				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.globalPos();
+				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.voxelPos();
 				
 				short id = vox::air;
 				if (real.y == height) {
@@ -68,11 +68,7 @@ void DefaultGenerator::generate(Chunk& chunk) {
 			}
 		}
 	}
-
-	chunk.setModified();
-	chunk.isGenerated = 1;
-	chunk.isInitLight = 0;
-
+	chunk.flag.generate();
 }
 void setConstants(luascr::LuaInterface& script) {
 	script
@@ -176,7 +172,7 @@ void CustomGenerator::generate(Chunk& chunk) {
 
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
-			glm::vec2 real = glm::vec2(x + chunk.globalPos().x, z + chunk.globalPos().z);
+			glm::vec2 real = glm::vec2(x + chunk.voxelPos().x, z + chunk.voxelPos().z);
 			heights[z * CHUNK_W + x] = calcHeight(real);
 		}
 	}
@@ -184,10 +180,10 @@ void CustomGenerator::generate(Chunk& chunk) {
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
 			size_t height = heights[z * CHUNK_W + x];
-			Biom::Type biom = getBiom(x+ chunk.globalPos().x, z+ chunk.globalPos().z);
+			Biom::Type biom = getBiom(x+ chunk.voxelPos().x, z+ chunk.voxelPos().z);
 			for (size_t y = 0; y < CHUNK_H; y++) {
 
-				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.globalPos();
+				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.voxelPos();
 				short id = 55;
 				if (biom == Biom::plain)
 					id = blockPlain(real, height);
@@ -200,9 +196,6 @@ void CustomGenerator::generate(Chunk& chunk) {
 		}
 	}
 
-	chunk.setModified();
-	chunk.isGenerated = 1;
-	chunk.isInitLight = 0;
-
+	chunk.flag.generate();
 }
 std::vector< CustomGenerator::Par>CustomGenerator::pars;

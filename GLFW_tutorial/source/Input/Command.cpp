@@ -7,7 +7,7 @@ namespace com {
 	
 	void UpdateMeshChunks::execute(Event& event) {
 		ChunkPtrs& chunks = scene->world.chunks.chunks();
-		for (size_t i = 0; i < chunks.size(); i++) chunks[i]->setModified();
+		for (size_t i = 0; i < chunks.size(); i++) chunks[i]->flag.modify();
 	}
 	namespace pl {
 		void SwitchBlock::execute(Event& event) {

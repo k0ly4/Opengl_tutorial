@@ -31,7 +31,7 @@ public:
 	
 	glm::vec3 normCursor;
 	glm::ivec3 posCursor;
-	Voxel curVoxel = Voxel(2);
+	Voxel curVoxel = vox::earth;
 
 private:
 
