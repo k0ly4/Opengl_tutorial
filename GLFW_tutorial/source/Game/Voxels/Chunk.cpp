@@ -5,34 +5,29 @@
 /// 
 /// </summary>
 
-bool gChunk::setVoxel(Voxel voxel, glm::uvec3 coord) {
-	coord = coord - bg_vox;
-	Voxel* voxel_ =voxs.get(coord);
-	//существует ли воксель
-	if (voxel_ == 0) return 0;
+void gChunk::setVoxelLocal(Voxel voxel, const glm::uvec3& coord) {
+	size_t index = voxs.ind(coord);
+	Voxel dest = voxs[index];
 	//идентичен ли он данному
-	if (*voxel_ == voxel)return 1;
+	if (dest == voxel)return;
+	voxs[index] = voxel;
 	//Определям что потребуется перестроить
-	if (VoxPack::isAlpha(voxel)&&((VoxPack::isAlpha(*voxel_) || VoxPack::isRender(*voxel_) == 0)) ) flag.modifyAlpha();
+	if (VoxPack::isAlpha(voxel) && ((VoxPack::isAlpha(dest) || VoxPack::isRender(dest) == 0))) {
+		upSortVox();
+		flag.modifyAlpha();
+		closes.modifyAlpha(coord.x, coord.z);
+	}
 	else {
 		flag.modify();
 		closes.modify(coord.x, coord.z);
 	}
 	//Физическая оптимизация
-	size_t index = voxs.ind(coord);
-	if (VoxPack::isActive(*voxel_)) {
+	if (VoxPack::isActive(dest)) {
 		//удаляем физически активный воксель из вектора
-		if (VoxPack::isActive(voxel) == 0) {
-			nonStatic.voxs_.erase(index);
-		}
+		if (VoxPack::isActive(voxel) == 0) nonStatic.voxs_.erase(index);
 	}
 	//добавляем физически активный воксель в вектора
-	else if (VoxPack::isActive(voxel)) {
-		nonStatic.voxs_.insert(index);
-	}
-	//nonStatic.log();
-	*voxel_ = voxel;
-	return 1;
+	else if (VoxPack::isActive(voxel)) nonStatic.voxs_.insert(index);
 }
 
 inline glm::vec4 Chunk::getFastLight(int x, int y, int z) {
@@ -249,51 +244,50 @@ void Chunk::buildLiquid(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, si
 	if (VoxPack::isSourceLiquid(voxel)) {
 		buildSortBox(mesh,voxel, x, y, z);
 	}
-	else {
+	else 
 		buildSortBox(mesh, voxel, x, y, z);
-		LOG("H-W\n");
-	}
+	
 }
 
 void Chunk::buildMesh() {	
+	flag.modified = 0;
 	mesh_.vertices.clear();
 	mesh_.indices.clear();
-	sort_vox.clear();
+	s_vox.clear();
 	for(size_t i=0;i<voxs.size();i++){
 		if (VoxPack::isRender(voxs[i]) == 0) continue;
 		glm::uvec3 pos(voxs.coord(i));
-		if (VoxPack::isAlpha(voxs[i])) sort_vox.push_back(pos);
+		if (VoxPack::isAlpha(voxs[i])) s_vox.push_back(i);
 		else {
 			if (voxs[i].e.id == vox::grass) buildСrossroad(mesh_, voxs[i], pos.x, pos.y, pos.z);
 			else  buildBox(mesh_, voxs[i], pos.x, pos.y, pos.z);
 		}
 	}
 	mesh_.needUpBuffer = 1;
-	flag.modified = 0;
 	flag.modifyAlpha();
 }
 
 void  Chunk::buildSortMesh(glm::ivec3 pos) {
 	pos = pos- glm::ivec3(bg_vox);
-	if (posView_  == pos && flag.isModifiedAlpha()==0) return;
+	if (((posView_  == pos) && (flag.isModifiedAlpha() == 0)) || flag.isModified()) return;
 	flag.modifiedAlpha = 0;
 	posView_ = pos;
-	//LOG("UP\n");
 	//Math distance
-	for (size_t i = 0; i < sort_vox.size(); i++) {
-		sort_vox[i].d = (
-			abs((int)sort_vox[i].pos.x - posView_.x) +
-			abs((int)sort_vox[i].pos.y - posView_.y) +
-			abs((int)sort_vox[i].pos.z - posView_.z));
+	for (size_t i = 0; i < s_vox.size(); i++) {
+		glm::ivec3 pos(voxs.coord(s_vox[i].ind));
+		s_vox[i].d = (
+			abs(pos.x - posView_.x) +
+			abs(pos.y - posView_.y) +
+			abs(pos.z - posView_.z));
 	}
 	//Sort
-	sort(sort_vox.begin(), sort_vox.end(), [](const SortableVoxel& l, const SortableVoxel& r) {return l.d > r.d; });
+	sort(s_vox.begin(), s_vox.end(), [](const SortableVoxel& l, const SortableVoxel& r) {return l.d > r.d; });
 	//Creating mesh
 	mesh_sort.vertices.clear();
 	mesh_sort.indices.clear();
-	for (size_t i = 0; i < sort_vox.size(); i++) {
-		const glm::uvec3& p = sort_vox[i].pos;
-		Voxel v = voxs(p);
+	for (size_t i = 0; i < s_vox.size(); i++) {
+		glm::ivec3 p(voxs.coord(s_vox[i].ind));
+		Voxel v = voxs[s_vox[i].ind];
 
 		if(VoxPack::isLiquid(v))	buildLiquid(mesh_sort, v, p.x, p.y, p.z);
 		else						buildSortBox(mesh_sort,v, p.x, p.y, p.z);

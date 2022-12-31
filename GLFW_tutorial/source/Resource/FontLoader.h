@@ -1,21 +1,20 @@
 #ifndef FONT_LOADER_H
 #define FONT_LOADER_H
-
+#include <map>
+#include "System/Exception.h"
+#include <iostream>
 #include <ft2build.h>
 #include FT_FREETYPE_H 
-#include <map>
-#include <iostream>
 
 /////FaceFont-----------------------------------------
 class FaceFont {
 public:
 
-	FaceFont(const FT_Face& face) :face_(face)
-	{}
+	FaceFont(const FT_Face& face) :face_(face){}
 
 	bool loadGlyph(size_t code,FT_Int32 flag = FT_LOAD_RENDER) {
 		if (FT_Load_Char(face_, code, flag)) {
-			printf("(!)ERROR::FaceFont::Failed to load glyph (code:%d)\n", code);
+			LOG(LogError,"FaceFont::Failed to load glyph (code:%d)\n", code);
 			return 0;
 		}
 		return 1;
@@ -48,7 +47,7 @@ public:
 	FontResource(const FT_Library& lib,const std::string& path) {
 		FT_Face face;
 		if (FT_New_Face(lib, path.c_str(), 0, &face)) {
-			printf("(!)ERROR::FontResource::Failed to load font from path:%s\n", path.c_str());
+			LOG(LogError, "FontResource::Failed to load font from path:%s\n", path.c_str());
 			font = 0;
 		}
 		font = std::make_shared<FaceFont>(face);
@@ -73,7 +72,7 @@ class FontLoader
 
 		FreeTypeLib() {
 			if (FT_Init_FreeType(&lib)) {
-				printf("(!)ERROR::Font::FREETYPE not init");
+				LOG(LogError, "Font::FREETYPE not init\n");
 				init = 0;
 			}
 			init = 1;
@@ -102,10 +101,8 @@ public:
 
 	static const std::shared_ptr <FaceFont>& get(const std::string& path) {
 		auto face = fonts.find(path);
-		if (face == fonts.end()) {
-			return load(path);
-		}
-		else return face->second.get();
+		if (face == fonts.end()) return load(path);
+		return face->second.get();
 	}
 
 	static bool isInit(){

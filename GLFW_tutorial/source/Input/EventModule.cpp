@@ -6,37 +6,17 @@
 /// update
 /// </summary>
 /// 
-void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline& graphic) {
+void EventModule::inputDisabledCursor(Event& event, GlobalScene& sc,GraphicPipeline& graphic) {
     if (event.type == Event::KeyPressed) {
-
-        if (event.key.code == Keyboard::LeftControl) {
-            f.rawMotionCursor = !f.rawMotionCursor;
-            Mouse::setRawMotion(f.rawMotionCursor);
-        }
-
-       
-        else if (event.key.code == Keyboard::F) {
-            printf("F\n");
-            f.shadow_view = !f.shadow_view;
-        }
-       
-        else if (event.key.code == Keyboard::M) {
-            f.shadow_level--;
-            if (f.shadow_level < 0)
-                f.shadow_level = 0;
-
-            printf("Shadow_Level:%d\n", f.shadow_level);
-        }
-        else if (event.key.code == Keyboard::E)
-        {
-            f.debugGbuffer = !f.debugGbuffer;
+        if (event.key.code == Keyboard::F) {
+            f.showUi = !f.showUi;
         }
         else if (event.key.code == Keyboard::F1)
         {
-            scene.world.save();
+            sc.sc3d.world.save();
         }
         else if (event.key.code >= Keyboard::Num0 && event.key.code <= Keyboard::Num9) {
-            scene.player.input.setCurVoxel(Voxel(event.key.code - Keyboard::Num0));
+            sc.sc3d.player.input.setCurVoxel(Voxel(event.key.code - Keyboard::Num0));
         }
         else inputMain.solveKey(event);
     }
@@ -49,11 +29,11 @@ void EventModule::inputDisabledCursor(Event& event,Scene& scene,GraphicPipeline&
     }
 }
 
-void EventModule::initialize(Scene& scene) {
-       sCommandHandler::init(inputMain,&scene, &scene.player);
+void EventModule::initialize(GlobalScene& sc) {
+       sCommandHandler::init(inputMain,&sc, &sc.sc3d.player);
 }
 
-void EventModule::update(float time, RenderWindow& window, GraphicPipeline& graphic, Scene& scene) {
+void EventModule::update(float time, RenderWindow& window, GraphicPipeline& graphic, GlobalScene& sc) {
     //PollEvent
     while (window.pollEvent(event))
     {
@@ -65,17 +45,17 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
         }
         else if (event.type == Event::WindowResized) {
             graphic.setBufferFrameSize(event.size.size);
-            scene.upSizeViews(event.size.size);
+            sc.upSizeViews(event.size.size);
             continue;
         }
-        inputDisabledCursor(event, scene,graphic);
+        inputDisabledCursor(event, sc,graphic);
     }
     //Cursor
     Cursor::setMode(Cursor::Disabled);
     //Player
-    scene.player.input.cameraUpdate(Mouse::getPosition());
-    scene.player.input.moveUpdate(time);
-    scene.player.cursorUpdate(scene.world.chunks);
+    sc.sc3d.player.input.cameraUpdate(Mouse::getPosition());
+    sc.sc3d.player.input.moveUpdate(time);
+    sc.sc3d.player.cursorUpdate(sc.sc3d.world.chunks);
     //RenderSectorChunks
-    scene.world.chunks.setCameraPos(scene.player.getPosition());
+    sc.sc3d.world.chunks.setCameraPos(sc.sc3d.player.getPosition());
 }

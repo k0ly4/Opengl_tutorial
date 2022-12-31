@@ -2,11 +2,6 @@
 #define IMAGE_LOADER_H
 
 #include"stb_image.h"
-#include <string>
-#include <list>
-#include <fstream>
-#include <sstream>
-
 #include "Graphic/ContextTexture.h"
 #include "System/Exception.h"
 
@@ -114,7 +109,7 @@ private:
 /// <summary>
 /// TextureResource
 /// </summary>
-class TextureResource:public Resource {
+class TextureResource {
 public:
 
 	TextureResource(const glm::ivec2& size,unsigned nrChannels,bool gamma, const unsigned char * data) {
@@ -183,38 +178,20 @@ public:
 	static const TextureResource* getTexture(const std::string& path, bool gamma = 1, int nrChannels_need = 0) {
 		auto resource = rTextures_.find(path);
 
-		if (resource == rTextures_.end()) {
-			try { loadTexture(path, gamma, nrChannels_need); }
-			catch(const stbiResourceException& ex)
-			{
-				ex.log();
-				return 0;
-			}
-			return &rTextures_[path];
-		}
-
+		if (resource == rTextures_.end()) 
+			return loadTexture(path, gamma, nrChannels_need) ? &rTextures_[path]:0;
 		return &resource->second;
 	}
 
 	static const STBI_Resource* getSTBI(const std::string& path, int nrChannels_need = 0) {
 		auto resource = rSTBI.find(path);
-
-		if (resource == rSTBI.end()) {
-			try { loadSTBI(path, nrChannels_need); }
-			catch (const stbiResourceException& ex)
-			{
-				ex.log();
-				return 0;
-			}
-			return &rSTBI[path];
-		}
-
+		if (resource == rSTBI.end()) return loadSTBI(path, nrChannels_need) ? &rSTBI[path] : 0;
 		return &resource->second;
 	}
 	
 private:
-	static void loadTexture(const std::string& path,bool gamma, int nrChannels_need);
-	static void loadSTBI(const std::string& path, int nrChannels_need = 0);
+	static bool loadTexture(const std::string& path,bool gamma, int nrChannels_need);
+	static bool loadSTBI(const std::string& path, int nrChannels_need = 0);
 
 	static std::map<std::string, TextureResource> rTextures_;
 	static std::map<std::string, STBI_Resource> rSTBI;

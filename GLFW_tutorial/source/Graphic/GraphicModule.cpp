@@ -7,10 +7,8 @@
 /// GraphicPipeline
 /// </summary>
 /// 
-inline void display(const Texture2D& texture) {
-    Debugger::display(texture);
-}
-
+inline void display(const Texture2D& texture, float exposure) { Debugger::displayExposure(texture, exposure); }
+inline void display(const Texture2D& texture) { Debugger::display(texture); }
 void GraphicPipeline::initialize(RenderWindow& window) {
 
     frame.create(window.getSize(), TextureData(GL_RGBA16F, GL_RGBA, GL_NEAREST));
@@ -18,7 +16,7 @@ void GraphicPipeline::initialize(RenderWindow& window) {
     ui.create(window.getSize(), TextureData(GL_RGBA, GL_RGBA, GL_NEAREST));
 }
 
-void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& event) {
+void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule& event) {
     ///--------------------------------------------
     //Shadow ------------------
     if (false) {
@@ -41,13 +39,13 @@ void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& ev
     }
     //Forward render ----------------------
     window.setDefaultHintShader(glShader::any_light_texture);
-    scene.inForward(window);
+    sc.sc3d.inForward(window);
 
     //UI----------------------
     GlRender::bind(ui);
     GlRender::setClearColor(0.f,0.f,0.f,0.f);
     glClear(GL_COLOR_BUFFER_BIT);
-    scene.inUI(ui);
+    sc.ui.inRender(ui);
 
     //Постобработка - гамма коррекция----------------------
     GlRender::unbind();
@@ -60,7 +58,7 @@ void GraphicPipeline::render(RenderWindow& window, Scene& scene, EventModule& ev
     ////else 
     filter.drawExposure(frame.getTexture());
     //ui render
-    if (event.f.shadow_view) display(ui.getTexture());
+    if (event.f.showUi) display(ui.getTexture());
     //
     window.display();
 }

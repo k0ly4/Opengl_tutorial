@@ -29,74 +29,68 @@ struct AngleAxis {
 /// 
 /// </summary>
 class Transform2D {
-
 public:
 	
-	Transform2D(const glm::vec2& position, const glm::vec2& scale,const glm::vec2& origin, float rotate):
+	Transform2D(const glm::vec2& position, const glm::vec2& scale, const glm::vec2& origin, float rotate) :
 		rotate_(rotate), 
 		position_(position), 
 		scale_(scale),
 		origin_(origin),
 		model(1.f)
 	{}
-
-	void setPosition(const glm::vec2& position) {
-		position_ = position;
-		needUpModel = 1;
-	}
-	const glm::vec2& getPosition()const {
-		return position_;
-	}
-
-	void setScale(const glm::vec2& scale) {
-		scale_ = scale;
-		needUpModel = 1;
-	}
-	const glm::vec2& getScale()const {
-		return scale_;
-	}
+	Transform2D() :
+		rotate_(0.f),
+		position_(0.f),
+		scale_(1.f),
+		origin_(0.f),
+		model(1.f)
+	{}
 	//In radians
-	void setRotate(float rotate_in_radians) {
-		rotate_ = rotate_in_radians;
-		needUpModel = 1;
-	}
-	//In radians
-	float getRotate()const {
-		return rotate_;
-	}
-
-	void setOrigin(const glm::vec2& origin) {
-		origin_ = origin;
-		needUpModel = 1;
-	}
-	const glm::vec2& getOrigin()const {
-		return origin_;
-	}
-
-	const glm::mat4& getModel() const{
-		if (needUpModel)calcModel();
+	inline const glm::vec2& getOrigin()		const { return origin_; }
+	inline float getRotate()				const { return rotate_; }
+	inline const glm::vec2& getPosition()	const { return position_; }
+	inline const glm::vec2& getScale()		const {	return scale_;}
+	inline const glm::mat4& matrix() const {
+		if (modified)calcModel();
 		return model;
 	}
-
-	bool isNeedUp()const {
-		return needUpModel;
+	//In radians
+	inline void setRotate(float rotate_in_radians) {
+		rotate_ = rotate_in_radians;
+		modified = 1;
 	}
+	inline void setOrigin(const glm::vec2& origin) {
+		origin_ = origin;
+		modified = 1;
+	}
+	inline void setOrigin(float x, float y) { setOrigin({ x,y }); }
+	inline void setPosition(const glm::vec2& position) {
+		position_ = position;
+		modified = 1;
+	}
+	inline void setPosition(float x, float y) { setPosition({ x,y }); }
+	inline void setScale(const glm::vec2& scale) {
+		scale_ = scale;
+		modified = 1;
+	}
+	inline void setScale(float x, float y) { setScale({ x,y }); }
+	//bool isNeedUp()const {return modified;}
+
 protected:
 
 	void calcModel()const {
+		modified = 0;
 		model = glm::mat4(1.0f);
 		//Rotate
 		model = glm::translate(model, glm::vec3(origin_ + position_, 0.0f));
 		model = glm::rotate(model, rotate_, glm::vec3(0.0f, 0.0f, 1.0f));
 		//Move
-		model = glm::translate(model, glm::vec3(-scale_ * origin_, 0.0f));
+		//model = glm::translate(model, glm::vec3(-scale_ * origin_, 0.0f));
 		//Scale
 		model = glm::scale(model, glm::vec3(scale_, 1.0f)); // последним идет масштабирование
-
-		needUpModel = 0;
 	}
 
-	mutable bool needUpModel = 1;
+	mutable bool modified = 1;
 	mutable glm::mat4 model;
 
 	float rotate_;

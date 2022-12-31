@@ -132,7 +132,7 @@ private:
 	
 	static inline void addChannelHeight(float scale, float influence) { pars.push_back({ scale, influence}); }
 	 inline Biom::Type getBiom(size_t x,size_t z) {
-		 int temperature = noise.getNormalize(glm::vec2(x, z)*2.f)*255.f;
+		 float temperature = noise.getNormalize(glm::vec2((float)x, (float)z)*2.f)*255.f;
 		 
 		 if (temperature < 50.f)return Biom::tundra;
 		 if (temperature < 200.f)return Biom::plain;

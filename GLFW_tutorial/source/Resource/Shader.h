@@ -103,6 +103,8 @@ public:
         font,
         text,
         shape,
+        convex2d,
+        texture_2d,
         skybox,
         billboard,
         voxel,
@@ -124,6 +126,7 @@ public:
         gb_render_point_lights,
         //posEffects
         frame_exposure,
+        frame,
         //Render in shadow map
         depth,
         depth_cascaded,

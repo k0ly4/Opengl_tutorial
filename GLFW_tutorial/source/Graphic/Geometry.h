@@ -41,19 +41,41 @@ public:
 		VAO.begin();
 		glDrawElements(primitive, size_vertex_to_draw, GL_UNSIGNED_INT, 0);
 	}
-
-	inline void pushIndices(size_t begin) {
-		indices.push_back(begin);
-		indices.push_back(begin + 1);
-		indices.push_back(begin + 2);
-		indices.push_back(begin);
-		indices.push_back(begin + 2);
-		indices.push_back(begin + 3);
+	inline void draw(GLenum primitive,size_t size) {
+		VAO.begin();
+		glDrawElements(primitive, size, GL_UNSIGNED_INT, 0);
 	}
 
-	inline void push_back(const T& vertex) {
-		vertices.push_back(vertex);
+	inline void pushInd(size_t ind)			noexcept {	indices.push_back(ind);}
+	inline void pushVert(const T& vertex)	noexcept {	vertices.push_back(vertex); }
+	inline void push_back(const T& vertex)	noexcept {	vertices.push_back(vertex);}
+	inline void pushSquare()				noexcept {
+		size_t begin = vertices.size();
+		pushInd(begin);
+		pushInd(begin + 1);
+		pushInd(begin + 2);
+		pushInd(begin);
+		pushInd(begin + 2);
+		pushInd(begin + 3);
 	}
+	inline void pushSquare(size_t begin)	noexcept {
+		pushInd(begin);
+		pushInd(begin + 1);
+		pushInd(begin + 2);
+		pushInd(begin);
+		pushInd(begin + 2);
+		pushInd(begin + 3);
+	}
+	inline void pushIndices(size_t begin)	noexcept {
+		pushInd(begin);
+		pushInd(begin + 1);
+		pushInd(begin + 2);
+		pushInd(begin);
+		pushInd(begin + 2);
+		pushInd(begin + 3);
+	}
+
+	inline void clear() noexcept { vertices.clear(); indices.clear(); }
 
 	ArrayBufferObject VAO;
 	VertexBufferObject VBO;
@@ -61,6 +83,50 @@ public:
 	size_t size_vertex_to_draw;
 
 	std::vector<unsigned int> indices;
+	std::vector<T> vertices;
+private:
+};
+///iGeometry---------------------------------------------
+/// <summary>
+/// 
+/// </summary>
+template<typename T>
+class qGeometry {
+public:
+
+	qGeometry() {
+		VBO.begin();
+		VAO.begin();
+		T::attrib(VAO);
+		VAO.end();
+		VBO.end();
+	}
+
+	inline void saveInBuffer() {
+		//VAO.begin();
+		VBO.begin();
+		VBO.data(vertices);
+		//T::attrib(VAO);
+		//VAO.end();
+	}
+
+	inline void drawArrays(GLenum primitive = GlRender::TRIANGLES) {
+		VAO.begin();
+		glDrawArrays(primitive, 0, vertices.size());
+	}
+	inline void drawArrayInstanced(size_t count_obj) {
+		VAO.begin();
+		glDrawArraysInstanced(GlRender::TRIANGLES, 0, vertices.size(), count_obj);
+	}
+	inline void drawArrayInstanced(GLenum primitive, size_t count_obj) {
+		VAO.begin();
+		glDrawArraysInstanced(primitive, 0, vertices.size(), count_obj);
+	}
+
+	inline void push_back(const T& vertex) { vertices.push_back(vertex); }
+	inline void clear(){vertices.clear();}
+	ArrayBufferObject VAO;
+	VertexBufferObject VBO;
 	std::vector<T> vertices;
 private:
 };

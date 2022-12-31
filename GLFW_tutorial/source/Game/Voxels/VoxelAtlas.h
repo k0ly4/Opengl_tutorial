@@ -5,6 +5,7 @@
 #include "Graphic/Texture.h"
 #include "System/Exception.h"
 #include "Resource/Shader.h"
+#include "UI/Sprite.h"
 namespace Side2D {
 
 	enum eSide2D :byte
@@ -98,18 +99,19 @@ struct Block {
 class ResourcePack {
 
 public:
+
 	enum eDrawGroup:byte {
 		draw_non =0,
 		draw_opaque,
 		draw_transparent,
 		draw_alpha,
 	};
+
 	enum ePhysics :byte {
 		ph_gas = 0,
 		ph_solid,
 		ph_liquid,
 	};
-
 	const Block& get(Voxel id)const noexcept { return blocks[id.e.id];}
 	//path to json file
 	bool load(const std::string& directory);
@@ -124,6 +126,16 @@ public:
 		texture_.use(0);
 	}
 	const Texture2D& getTexture()const {return texture_;}
+	inline Sprite& getSprite(Voxel id)const {
+		glm::vec2 size = glm::vec2(texture_.getSize());
+		glm::vec2 norm(get(id, Side::top));
+		glm::vec2 pos(
+			glm::vec2(norm.x, 1.f - norm.y - uvSize_) * size
+		);
+		FloatRect rect(pos, glm::vec2((float)sizeVoxel_));
+		icon.setTextureRect(rect);
+		return icon;
+	}
 private:
 
 	inline const glm::vec2& get(twobyte id, int side)const { return uv[blocks[id].idSide[side]];}
@@ -140,7 +152,7 @@ private:
 	size_t voxelInSide;
 	size_t sizeVoxel_;
 	Texture2D texture_;
-
+	mutable Sprite icon;
 };
 
 ///VoxelPack---------------------------
@@ -149,7 +161,8 @@ private:
 /// </summary>
 class VoxPack {
 public:
-	
+	static inline		Sprite& getSprite(Voxel id)			noexcept { return res->getSprite(id);}
+
 	static inline const Block& get(Voxel id)				noexcept { return res->get(id);}
 	static inline const glm::vec2& get(Voxel id, byte side)	noexcept { return res->get(id, side);}
 	static inline const ResourcePack* get()					noexcept { return res; }
@@ -169,7 +182,7 @@ public:
 	static inline bool isActive(Voxel id)					noexcept { return get(id).physGroup == ResourcePack::ph_liquid; }
 
 	static inline void set(const ResourcePack* resource)	noexcept { res = resource;}
-	const static byte maxConcLiquid = 0x07u;
+	const static byte maxConcLiquid = 0x08u;
 private:
 
 	VoxPack() {}

@@ -87,9 +87,6 @@
     <ClCompile Include="source\System\Clock.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
-    <ClCompile Include="source\Resource\ResourceTypes.cpp">
-      <Filter>Исходные файлы\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="source\Resource\FileManager.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
@@ -159,12 +156,6 @@
     <ClCompile Include="source\Scene\Quad.cpp">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="source\Scene\Skybox.cpp">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\Shape.cpp">
-      <Filter>Исходные файлы\Scene\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="source\Math\Matrix.cpp">
       <Filter>Исходные файлы\Math</Filter>
     </ClCompile>
@@ -182,9 +173,6 @@
     </ClCompile>
     <ClCompile Include="source\Resource\FontLoader.cpp">
       <Filter>Исходные файлы\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\Sphere.cpp">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
     <ClCompile Include="source\Game\Voxels\World.cpp">
       <Filter>Исходные файлы\Game</Filter>
@@ -218,9 +206,6 @@
     </ClCompile>
     <ClCompile Include="source\Input\EventModule.cpp">
       <Filter>Исходные файлы\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene\Primitive.cpp">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClCompile>
     <ClCompile Include="source\Game\Voxels\VoxelAtlas.cpp">
       <Filter>Исходные файлы\Game</Filter>
@@ -276,22 +261,22 @@
     <ClCompile Include="source\Game\Interface\GameUi.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="source\UI\UiScene.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Scene\Scene3D.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI\Shape.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\stb_image.h">
       <Filter>Файлы ресурсов\stb</Filter>
     </ClInclude>
-    <ClInclude Include="source\Scene\TypeObject.h">
-      <Filter>Исходные файлы\Scene\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\Shape.h">
-      <Filter>Исходные файлы\Scene\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="source\UI\Sprite.h">
       <Filter>Исходные файлы\Scene\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\DirectionLight.h">
-      <Filter>Исходные файлы\Scene\LightSystem\Light</Filter>
     </ClInclude>
     <ClInclude Include="source\Resource\Buffer.h">
       <Filter>Исходные файлы\Resources</Filter>
@@ -324,9 +309,6 @@
       <Filter>Исходные файлы\Game</Filter>
     </ClInclude>
     <ClInclude Include="source\Resource\Shader.h">
-      <Filter>Исходные файлы\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Resource\ResourceTypes.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
     <ClInclude Include="source\Scene\Transformable.h">
@@ -389,12 +371,6 @@
     <ClInclude Include="source\Scene\Plane.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="source\Scene\DeclaredObjects.h">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\Skybox.h">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
-    </ClInclude>
     <ClInclude Include="source\Scene\Billboard.h">
       <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
@@ -418,9 +394,6 @@
     </ClInclude>
     <ClInclude Include="source\Resource\FontLoader.h">
       <Filter>Исходные файлы\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\Sphere.h">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
     <ClInclude Include="source\Game\Voxels\World.h">
       <Filter>Исходные файлы\Game</Filter>
@@ -448,9 +421,6 @@
     </ClInclude>
     <ClInclude Include="source\Input\EventModule.h">
       <Filter>Исходные файлы\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene\Primitive.h">
-      <Filter>Исходные файлы\Scene\Primitives</Filter>
     </ClInclude>
     <ClInclude Include="source\Resource\FileManager.h">
       <Filter>Исходные файлы\Resources</Filter>
@@ -525,6 +495,18 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="source\Game\Voxels\Declare.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI\UiScene.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scene\Scene3D.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI\Shape.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Resource\ShaderArguments.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

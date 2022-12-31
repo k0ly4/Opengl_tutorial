@@ -216,6 +216,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Scene\Scene3D.cpp" />
     <ClCompile Include="source\Game\Interface\GameUi.cpp" />
     <ClCompile Include="source\Game\Entities\ProcessQueue.cpp" />
     <ClCompile Include="source\Game\Voxels\ChunkMeshQueue.cpp" />
@@ -229,7 +230,6 @@
     <ClCompile Include="source\Game\Light\LightSolver.cpp" />
     <ClCompile Include="source\Game\Light\LightMap.cpp" />
     <ClCompile Include="source\Game\Voxels\Region.cpp" />
-    <ClCompile Include="source\Scene\Primitive.cpp" />
     <ClCompile Include="source\Game\Voxels\ChunkHandle.cpp" />
     <ClCompile Include="source\Game\Lib\Game.cpp" />
     <ClCompile Include="source\Game\Voxels\VoxelAtlas.cpp" />
@@ -271,15 +271,12 @@
     <ClCompile Include="source\Graphic\Render.cpp" />
     <ClCompile Include="source\Graphic\RenderEntity.cpp" />
     <ClCompile Include="source\Graphic\RenderWindow.cpp" />
-    <ClCompile Include="source\Resource\ResourceTypes.cpp" />
     <ClCompile Include="source\Resource\FileManager.cpp" />
     <ClCompile Include="source\Scene\Scene.cpp" />
     <ClCompile Include="source\Resource\Shader.cpp" />
-    <ClCompile Include="source\Scene\Shape.cpp" />
-    <ClCompile Include="source\Scene\Skybox.cpp" />
     <ClCompile Include="source\Game\Entities\Player.cpp" />
-    <ClCompile Include="source\Scene\Sphere.cpp" />
     <ClCompile Include="source\System\LuaFile.cpp" />
+    <ClCompile Include="source\UI\Shape.cpp" />
     <ClCompile Include="source\UI\Sprite.cpp" />
     <ClCompile Include="lib\stb_image.cpp" />
     <ClCompile Include="source\Scene\Text.cpp" />
@@ -289,8 +286,11 @@
     <ClCompile Include="source\Game\Voxels\World.cpp" />
     <ClCompile Include="source\Game\Voxels\SuperRegion.cpp" />
     <ClCompile Include="source\Physics\sPhysics.cpp" />
+    <ClCompile Include="source\UI\UiScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Resource\ShaderArguments.h" />
+    <ClInclude Include="source\Scene\Scene3D.h" />
     <ClInclude Include="source\Game\Interface\GameUi.h" />
     <ClInclude Include="source\Game\Voxels\Declare.h" />
     <ClInclude Include="source\Graphic\Geometry.h" />
@@ -314,7 +314,6 @@
     <ClInclude Include="source\Game\Voxels\ChunkHandle.h" />
     <ClInclude Include="source\Game\Entities\GeneralGameEntity.h" />
     <ClInclude Include="source\Resource\FileManager.h" />
-    <ClInclude Include="source\Scene\Primitive.h" />
     <ClInclude Include="source\Resource\Glyph.h" />
     <ClInclude Include="source\Scene\Billboard.h" />
     <ClInclude Include="source\Game\Voxels\Chunk.h" />
@@ -326,7 +325,6 @@
     <ClInclude Include="source\Graphic\ContextWindow.h" />
     <ClInclude Include="source\Scene\Convex.h" />
     <ClInclude Include="source\Input\Cursor.h" />
-    <ClInclude Include="source\Scene\DeclaredObjects.h" />
     <ClInclude Include="source\Graphic\Drawable.h" />
     <ClInclude Include="source\Input\Event.h" />
     <ClInclude Include="source\Input\EventModule.h" />
@@ -343,7 +341,6 @@
     <ClInclude Include="source\Math\Math.h" />
     <ClInclude Include="source\Resource\Buffer.h" />
     <ClInclude Include="source\Scene\Camera.h" />
-    <ClInclude Include="source\Scene\DirectionLight.h" />
     <ClInclude Include="source\Graphic\Framebuffer.h" />
     <ClInclude Include="source\Game\Lib\GLFW.h" />
     <ClInclude Include="source\Math\Matrix.h" />
@@ -355,13 +352,10 @@
     <ClInclude Include="source\Math\Rects.h" />
     <ClInclude Include="source\Graphic\Render.h" />
     <ClInclude Include="source\Graphic\RenderEntity.h" />
-    <ClInclude Include="source\Resource\ResourceTypes.h" />
     <ClInclude Include="source\Scene\Scene.h" />
     <ClInclude Include="source\Resource\Shader.h" />
-    <ClInclude Include="source\Scene\Shape.h" />
-    <ClInclude Include="source\Scene\Skybox.h" />
     <ClInclude Include="source\Game\Entities\Player.h" />
-    <ClInclude Include="source\Scene\Sphere.h" />
+    <ClInclude Include="source\UI\Shape.h" />
     <ClInclude Include="source\UI\Sprite.h" />
     <ClInclude Include="lib\stb_image.h" />
     <ClInclude Include="source\Scene\Text.h" />
@@ -369,11 +363,11 @@
     <ClInclude Include="source\Graphic\TextureEntity.h" />
     <ClInclude Include="source\Math\Transform.h" />
     <ClInclude Include="source\Scene\Transformable.h" />
-    <ClInclude Include="source\Scene\TypeObject.h" />
     <ClInclude Include="source\Math\Vectors.h" />
     <ClInclude Include="source\Game\Voxels\World.h" />
     <ClInclude Include="source\Game\Voxels\SuperRegion.h" />
     <ClInclude Include="source\Physics\sPhysics.h" />
+    <ClInclude Include="source\UI\UiScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,6 +2,8 @@
 #define PLANE_H
 
 #include "PrimitiveEntity.h"
+#include "Transformable.h"
+#include "Graphic/Drawable.h"
 
 class Plane :public Texturable, public Transformable3D {
    

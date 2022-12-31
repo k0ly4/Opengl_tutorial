@@ -20,19 +20,19 @@ void InputPlayer::moveUpdate(float time) {
 }
 
 void InputPlayer::setVoxel(World& world, bool isModAdd) {
-	if (posCursor == glm::ivec3(0))return;
+	if (cursor.pos == glm::ivec3(0))return;
 
 	if (isModAdd) {
-		glm::ivec3 pos(posCursor + glm::ivec3(normCursor));
-		if (VoxPack::isLiquid(curVoxel)) {
-			curVoxel.e.m1 = VoxPack::maxConcLiquid;
+		glm::ivec3 pos(cursor.pos + glm::ivec3(cursor.norm));
+		if (VoxPack::isLiquid(inventory->get().vox)) {
+			inventory->get().vox.e.m1 = VoxPack::maxConcLiquid;
 		}
-		world.chunks.setVoxel(curVoxel, pos);
-		world.light.addToQueue(pos, curVoxel);
+		world.chunks.setVoxel(inventory->get().vox, pos);
+		world.light.addToQueue(pos, inventory->get().vox);
 	}
 	else {
-		world.chunks.setVoxel(vox::air, posCursor);
-		world.light.addToQueue(posCursor, vox::air);
+		world.chunks.setVoxel(vox::air, cursor.pos);
+		world.light.addToQueue(cursor.pos, vox::air);
 	}
 }
 
@@ -44,7 +44,10 @@ inline void push_line(std::vector<unsigned>& indices,size_t i1,size_t i2) {
 	indices.push_back(i2);
 }
 
-Cursor3D::Cursor3D() {
+Cursor3D::Cursor3D():
+	pos(0),
+	norm(0.f)
+{
 	GlRender::Line::Width(5.f);
 	std::vector<unsigned>& ind = mesh.indices;
 	push_back(mesh, glm::vec3(0.f, 0.f, 0.f));//0
@@ -78,20 +81,15 @@ Cursor3D::Cursor3D() {
 
 	mesh.saveInBuffer();
 }
-void Cursor3D::update(ChunkSectorRender& chunks, InputPlayer& input, const Basis& basis) {
-
+void Cursor3D::rayCast(ChunkSectorRender& chunks, const Basis& basis) {
 	glm::vec3 end;
-
-	if (chunks.rayCast(basis, maxDistanceCursor, end, input.normCursor, input.posCursor) ==0 )
-		input.posCursor = glm::ivec3(0);
-
-	posCursor = glm::vec3(input.posCursor);
+	if (chunks.rayCast(basis, maxDistanceCursor, end, norm, pos) == 0) pos= glm::ivec3(0);
 }
 
 void Cursor3D::draw(RenderTarget& target){
 	const Shader& shader = glShader::get(glShader::color_layout);
 	shader.use();
-	shader.uniform("model", glm::translate(glm::mat4(1.f), posCursor));
+	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(pos)));
 	target.getView()->use(shader);
 	mesh.draw(GlRender::LINES);
 }

@@ -2,7 +2,7 @@
 #define COMMAND_H
 #include "Game/Entities/Player.h"
 
-class Scene;
+class GlobalScene;
 
 //Command------------------------------------------------------------------
 class Command
@@ -27,9 +27,9 @@ namespace com {
 
 	class UpdateMeshChunks :public Command {
 	public:
-		UpdateMeshChunks(Scene* s) :scene(s) {}
+		UpdateMeshChunks(GlobalScene* s) :scene(s) {}
 		void execute(Event& event);
-	private: Scene* scene;
+	private: GlobalScene* scene;
 	};
 
 	namespace pl {
@@ -71,18 +71,18 @@ namespace com {
 
 		class HandCreate :public ComPlayer {
 		public:
-			HandCreate(Player* p, Scene* s) :ComPlayer(p), scene(s) {}
+			HandCreate(Player* p, GlobalScene* s) :ComPlayer(p), scene(s) {}
 			void execute(Event& event);
 		private:
-			Scene* scene;
+			GlobalScene* scene;
 		};
 
 		class HandDestroy:public ComPlayer {
 		public:
-			HandDestroy(Player* p, Scene* s) :ComPlayer(p),scene(s) {}
+			HandDestroy(Player* p, GlobalScene* s) :ComPlayer(p),scene(s) {}
 			void execute(Event& event);
 		private:
-			Scene* scene;
+			GlobalScene* scene;
 		};
 
 	}

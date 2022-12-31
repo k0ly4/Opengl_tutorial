@@ -2,34 +2,33 @@
 
 void Text::initRenderData()
 {
-    convex_[0] = UvVertex(glm::vec3(0.0f, 1.0f, 0.f), glm::vec2(0.f, 1.f));
-    convex_[1] = UvVertex(glm::vec3(0.0f, 0.0f, 0.f), glm::vec2(0.f, 0.f));
-    convex_[2] = UvVertex(glm::vec3(1.0f, 1.0f, 0.f), glm::vec2(1.f, 1.f));
-    convex_[3] = UvVertex(glm::vec3(1.0f, 0.0f, 0.f), glm::vec2(1.f, 0.f));
+    mesh.vertices.resize(4);
+
+    mesh.vertices[0] = {glm::vec3(0.0f, 1.0f, 0.f), glm::vec2(0.f, 1.f)};
+    mesh.vertices[1] = {glm::vec3(0.0f, 0.0f, 0.f), glm::vec2(0.f, 0.f)};
+    mesh.vertices[2] = {glm::vec3(1.0f, 1.0f, 0.f), glm::vec2(1.f, 1.f)};
+    mesh.vertices[3] = {glm::vec3(1.0f, 0.0f, 0.f), glm::vec2(1.f, 0.f)};
+    mesh.saveInBuffer();
 
     bufferMetrica.setMode(GBO::DYNAMIC);
-    auto& VAO = convex_.getVAO();
-    VAO.data_draw.cur_type = DataDraw::DrawArraysInstanced;
-    VAO.begin();
+    mesh.VAO.begin();
     //metrics
     bufferMetrica.begin();
 
-    VAO.attribInstance(2, 4,  sizeof(CharMetrica), 0);
-    VAO.attribInstance(3, 2,  sizeof(CharMetrica), sizeof(glm::vec4));
-    VAO.attribInstanceMat4(4, sizeof(CharMetrica), sizeof(glm::vec4)+sizeof(glm::vec2));
+    mesh.VAO.attribInstance(2, 4,  sizeof(CharMetrica), 0);
+    mesh.VAO.attribInstance(3, 2,  sizeof(CharMetrica), sizeof(glm::vec4));
+    mesh.VAO.attribInstanceMat4(4, sizeof(CharMetrica), sizeof(glm::vec4)+sizeof(glm::vec2));
 }
 
 void Text::draw(const View* view, const Shader& shader) {
-    if (needUpMap ) 
-        upMap();
-  
+    if (modified) solve();
     shader.use();
     view->use(shader);
-    uniformTransform(shader);
-    form_.uniform("style", shader);
-    outline_.uniform("outline", shader);
-    map_.getTexture().use(0);
-    convex_.draw();
+    shader.uniform("model", transform.matrix());
+    style.uniform("style", shader);
+    outline.uniform("outline", shader);
+    map_->getTexture().use(0);
+    mesh.drawArrayInstanced(GlRender::TRIANGLES_STRIP, charBuffer.size());
 }
 
 glm::vec4 Text::getGlyphRect(const Glyph& glyph)const {
@@ -41,46 +40,34 @@ glm::vec4 Text::getGlyphRect(const Glyph& glyph)const {
     return rect.vec4();
 }
 
-size_t Text::getSize(const std::wstring& str) {
-    size_t result = 0;
-    for (size_t i = 0; i < str.size(); i++) {
-        if (str[i] == '\n')continue;
-        result++;
-    }
-    return result;
-}
-
-void Text::upMap() {
-
-    charData_.resize(getSize(strUnicode));
-    convex_.getVAO().data_draw.data.count_object = charData_.size();
-
+void Text::solve() {
+    modified = 0;
+    charBuffer.resize(getSize(strUnicode));
+ 
     glm::vec2 pos(0.f);
     size_t index = 0;
-
-    std::map<size_t, Glyph>& glyphs = map_.getGlyphs();
-    size_t originLineY = map_.getOriginLine();
+    Glyphs& glyphs = map_->metrics;
+    size_t originLineY = map_.originLine();
 
     for (size_t i = 0; i < strUnicode.size(); i++) {
 
         if (strUnicode[i] == '\n') {
             //next line
-            pos.y += (float)map_.getSizeFont();
+            pos.y += (float)map_.sizeFont();
             pos.x = 0.f;
             continue;
         }
 
         Glyph& glyph = glyphs[strUnicode[i]];
 
-        charData_[index].size = glyph.size;
-        charData_[index].rect = getGlyphRect(glyph);
-        charData_[index].model = glm::translate(glm::mat4(1.f), glm::vec3(pos + getLocalPos(glyph, (float)originLineY), 0.f));
+        charBuffer[index].size = glyph.size;
+        charBuffer[index].rect = getGlyphRect(glyph);
+        charBuffer[index].model = glm::translate(glm::mat4(1.f), glm::vec3(pos + getLocalPos(glyph, (float)originLineY), 0.f));
         //to right
         pos.x += (float)glyph.advantage;
         //step charData_
         index++;
     }
 
-    upBuffer();
-    needUpMap = 0;
+    upBufferMetrica();
 }

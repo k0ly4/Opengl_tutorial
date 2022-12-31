@@ -33,7 +33,7 @@ private:
 class sCommandHandler {
 public:
 
-	static void init(InputHandler& input, Scene* scene, Player* player);
+	static void init(InputHandler& input, GlobalScene* scene, Player* player);
 
 private:
 

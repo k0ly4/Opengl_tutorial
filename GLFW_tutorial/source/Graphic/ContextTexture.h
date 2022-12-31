@@ -1,6 +1,6 @@
 #ifndef CONTEXT_TEXTURE_H
 #define CONTEXT_TEXTURE_H
-#include "Resource/ResourceTypes.h"
+#include "Graphic/TextureEntity.h"
 
 class glTexture {
 

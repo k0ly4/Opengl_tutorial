@@ -21,17 +21,16 @@ public:
 	generated = 1;
 	is_init_light = 0;*/
 	inline void generate()noexcept {
-		modify();
-		generated = 1;
 		is_init_light = 0;
+		generated = 1;
 	}
 	//generated = 0
 	inline void offInit()noexcept { generated = 0;}
 	/*modify();
 	is_init_light = 1;*/
 	inline void initLight()noexcept {
-		is_init_light = 1;
 		modify();
+		is_init_light = 1;
 	}
 	/// modifiedAlpha = 1; 
 	inline void modifyAlpha() { modifiedAlpha=1; }
@@ -85,7 +84,10 @@ public:
 		}
 
 		inline void clear() { for (size_t i = 0; i < Side2D::NuN; i++) chunks[i] = nullptr;}
-		inline void modify(size_t index) { if (chunks[index]) chunks[index]->flag.modify(); }
+
+		inline void modify(size_t index)		{ if (chunks[index]) chunks[index]->flag.modify(); }
+		inline void modifyAlpha(size_t index)	{ if (chunks[index]) chunks[index]->flag.modifyAlpha(); }
+
 		inline void modify() { for (size_t i = 0; i < Side2D::NuN; i++) modify(i);}
 		inline gChunk*& operator [](size_t i) noexcept { return chunks[i]; }
 		inline void modify(size_t x, size_t y) {
@@ -104,16 +106,34 @@ public:
 			else if (	top &&	left)modify(Side2D::left_top);
 			else if (	bottom && right)modify(Side2D::right_bottom);
 			else if (	bottom && left)modify(Side2D::left_bottom);
-	}
+		}
+		inline void modifyAlpha(size_t x, size_t y) {
+			bool right = (x == CHUNK_W - 1);
+			bool left = (x == 0);
+			bool top = (y == CHUNK_D - 1);
+			bool bottom = (y == 0);
+
+			if (right)					modifyAlpha(Side2D::right);
+			else if (left)				modifyAlpha(Side2D::left);
+
+			if (top)					modifyAlpha(Side2D::top);
+			else if (bottom)			modifyAlpha(Side2D::bottom);
+
+			if (top && right)			modify(Side2D::right_top);
+			else if (top && left)		modifyAlpha(Side2D::left_top);
+			else if (bottom && right)	modifyAlpha(Side2D::right_bottom);
+			else if (bottom && left)	modifyAlpha(Side2D::left_bottom);
+		}
+
 		
 	private:
 		gChunk* chunks[Side2D::NuN];
 	};
 
 	struct SortableVoxel {
-		glm::uvec3 pos;
+		size_t ind;
 		size_t d;
-		SortableVoxel(const glm::uvec3& pos_) :pos(pos_) {}
+		SortableVoxel(size_t ind_) :ind(ind_){}
 		SortableVoxel() {}
 	};
 
@@ -136,7 +156,15 @@ public:
 	/// <summary>
 	/// »змен€ет заданный в глобальных кординатах coord воксель, устанавлива€ себе и 6 ближайшим чанкам modified в true
 	/// </summary>
-	bool setVoxel(Voxel vx, glm::uvec3 coord);
+	void setVoxelLocal(Voxel vx, const glm::uvec3& coord);
+	bool setVoxel(Voxel vx, glm::uvec3 coord) {
+		coord = coord - bg_vox;
+		if (voxs.is(coord)) {
+			setVoxelLocal(vx, coord);
+			return 1;
+		}
+		return 0;
+	}
 
 	inline byte getLight(const glm::uvec3& local, int channel_)		const{	return voxs.is(local) ? lightMap.get(local, channel_) : 0;}
 	inline byte getLight(size_t x,size_t y,size_t z, int channel_)	const { return getLight(glm::uvec3(x, y, z), channel_);}
@@ -158,8 +186,11 @@ public:
 
 protected:
 	glm::ivec3 posView_;
-	std::vector<SortableVoxel> sort_vox;
-
+	std::vector<SortableVoxel> s_vox;
+	inline void upSortVox() {
+		s_vox.clear();
+		for (size_t i = 0; i < voxs.size(); i++) if (VoxPack::isAlpha(voxs[i])) s_vox.push_back(i);
+	}
 	static inline bool isFree(Voxel targ, byte drawGroup) { return !VoxPack::isRender(targ) || (VoxPack::get(targ).drawGroup != drawGroup);}
 	inline bool isFree(int x, int y, int z, byte drawGroup)noexcept {
 		///Local test
@@ -238,7 +269,6 @@ public:
 private:
 
 	glm::ivec3 posView_;
-	std::vector<SortableVoxel> sort_vox;
 
 	unsigned char LIGHT(int x, int y, int z, int channel) {
 		
@@ -250,7 +280,7 @@ private:
 	inline unsigned char LIGHT(const glm::ivec3& coord, int channel) {LIGHT(coord.x, coord.y, coord.z, channel);}
 
 	glm::vec4 getFastLight(int x, int y, int z);
-
+	
 	void getLightTop(int x, int y, int z,		LightFace& face);
 	void getLightBottom(int x, int y, int z,	LightFace& face);
 	void getLightRight(int x, int y, int z,		LightFace& face);

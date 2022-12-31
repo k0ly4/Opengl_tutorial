@@ -2,14 +2,14 @@
 #define S_PHYSICS_H
 
 #include "PhysicsSolver.h"
-class Scene;
+class GlobalScene;
 
 class PhysicsModule {
 public:
 
 	PhysicsModule() {}
-	void init(Scene& scene);
-	void update(float time, Scene& scene);
+	void init(GlobalScene& scene);
+	void update(float time, GlobalScene& scene);
 
 private:
 

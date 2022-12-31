@@ -216,6 +216,8 @@ void glShader::init() {
     shader.resize(shader_size);
     //2d
     shader[shape].loadDirectory("shaders\\2d\\shape\\");
+    shader[convex2d].loadDirectory("shaders\\2d\\convex\\");
+    setup(texture_2d, "shaders\\2d\\texture\\", 0, Uniform<int>("diffuse", 0));
 
     setup(text,"shaders\\3d\\text\\", 0, Uniform<int>("glyph", 0));
     //3d
@@ -253,6 +255,7 @@ void glShader::init() {
 
     //frame
     setup(frame_exposure, "shaders\\framebuffer\\exposure\\", 0, Uniform<int>("image", 0));
+    setup(frame, "shaders\\framebuffer\\forward\\", 0, Uniform<int>("image", 0));
     setup(red, "shaders\\light\\shadow\\display\\default\\", 0, Uniform<int>("image", 0));
     setup(red_array, "shaders\\light\\shadow\\display\\array_texture\\", 0, Uniform<int>("image", 0));
     setup(font, "shaders\\framebuffer\\font\\", 0, Uniform<int>("glyph", 0));

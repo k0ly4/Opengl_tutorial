@@ -48,6 +48,10 @@ bool ResourcePack::load(const std::string& directory) {
 	voxelInSide = texture_.getSize().x / sizeVoxel_;
 	uv.resize(voxelInSide * voxelInSide);
 	for (size_t i = 0; i < uv.size(); i++) uv[i] = getUV(i);
+
+	icon.setTexture(VoxPack::get()->getTexture());
+	icon.transform.setPosition(glm::vec2(0.f));
+	icon.transform.setScale(2.f, 2.f);
 	return 1;
 }
 

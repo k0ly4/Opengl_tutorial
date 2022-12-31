@@ -6,17 +6,17 @@ namespace com {
 
 	
 	void UpdateMeshChunks::execute(Event& event) {
-		ChunkPtrs& chunks = scene->world.chunks.chunks();
+		ChunkPtrs& chunks = scene->sc3d.world.chunks.chunks();
 		for (size_t i = 0; i < chunks.size(); i++) chunks[i]->flag.modify();
 	}
 	namespace pl {
 		void SwitchBlock::execute(Event& event) {
 			if (event.mouseScroll.yOffset > 0) {
-				if (player->input.curVoxel.e.id < vox::size-1)
-				player->input.curVoxel.e.id++;
+				if (player->inventory.get().vox.e.id < vox::size - 1)
+				player->inventory.get().vox.e.id++;
 			}
-			else if(player->input.curVoxel.e.id >0)
-				player->input.curVoxel.e.id--;
+			else if(player->inventory.get().vox.e.id >0)
+				player->inventory.get().vox.e.id--;
 
 		}
 		void Jump::execute(Event& event) {
@@ -41,13 +41,13 @@ namespace com {
 		
 		void HandCreate::execute(Event& event) {
 			if (event.type == Event::MouseButtonPressed) {
-				player->input.setVoxel(scene->world, 1);
+				player->input.setVoxel(scene->sc3d.world, 1);
 			}
 		}
 
 		void HandDestroy::execute(Event& event) {
 			if (event.type == Event::MouseButtonPressed) {
-				player->input.setVoxel(scene->world, 0);
+				player->input.setVoxel(scene->sc3d.world, 0);
 			}
 		}
 

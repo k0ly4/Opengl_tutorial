@@ -19,7 +19,7 @@ public:
         filter.setExposure(2.2f);
     }
     void initialize(RenderWindow& window);
-    void render(RenderWindow& window, Scene& scene, EventModule& event);
+    void render(RenderWindow& window, GlobalScene& scene, EventModule& event);
     void setBufferFrameSize(const glm::ivec2& size) {
         frame.setSize(size);
         ui.create(size);

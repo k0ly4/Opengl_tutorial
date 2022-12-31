@@ -8,10 +8,17 @@
 class Debugger {
 public:
 
-    static void display(const Texture2D& texture) {
+    static void displayExposure(const Texture2D& texture, float exp) {
         const Shader& shader = glShader::get(glShader::frame_exposure);
         shader.use();
-        shader.uniform("exposure", exposure);
+        shader.uniform("exposure", exp);
+        texture.use(0);
+        sBuffer::quad->getVAO().draw();
+    }
+
+    static void display(const Texture2D& texture) {
+        const Shader& shader = glShader::get(glShader::frame);
+        shader.use();
         texture.use(0);
         sBuffer::quad->getVAO().draw();
     }

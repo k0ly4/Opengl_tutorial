@@ -59,7 +59,7 @@ void InputHandler::solveScroll(Event& event) {
 	command[mScroll]->execute(event);
 }
 
-void sCommandHandler::init(InputHandler& input,Scene* scene, Player* player) {
+void sCommandHandler::init(InputHandler& input, GlobalScene* scene, Player* player) {
 	
 	input.command[input.kA] =		new com::pl::Left(player);
 	input.command[input.kD] =		new com::pl::Right(player);

@@ -14,25 +14,18 @@ class EventModule {
 public:
 
     struct TempFlags {
-        size_t cur_animation = 0;
-        int shadow_level = 0;
-        bool shadow_view = 0;
-        int cur_bone = 0;
-        int mode_bone = 0;
-        bool rawMotionCursor = 0;
         bool checkCollision = 0;
-        bool debugGbuffer = 0;
-        float zMult = 10.f;
-        bool debugCascadeShadow = 0;
+        bool showUi = 1;
+        bool showDebugInfo = 1;
     }f;
 
-    void initialize(Scene& scene);
+    void initialize(GlobalScene& scene);
 
-    void update(float time, RenderWindow& window, GraphicPipeline& graphic, Scene& scene);
+    void update(float time, RenderWindow& window, GraphicPipeline& graphic, GlobalScene& scene);
 
 private:
 
-    void inputDisabledCursor(Event& event, Scene& scene, GraphicPipeline& graphic);
+    void inputDisabledCursor(Event& event, GlobalScene& scene, GraphicPipeline& graphic);
 	Event event;
     InputHandler inputMain;
 };

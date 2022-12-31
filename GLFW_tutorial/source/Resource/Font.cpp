@@ -48,7 +48,6 @@ MapGlyph& Font::getMapGlyphs(size_t size_char) {
 bool Font::load(const std::string& path) {
     if (path == path_) return 1;
     path_ = path;
-
     face_ = FontLoader::get(path);
     return face_ != 0;
 }

@@ -3,17 +3,8 @@
 
 #include "Resource/buffer.h"
 #include "Graphic/Render.h"
+#include "Graphic/TextureEntity.h"
 
-
-/// <summary>
-/// RenderScene
-/// </summary>
-class RenderScene {
-public:
-    virtual void inGBuffer(RenderTarget& target) = 0;
-    virtual void inShadowMap(RenderTarget& target, glShader::Object shader) = 0;
-    virtual void inUI(RenderTarget& target) = 0;
-};
 
 /// <summary>
 /// FrameBuffer

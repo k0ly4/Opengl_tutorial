@@ -1,7 +1,7 @@
 #ifndef RENDER_ENTITY_H
 #define RENDER_ENTITY_H
 
-#include "Scene/TypeObject.h"
+#include "Graphic/Drawable.h"
 
 /// <summary>
 /// GeneralRender

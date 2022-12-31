@@ -3,6 +3,6 @@
 
 class EventModule;
 class GraphicPipeline;
-class Scene;
+class GlobalScene;
 
 #endif

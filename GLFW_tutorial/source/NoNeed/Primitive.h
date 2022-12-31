@@ -1,8 +1,9 @@
 
 #ifndef PRIMITIVE_H
 #define PRIMITIVE_H
-#include "Sphere.h"
 
+#include "Transformable.h"
+#include "Graphic/Drawable.h"
 ///////Cube--------------------------------------------
 class Cube :public Transformable3D, public Drawable{
 

@@ -56,7 +56,7 @@ private:
     void setupWindow() {
 
         window.create(sSetup::render_size, sSetup::title);
-        window.setView(scene.camera);
+        window.setView(scene.sc3d.camera);
 
         ImageLoader::flipVerticallyOnLoad(false);
         auto resource = ImageLoader::getSTBI("asset\\image\\favor.jpg", 4);
@@ -67,12 +67,14 @@ private:
         GlRender::setClearColor(Color::ColorU(150, 199, 196));
 
     }
+
     ProcessQueue procQueue;
-    Scene scene;
+    GlobalScene scene;
     GraphicPipeline graphic;
     EventModule event;
     PhysicsModule physics;
     Clock clock;
     std::thread* thread_render;
+
 };
 #endif
