@@ -49,7 +49,7 @@ public:
 	}
 
 private:
-
+	//bool checkCur(SortableChunks& sBuff);
 	void step();
 	byte isSync = eWait;
 	ChunkSectorRender* target;

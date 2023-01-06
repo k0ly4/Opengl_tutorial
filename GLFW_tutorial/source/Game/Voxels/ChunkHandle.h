@@ -10,7 +10,7 @@
 /// <summary>
 ///  
 /// </summary>
-class ChunkSectorRender :public Drawable/*, public uniListener<Chunk>*/{
+class ChunkSectorRender :public Drawable, public uniListener<Chunk>/*, public uniListener<Chunk>*/{
 	
 public:
 
@@ -57,12 +57,15 @@ public:
 	
 
 	inline void draw(const View* view, const Shader& shader) {
+		if (ch_sort.size() == 0)return;
+		//if (ch_sort[0].ch->flag.isModified()&& ch_sort[0].ch->flag.isInitLight()) ch_sort[0].ch->buildMesh();
+		//ch_sort[0].ch->buildSortMesh(viewPos_);
 		shader.use();
 		view->useVP(shader);
 		VoxPack::get()->use(shader);
-		for (int i = ch_sort.size() - 1; i > -1; i--)  ch_sort[i].ch->drawOpaqueMesh(shader);
-		for (int i = ch_sort.size()-1; i >-1; i--) ch_sort[i].ch->drawSortMesh(shader);
 
+		for (int i = ch_sort.size() - 1; i > -1; i--)	ch_sort[i].ch->drawOpaqueMesh(shader);
+		for (int i = ch_sort.size()-1; i > -1; i--)		ch_sort[i].ch->drawSortMesh(shader);
 	}
 
 	void setVoxel(const Voxel&, const glm::ivec3& coord);

@@ -57,6 +57,7 @@ private:
 
 	void step(Hitbox& hibox);
 	void step_world();
+	
 	void modelingLuqid(size_t index, Voxels& voxs, Chunk* chunk);
 	glm::vec3 gravity;
 

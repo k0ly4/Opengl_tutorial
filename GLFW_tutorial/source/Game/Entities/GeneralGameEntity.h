@@ -40,8 +40,8 @@ struct Voxel {
 	Voxel():e(0,0,0) {}
 };
 
-static bool operator==(const Voxel& left, const Voxel& right) {return (right.e.id== left.e.id);}
-static bool operator!=(const Voxel& left, const Voxel& right) { return (right.e.id != left.e.id); }
+static bool operator==(const Voxel& left, const Voxel& right) {return (right.id_== left.id_);}
+static bool operator!=(const Voxel& left, const Voxel& right) { return (right.id_ != left.id_); }
 namespace vox {
 
 	enum TypeVoxel :short

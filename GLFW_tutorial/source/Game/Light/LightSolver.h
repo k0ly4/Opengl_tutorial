@@ -5,7 +5,7 @@
 
 
 class LightSolver {
-	
+
 public:
 
 	LightSolver() {}
@@ -16,7 +16,7 @@ public:
 		chunks = chunks_;
 		channel = channel_;
 	}
-	void add(const glm::ivec3& pos);
+	void add(const glm::ivec3& pos){ add(pos, chunks->getChannelLight(pos, channel)); }
 	inline void add(int x, int y, int z) { add(glm::ivec3(x, y, z)); }
 	void add(const glm::ivec3& pos, byte emission);
 	inline void add(int x, int y, int z, byte emission) { add(glm::ivec3(x, y, z), emission); }

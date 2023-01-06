@@ -9,7 +9,7 @@ void UiScene::init(RenderWindow& window) {
 
 	texError.wrap(TextureWrap::ClampToEdge);
 
-	gameUi.init(&main->player);
+	gameUi.init(&main->player,&main->world);
 }
 void UiScene::inRender(RenderTarget& target) {
 	target.setView(view2D);

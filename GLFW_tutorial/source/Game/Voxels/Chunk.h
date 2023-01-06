@@ -296,6 +296,7 @@ private:
 	void buildBackFace(		ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize);
 
 	friend class ChunkMeshQueue;
+	friend class ChunkSectorRender;
 	void buildBox(			ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
 	void buildSortBox(		ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
 	void build—rossroad(	ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);

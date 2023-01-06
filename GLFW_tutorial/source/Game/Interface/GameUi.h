@@ -2,7 +2,7 @@
 #define GAME_UI_H
 
 #include "UI/Sprite.h"
-#include "Game/Voxels/VoxelAtlas.h"
+#include "Game/Voxels/World.h"
 #include "Game/Entities/Player.h"
 #include "UI/Shape.h"
 #include "Scene/Text.h"
@@ -12,16 +12,19 @@ class GameUi
 {
 public:
 	GameUi():player(0) {}
-	 void init(Player* player_);
+	 void init(Player* player_,World* world_);
 	inline void draw(RenderTarget& target) {
 		drawDebugInfo(target);
 	}
 	
 private:
-	glm::vec2 beg = { 10.f,10.f };
+	World*world;
+	glm::vec2 beg = { 0.f,0.f };
+	std::wstring info;
 	Font font;
 	Text text;
 	void drawDebugInfo(RenderTarget& target);
 	Player* player;
+	RectangleShape back;
 };
 #endif

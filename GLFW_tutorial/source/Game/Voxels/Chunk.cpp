@@ -273,6 +273,7 @@ void  Chunk::buildSortMesh(glm::ivec3 pos) {
 	flag.modifiedAlpha = 0;
 	posView_ = pos;
 	//Math distance
+	std::vector<SortableVoxel> s_vox = this->s_vox;
 	for (size_t i = 0; i < s_vox.size(); i++) {
 		glm::ivec3 pos(voxs.coord(s_vox[i].ind));
 		s_vox[i].d = (
@@ -298,7 +299,7 @@ void  Chunk::buildSortMesh(glm::ivec3 pos) {
 }
 
 void Chunk::drawOpaqueMesh(const Shader& shader) {
-	if (mesh_.needUpBuffer)
+	if ((flag.modified == 0) && mesh_.needUpBuffer)
 	{
 		mesh_.needUpBuffer = 0;
 		mesh_.saveInBuffer();
@@ -308,7 +309,7 @@ void Chunk::drawOpaqueMesh(const Shader& shader) {
 }
 
 void Chunk::drawSortMesh(const Shader& shader) {
-	if (mesh_sort.needUpBuffer)
+	if ((flag.modified == 0) && (flag.modifiedAlpha == 0) && mesh_sort.needUpBuffer)
 	{
 		mesh_sort.needUpBuffer = 0;
 		mesh_sort.saveInBuffer();
