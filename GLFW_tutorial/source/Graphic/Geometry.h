@@ -27,10 +27,11 @@ public:
 		VBO.data(vertices);
 		EBO.begin();
 		EBO.data(indices);
+		size_vertex_to_draw = indices.size();
 		T::attrib(VAO);
 		VAO.end();
 		EBO.end();
-		size_vertex_to_draw = indices.size();
+		
 	}
 
 	inline void draw() {

@@ -27,12 +27,12 @@ void InputPlayer::setVoxel(World& world, bool isModAdd) {
 		if (VoxPack::isLiquid(inventory->get().vox)) {
 			inventory->get().vox.e.m1 = VoxPack::maxConcLiquid;
 		}
-		world.chunks.setVoxel(inventory->get().vox, pos);
 		world.light.addToQueue(pos, inventory->get().vox);
+		world.chunks.setVoxel(inventory->get().vox, pos);
 	}
 	else {
-		world.chunks.setVoxel(vox::air, cursor.pos);
 		world.light.addToQueue(cursor.pos, vox::air);
+		world.chunks.setVoxel(vox::air, cursor.pos);
 	}
 }
 

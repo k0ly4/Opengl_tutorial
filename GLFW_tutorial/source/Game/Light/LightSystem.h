@@ -34,13 +34,16 @@ private:
 
 	inline void solveQueue() {
 		while (queue.size()) {
-			Mods cur = queue.front();
-			if (VoxPack::isOpaque(cur.vox) == 0) remove(cur.pos);
-			else add(cur.pos, cur.vox);
+			Mods cur(queue.front());
 			queue.pop();
+			//если прозрачный 
+			if (		VoxPack::isOpaque(cur.vox)==0)		remove(cur.pos);
+			else	add(cur.pos, cur.vox);
 		}
 	}
+	//Для эмиссионных и непрозрачных
 	void add(const glm::ivec3& pos, Voxel voxel);
+	//Для прозрачных
 	void remove(const glm::ivec3& pos);
 
 	inline void handleEvent(int id, Chunk* value) {

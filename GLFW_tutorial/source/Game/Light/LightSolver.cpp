@@ -1,18 +1,17 @@
 #include "LightSolver.h"
-
-void LightSolver::add(const glm::ivec3& pos, unsigned char emission) {
-	if (emission <= 1) return;
+//Добавляем эмиссию(emission > 1)
+void LightSolver::add(const glm::ivec3& pos, byte emission) {
+	if (emission < 2) return;
 	Chunk* chunk = chunks->getByVoxel(pos);
 	LightUint8 entry(pos, emission);
 	addqueue.push(entry);
 	chunk->setLightGlobal(entry, channel);
 }
-
+//Обнуляем
 void LightSolver::remove(const glm::ivec3& pos) {
 	Chunk* chunk = chunks->getByVoxel(pos.x, pos.y,pos.z);
-	//if (chunk == nullptr) return;
-	unsigned char light = chunk->getLightGlobal(pos, channel);
-	if (light == 0) return;
+	byte light = chunk->getLightGlobal(pos, channel);
+	//if (light == 0) return;
 	remqueue.push(LightUint8(pos, light));
 	chunk->setLightGlobal(LightUint8(pos,0), channel);
 }
@@ -33,13 +32,13 @@ void LightSolver::solve() {
 		remqueue.pop();
 
 		for (size_t i = 0; i < 6; i++) {
-			glm::uvec3 pos = glm::ivec3(entry.pos) + coords[i];
+			glm::uvec3 pos(glm::ivec3(entry.pos) + coords[i]);
 			Chunk* chunk = chunks->getByVoxel(pos);
 			if (chunk == 0) continue;
-			unsigned char light = chunks->getChannelLight(pos, channel);
 
-			if (light > entry.light+1) addqueue.push(LightUint8(pos,light));
-			else if ((light != 0) && (light == entry.light - 1)) {
+			byte light = chunks->getChannelLight(pos, channel);
+			if (light >= entry.light) addqueue.push(LightUint8(pos,light));
+			else if ((light!=0) && (light == entry.light - 1)) {
 				remqueue.push(LightUint8(pos, light));
 				chunk->setLightGlobal(LightUint8(pos, 0), channel);
 			}
@@ -50,18 +49,17 @@ void LightSolver::solve() {
 	while (!addqueue.empty()) {
 		LightUint8 entry(addqueue.front());
 		addqueue.pop();
-		if (entry.light <= 1)
-			continue;
+		if (entry.light == 0) continue;
 
 		for (size_t i = 0; i < 6; i++) {
-			glm::ivec3 pos = glm::ivec3(entry.pos) + coords[i];
+			glm::uvec3 pos(glm::ivec3(entry.pos) + coords[i]);
 			Chunk* chunk = chunks->getByVoxel(pos);
 			if (chunk == 0) continue;
 
 			const Voxel* v = chunks->getVoxel(pos);
-			if (VoxPack::isOpaque(*v) == 0 &&
-				chunks->getChannelLight(pos, channel) + 1 < entry.light) {
-
+			byte light = chunks->getChannelLight(pos, channel);
+			if (light > entry.light + 1) addqueue.push(LightUint8(pos,light));
+			else if ((VoxPack::isOpaque(*v) == 0)&& (light + 1 < entry.light)) {
 					LightUint8 outer(pos, entry.light - 1);
 					addqueue.push(outer);
 					chunk->setLightGlobal(outer, channel);

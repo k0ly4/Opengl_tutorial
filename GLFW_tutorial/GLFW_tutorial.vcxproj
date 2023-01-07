@@ -216,6 +216,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Math\Vectors.cpp" />
     <ClCompile Include="source\Scene\Scene3D.cpp" />
     <ClCompile Include="source\Game\Interface\GameUi.cpp" />
     <ClCompile Include="source\Game\Entities\ProcessQueue.cpp" />
@@ -287,6 +288,7 @@
     <ClCompile Include="source\Game\Voxels\SuperRegion.cpp" />
     <ClCompile Include="source\Physics\sPhysics.cpp" />
     <ClCompile Include="source\UI\UiScene.cpp" />
+    <ClCompile Include="source\Game\Entities\WeatherHandle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Resource\ShaderArguments.h" />
@@ -368,6 +370,7 @@
     <ClInclude Include="source\Game\Voxels\SuperRegion.h" />
     <ClInclude Include="source\Physics\sPhysics.h" />
     <ClInclude Include="source\UI\UiScene.h" />
+    <ClInclude Include="source\Game\Entities\WeatherHandle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

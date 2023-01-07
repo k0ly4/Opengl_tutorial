@@ -1,6 +1,6 @@
 #ifndef CHUNK_HANDLE_H
 #define CHUNK_HANDLE_H
-
+#include "Game/Entities/WeatherHandle.h"
 #include "Game/Entities/Observer.h"
 #include "Region.h"
 #include "Game/Voxels/SuperRegion.h"
@@ -63,7 +63,8 @@ public:
 		shader.use();
 		view->useVP(shader);
 		VoxPack::get()->use(shader);
-
+		shader.uniform("color_factor", weather->getSunFactor());
+		shader.uniform("ambient", 0.015f);
 		for (int i = ch_sort.size() - 1; i > -1; i--)	ch_sort[i].ch->drawOpaqueMesh(shader);
 		for (int i = ch_sort.size()-1; i > -1; i--)		ch_sort[i].ch->drawSortMesh(shader);
 	}
@@ -106,7 +107,7 @@ public:
 	inline size_t size()const {				return size_; }
 	const glm::uvec2& getBegin()const {		return begCh_; }
 	ChunkPtrs& chunks() {					return chunks_;}
-
+	WeatherHandle* weather;
 private:
 
 	void upChunks_sort();
@@ -128,7 +129,7 @@ private:
 
 	glm::uvec2 viewCh_;
 	glm::ivec3 viewPos_;
-
+	
 	SupReg* region_;
 };
 #endif

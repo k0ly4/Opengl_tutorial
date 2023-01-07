@@ -1,6 +1,10 @@
 #include "PhysicsSolver.h"
-
+#include "Scene/Scene.h"
 #define E 0.03f
+void PhysicsSolver::init(GlobalScene* scene_) {
+	scene = scene_;
+	world = &scene->sc3d.world;
+}
 
 void PhysicsSolver::step(Hitbox& hitbox) {
 	
@@ -105,7 +109,7 @@ void PhysicsSolver::step(Hitbox& hitbox) {
 }
 
 
-glm::ivec3 dist[] = {
+glm::ivec3 off[] = {
 		{-1,0,0 },
 		{1,0,0 },
 		{0,0,-1 },
@@ -119,23 +123,15 @@ inline bool isFree(Voxel dest, Voxel source) {
 	return !((dest.id_ == source.id_) && (dest.e.m1 >= source.e.m1 - 1));
 }
 void spreadLiquid(Voxel src, Voxels& voxs, Chunk* chunk,const glm::ivec3& local) {
-	for (size_t k = 0; k < 4; k++) {
-		Voxel* dst = voxs.get(local + dist[k]);
-		if ((dst == 0) || VoxPack::isSolid(*dst)) continue;
-		if (src.e.id == dst->e.id) {
-			if (src.e.m1 > dst->e.m1+1)
-				chunk->setVoxel(Voxel(src.id_, dst->e.m1+1), local + dist[k] + glm::ivec3(chunk->voxelPos()));
+	if (src.e.m1 > 0)
+		for (size_t k = 0; k < 4; k++) {
+			Voxel* dst = voxs.get(local + off[k]);
+			if (dst && VoxPack::isGas(*dst))
+				chunk->setVoxel(Voxel(src.id_, 0), local + off[k] + glm::ivec3(chunk->voxelPos()));
 		}
-		else if(src.e.m1>0) chunk->setVoxel(Voxel(src.id_, 0), local + dist[k] + glm::ivec3(chunk->voxelPos()));
-	}
-
 	//if top
-	Voxel* dst = voxs.get(local + dist[5]);
-	if ((dst == 0) || VoxPack::isSolid(*dst)) return;
-	if (src.e.id == dst->e.id) {
-		if (VoxPack::maxConcLiquid > dst->e.m1+1) chunk->setVoxel(Voxel(src.id_, dst->e.m1 + 1), local + dist[5] + glm::ivec3(chunk->voxelPos()));
-	}
-	else if (src.e.m1 > 0) chunk->setVoxel(Voxel(src.id_, 0), local + dist[5] + glm::ivec3(chunk->voxelPos()));
+	Voxel* dst = voxs.get(local + off[5]);
+	if (dst && VoxPack::isGas(*dst)) chunk->setVoxel(Voxel(src.id_, 0), local + off[5] + glm::ivec3(chunk->voxelPos()));
 }
 
 void PhysicsSolver::modelingLuqid(size_t i,Voxels& voxs, Chunk* chunk) {
@@ -146,17 +142,28 @@ void PhysicsSolver::modelingLuqid(size_t i,Voxels& voxs, Chunk* chunk) {
 		spreadLiquid(src, voxs, chunk, local);
 		return;
 	}
-	for (size_t k = 0; k < 5; k++) {
-		if (isSource(i, local + dist[k], voxs)) {
-			spreadLiquid(src, voxs, chunk, local);
-			return;
-		}
+	byte m1 =0;
+	for (size_t k = 0; k < 4; k++) {
+		const Voxel* targ = voxs.get(local + off[k]);
+		if(targ && isSource(voxs[i], *targ)&& targ->e.m1>m1) m1 = targ->e.m1;
 	}
-	//source is not exist
-	//to air
-	if (src.e.m1 == 0) chunk->setVoxelLocal(vox::air, local);
-	//else decrement m1
-	else chunk->setVoxelLocal(Voxel(src.e.id, src.e.m1 - 1), local);
+	const Voxel* targ = voxs.get(local + off[5]);
+	if (targ && (targ->e.id == voxs[i].e.id)) m1 = VoxPack::maxConcLiquid - 1;
+	if (m1 == 0) {
+		//source is not exist
+		//to air
+		for (size_t k = 0; k < 6; k++) {
+			glm::ivec3 pos(local + off[k]);
+			if (voxs.is(pos)) chunk->nonStatic.insert(voxs.ind(pos));
+		}
+		if (src.e.m1 == 0) chunk->setVoxelLocal(vox::air, local);
+		//else decrement m1
+		else chunk->setVoxelLocal(Voxel(src.e.id, src.e.m1 - 1), local);
+	}
+	else {
+		if(m1> src.e.m1+1) chunk->setVoxelLocal(Voxel(src.e.id, src.e.m1 +1), local);
+		spreadLiquid(src, voxs, chunk, local);
+	}
 }
 
 void PhysicsSolver::step_world() {
@@ -164,13 +171,17 @@ void PhysicsSolver::step_world() {
 	ChunkPtrs& chunks = world->chunks.chunks();
 	for (size_t j = 0; j < chunks.size(); j++) {
 		Voxels& voxs = chunks[j]->voxels();
-		ContainerNonStaticVoxel buffer = chunks[j]->nonStatic;
-		for (size_t i : buffer.voxs_) {
+		std::set<size_t> buffer;
+		chunks[j]->nonStatic.swap(buffer);
+		
+		for (size_t i : buffer) {
+			if (VoxPack::isActive(chunks[j]->voxels()[i]) == 0)continue;
 			if (VoxPack::isLiquid(voxs[i])) {
-				modelingLuqid(i,voxs,chunks[j]);
+				modelingLuqid(i, voxs, chunks[j]);
 			}
 			else LOG(LogError, "Physics it isn't liquid\n");
 		}
+		if (chunks[j]->nonStatic.size())LOG("NonStatic:%d\n", chunks[j]->nonStatic.size());
 	}
 	
 }

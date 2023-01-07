@@ -30,6 +30,7 @@ void ChunkMeshQueue::step() {
 			return;
 		}
 		if (sBuff[i].ch->flag.isModified()) {
+			notify(_obs_event::solveQueueLight, 0);
 			sBuff[i].ch->buildMesh();
 			return;
 		}

@@ -34,7 +34,7 @@ void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule&
     ////////////////---------------------------------
     else {
     GlRender::bind(frame);
-    GlRender::setClearColor(0.7f, 0.7f, 1.f,1.f);
+    GlRender::setClearColor(sc.sc3d.world.weather.colorSky());
     glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
     }
     //Forward render ----------------------
@@ -43,7 +43,7 @@ void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule&
 
     //UI----------------------
     GlRender::bind(ui);
-    GlRender::setClearColor(0.f,0.f,0.f,0.f);
+    GlRender::setClearColor(clearUI);
     glClear(GL_COLOR_BUFFER_BIT);
     sc.ui.inRender(ui);
 

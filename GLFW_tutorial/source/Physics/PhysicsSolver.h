@@ -3,12 +3,12 @@
 
 #include "Hitbox.h"
 #include "Game/Voxels/World.h"
-
 //PhysicsSolver----------------------------------------------
 /// <summary>
 /// ѕока что основной класс на который нужно жаловатьс€ за ошибки в физической имитации
 /// </summary>
 /// 
+class  GlobalScene;
 class PhysicsSolver
 {
 public:
@@ -16,43 +16,27 @@ public:
 		wTime(1 / 2.f),
 		rTime(1 / 60.f)
 	{}
-	void setWorld(World* world_) {
-		world = world_;
+	void init(GlobalScene* scene_);
+	inline void upTime(float time) {
+
+		float rtime = (time+rTime.rem);
+		rPhStep = (int)(rtime / rTime.step);
+		rTime.rem = rtime - (float)rPhStep* rTime.step;
+		if (rPhStep > 5) LOG("rPhStep:%d\n", rPhStep);
+
+		float wtime = (time + wTime.rem) ;
+		wPhStep = (int)(wtime / wTime.step);
+		wTime.rem = wtime - (float)wPhStep* wTime.step;
 	}
 
-	void setGravity(const glm::vec3& gravity_) {
-		gravity = gravity_;
+	inline void setGravity(const glm::vec3& gravity_) { gravity = gravity_;}
+	inline void solve(Hitbox& hitbox) {	for (size_t i = 0; i < rPhStep; i++) step(hitbox);}
+	inline void solveWorld() {
+		
+		for (size_t i = 0; i < wPhStep; i++) step_world();
+		for (size_t i = 0; i < rPhStep; i++) world->weather.update(rTime.step);
 	}
 
-	void solve(float time, Hitbox& hitbox) {
-		time += rTime.rem;
-		while (time >= rTime.step) {
-			step(hitbox);
-			time -= rTime.step;
-		}
-		rTime.rem = time;
-	}
-
-	void solveWorld(float time) {
-		time += wTime.rem;
-		while (time >= wTime.step) {
-			step_world();
-			time -= wTime.step;
-		}
-		wTime.rem = time;
-	}
-
-	void debugSolve(float time, Hitbox& hitbox) {
-		time += rTime.rem;
-
-		int physStep = time / rTime.step; if (physStep > 5) LOG("Physstep:%d\n", physStep);
-
-		while (time >= rTime.step) {
-			step(hitbox);
-			time -= rTime.step;
-		}
-		rTime.rem = time;
-	}
 private:
 
 	void step(Hitbox& hibox);
@@ -68,8 +52,12 @@ private:
 		UpTime(float step_): step(step_){}
 	};
 
+	int rPhStep;
+	int wPhStep;
 	UpTime rTime;
 	UpTime wTime;
+
+	GlobalScene*scene;
 	World* world;
 };
 #endif

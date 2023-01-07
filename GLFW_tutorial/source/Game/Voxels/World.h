@@ -11,7 +11,9 @@ public:
     void save();
     inline void init(Camera& camera) {
         chunks.create(sSetup::distance_render, camera.getPosition());
+        chunks.weather = &weather;
     }
+    WeatherHandle weather;
     //Generation
     LightHandle light;
     ChunkSectorRender chunks;

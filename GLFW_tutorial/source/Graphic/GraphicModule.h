@@ -17,6 +17,9 @@ class GraphicPipeline :public FrameBuffer
 public:
     GraphicPipeline(){
         filter.setExposure(2.2f);
+        clearUI =   {   0.f,0.f,0.f,0.f };
+        clearMain = {   0.7f, 0.7f, 1.f,1.f };
+
     }
     void initialize(RenderWindow& window);
     void render(RenderWindow& window, GlobalScene& scene, EventModule& event);
@@ -27,6 +30,7 @@ public:
     }
 //
 //protected:
+    Color clearUI, clearMain;
     RenderTexture ui;
     FrameBuffer frame;
     Filter filter;

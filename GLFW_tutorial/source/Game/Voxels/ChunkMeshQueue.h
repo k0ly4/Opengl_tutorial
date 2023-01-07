@@ -37,8 +37,8 @@ public:
 
 	inline void stepSolveChunkMesh() {
 		if (isSync == eWork) {
-			step();
 			notify(_obs_event::solveQueueLight, 0);
+			step();
 		}
 		else if (isSync == eSwitch) isSync = eWait; 
 		else std::this_thread::yield();

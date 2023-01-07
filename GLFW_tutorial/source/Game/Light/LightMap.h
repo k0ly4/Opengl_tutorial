@@ -16,11 +16,20 @@ class LightMap
 
 		inline byte get(int x, int y, int z, int channel)const	noexcept { return (map_(x,y,z) >> (channel << 2)) & 0xF;}
 		inline byte get(const glm::uvec3& coord, int channel)const noexcept { return (map_(coord) >> (channel << 2)) & 0xF; }
-
+		inline byte get(size_t i, int channel)const noexcept { return (map_[i] >> (channel << 2)) & 0xF; }
+		inline ColorU get(int x, int y, int z)const noexcept {
+			size_t i = map_.ind(x, y, z);
+			return {getR(i),getG(i) ,getB(i) ,getS(i) };
+		}
 		inline byte getR(int x, int y, int z)const noexcept	{ return map_(x, y, z) & 0xF; }
 		inline byte getG(int x, int y, int z)const noexcept	{ return (map_(x, y, z) >> 4) & 0xF;}
 		inline byte getB(int x, int y, int z)const noexcept	{return (map_(x, y, z) >> 8) & 0xF;}
 		inline byte getS(int x, int y, int z)const noexcept	{return (map_(x, y, z) >> 12) & 0xF;}
+		
+		inline byte getR(size_t i)const noexcept { return  map_[i] & 0xF; }
+		inline byte getG(size_t i)const noexcept { return (map_[i] >> 4) & 0xF; }
+		inline byte getB(size_t i)const noexcept { return (map_[i] >> 8) & 0xF; }
+		inline byte getS(size_t i)const noexcept { return (map_[i] >> 12) & 0xF; }
 
 		inline void setR(int x, int y, int z, int value)noexcept {
 			twobyte& red = map_(x,y,z);

@@ -64,7 +64,7 @@
 		"8":{
 			"name":"lamp",
 			"side":[8,8,8,8,8,8],
-			"emission":[0,0,0],
+			"emission":[10,3,3],
 			"drawGroup":1,
 			"physGroup":1
 		},

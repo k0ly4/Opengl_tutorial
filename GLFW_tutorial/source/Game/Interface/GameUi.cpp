@@ -20,14 +20,27 @@ std::wstring to_wstring(Voxel vox) {
 }
 void GameUi::drawDebugInfo(RenderTarget& target) {
 	target.draw(back);
-	const Voxel* voxel = world->chunks.getVoxel(player->input.cursor.pos);
+	Chunk* chunk = world->chunks.getByVoxel(player->input.cursor.pos);
+	const Voxel* voxel;
+	if (chunk)voxel = chunk->getGlobal(player->input.cursor.pos);
+	else voxel = 0;
 	info = L"player:\npos." +
 		to_wstring(player->getBasis().position) + L"\n" +
 		L"front." + to_wstring(player->getBasis().front) + L"\n" +
 		L"cursor:\n" +
 		L"pos." + to_wstring(player->input.cursor.pos) + L"\n" +
-		L"norm." + to_wstring(player->input.cursor.norm) + L"\n"+
-		L"voxel." + (voxel == 0 ? L"NuN" : to_wstring(*voxel)) + L"\n";
+		L"norm." + to_wstring(player->input.cursor.norm) + L"\n";
+	if (voxel) {
+
+		info += L"voxel." + to_wstring(*voxel) + L"\n"+
+			L"light.r:" + std::to_wstring(chunk->getLightGlobal(player->input.cursor.pos, 0)) +
+			L".g:" + std::to_wstring(chunk->getLightGlobal(player->input.cursor.pos, 1)) +
+			L".b:" + std::to_wstring(chunk->getLightGlobal(player->input.cursor.pos, 2)) +
+			L".s:" + std::to_wstring(chunk->getLightGlobal(player->input.cursor.pos, 3)) + L"\n";
+
+	}
+	else info += L"voxel.NuN\n";
+		
 	text.setString(info);
 	target.draw(text);
 
