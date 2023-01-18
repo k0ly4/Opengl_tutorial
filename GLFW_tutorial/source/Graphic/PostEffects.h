@@ -43,7 +43,7 @@ class Filter {
 
 public:
 
-    void displayRed(const Texture2D& texture) {
+    void displayRed(const Texture2DLite& texture) {
         Red(glShader::get(glShader::red), texture);
     }
     void displayRed(const ArrayTexture2D& texture, int level) {
@@ -52,7 +52,7 @@ public:
     void setExposure(float exp) {
         exposure = exp;
     }
-    void drawExposure(const Texture2D& texture) {
+    void drawExposure(const Texture2DLite& texture) {
         Exposure(glShader::get(glShader::frame_exposure), texture);
     }
 
@@ -60,13 +60,13 @@ private:
 
         float exposure = 2.2f;
 
-        void Exposure(const Shader& shader, const Texture2D& texture) {
+        void Exposure(const Shader& shader, const Texture2DLite& texture) {
             shader.use();
             shader.uniform("exposure", exposure);
             texture.use(0);
             sBuffer::quad->getVAO().draw();
         }
-        void Red(const Shader& shader, const Texture2D& texture) {
+        void Red(const Shader& shader, const Texture2DLite& texture) {
             shader.use();
             texture.use(0);
             sBuffer::quad->getVAO().draw();

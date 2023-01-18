@@ -28,7 +28,7 @@ public:
 
     static void deleteBuffer(unsigned id) {         pull.deleteBuffer(id); }
     static void deleteVertexArray(unsigned id) {    pull.deleteVertexArray(id); }
-
+    
 
     class Pull {
 
@@ -61,22 +61,24 @@ public:
             assert(stack_buffer_forward >0);
             stack_vertexArray[--stack_vertexArray_forward] = id;
         }
-
+        inline int size_stack_buffer()const {        return stack_buffer_forward;}
+        inline int size_stack_vertexArray()const {   return stack_vertexArray_forward; }
+        static const size_t MAX = 1 << 14;
+        static const size_t bMax = 1 << 15;
     private:
         bool isInit = 0;
-        static const size_t MAX = 1<<14;
-        static const size_t bMax=1<<15;
 
         unsigned stack_buffer[bMax];
-        int stack_buffer_forward;
         unsigned stack_vertexArray[MAX];
+
+        int stack_buffer_forward;
         int stack_vertexArray_forward;
 
         unsigned buffer[bMax];
         unsigned vertexArray[MAX];
 
     };
-
+    inline static const Pull& getPull() { return pull;}
 private:
 
     static unsigned int last_vbo, last_ebo, last_vao;

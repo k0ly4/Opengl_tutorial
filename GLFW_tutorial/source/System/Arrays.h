@@ -10,18 +10,23 @@ public:
 		size_ = size;
 		buffer.resize(size_ * size_);
 	}
-	inline T& operator ()(size_t x, size_t y) { return buffer[ind(x, y)]; }
-	inline T& operator ()(const glm::uvec2& coord) { return buffer[ind(coord)]; }
-	inline T& operator[](size_t index) { return buffer[index]; }
-	inline size_t size() { return buffer.size(); }
+	inline T& operator ()(size_t x, size_t y) {			return buffer[ind(x, y)]; }
+	inline T& operator ()(const glm::uvec2& coord) {	return buffer[ind(coord)]; }
+	inline T& operator[](size_t index) {				return buffer[index]; }
+	inline size_t size() {								return buffer.size(); }
 	// Проверка корректности адреса
-	inline bool is(size_t x, size_t y)const { return x < size_&& y < size_; }
-	inline bool is(const glm::uvec2& coord)const { return coord.x < size_&& coord.y < size_; }
+	inline bool is(size_t x, size_t y)const {			return x < size_&& y < size_; }
+	inline bool is(const glm::uvec2& coord)const {		return coord.x < size_&& coord.y < size_; }
 	inline void setNull() { for (size_t i = 0; i < buffer.size(); i++) buffer[i] = 0; }
-private:
-
+	// Если адрес неверный то возвращает 0
+	inline  T* get(const glm::uvec2& coord) noexcept {				return is(coord) ? &(buffer[ind(coord)]) : 0; }
+	inline const T* get(const glm::uvec2& coord) const noexcept {	return is(coord) ? &(buffer[ind(coord)]) : 0; }
+	//Индекс
 	inline size_t ind(size_t x, size_t y)		const noexcept { return (y * size_ + x); }
 	inline size_t ind(const glm::uvec2& coord)	const noexcept { return (coord.y * size_ + coord.x); }
+private:
+
+	
 	size_t size_;
 	std::vector<T> buffer;
 };
@@ -30,15 +35,22 @@ private:
 template<size_t size_, typename T>
 class Array2d {
 public:
-	inline T& operator ()(size_t x, size_t y)noexcept { return buffer[toInt(x, y, size_)]; }
-	inline T& operator ()(const glm::uvec2& coord)noexcept { return buffer[toInt(coord, size_)]; }
-	inline T& operator[](size_t index)noexcept { return buffer[index]; }
-	inline size_t size() { return size_ * size_; }
+	inline T& operator ()(size_t x, size_t y)noexcept {			return buffer[ind(x, y)]; }
+	inline T& operator ()(const glm::uvec2& coord)noexcept {	return buffer[ind(coord)]; }
+	inline T& operator[](size_t index)noexcept {				return buffer[index]; }
+	inline size_t size() {										return size_ * size_; }
 	// Проверка корректности адреса
-	inline bool is(size_t x, size_t y) { return x < size_&& y < size_; }
-	inline bool is(const glm::uvec2& coord) { return coord.x < size_&& coord.y < size_; }
+	inline bool is(size_t x, size_t y) {						return x < size_&& y < size_; }
+	inline bool is(const glm::uvec2& coord) {					return coord.x < size_ && coord.y < size_; }
 	inline void setNull() { for (size_t i = 0; i < size_ * size_; i++)buffer[i] = 0; }
+	// Если адрес неверный то возвращает 0
+	inline  T* get(const glm::uvec2& coord) noexcept {			return is(coord) ? &(buffer[ind(coord)]) : 0; }
+	inline const T* get(const glm::uvec2& coord)const noexcept{	return is(coord) ? &(buffer[ind(coord)]) : 0; }
 private:
+	//Индекс
+	inline size_t ind(size_t x, size_t y)		const noexcept { return (y * size_ + x); }
+	inline size_t ind(const glm::uvec2& coord)	const noexcept { return (coord.y * size_ + coord.x); }
+
 	T buffer[size_ * size_];
 };
 

@@ -24,12 +24,14 @@ void GameUi::drawDebugInfo(RenderTarget& target) {
 	const Voxel* voxel;
 	if (chunk)voxel = chunk->getGlobal(player->input.cursor.pos);
 	else voxel = 0;
+	//Player
 	info = L"player:\npos." +
 		to_wstring(player->getBasis().position) + L"\n" +
 		L"front." + to_wstring(player->getBasis().front) + L"\n" +
 		L"cursor:\n" +
 		L"pos." + to_wstring(player->input.cursor.pos) + L"\n" +
 		L"norm." + to_wstring(player->input.cursor.norm) + L"\n";
+	//curVoxel
 	if (voxel) {
 
 		info += L"voxel." + to_wstring(*voxel) + L"\n"+
@@ -40,7 +42,12 @@ void GameUi::drawDebugInfo(RenderTarget& target) {
 
 	}
 	else info += L"voxel.NuN\n";
-		
+	//ContextTexture
+	info += L"Textures:" + std::to_wstring(glTexture::total_count) + L"\n";
+	//Buffer
+	info += L"Buffers:"+std::to_wstring(GlBuffer::getPull().size_stack_buffer())+
+		L", VAO:"+std::to_wstring(GlBuffer::getPull().size_stack_vertexArray()) + L"\n";
+
 	text.setString(info);
 	target.draw(text);
 

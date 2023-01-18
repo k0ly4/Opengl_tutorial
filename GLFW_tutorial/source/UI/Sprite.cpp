@@ -20,7 +20,7 @@ void Sprite::draw(const View* view, const Shader& shader) {
    shader.uniform("model", transform.matrix());
    shader.uniform("color", color_);
 
-   mesh.drawArrays(GlRender::TRIANGLES_STRIP);
+   mesh.drawArrays(Render::TRIANGLES_STRIP);
 }
 
 void Sprite::solve() {

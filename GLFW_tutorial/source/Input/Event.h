@@ -103,32 +103,4 @@ struct Key
 	int action;
 	int mods;
 };
-
-class EventStack {
-
-public:
-
-	void push(const Event&event){
-		events.push_back(event);
-	}
-
-	Event& get() {
-		return events.front();
-	}
-
-	bool isEmpty() {
-		return events.size() == 0;
-	}
-
-	void next() {
-		events.pop_front();
-	}
-
-	Event& last() {
-		return events.back();
-	}
-private:
-
-	std::list<Event> events;
-};
 #endif

@@ -4,20 +4,18 @@
 #include "Graphic/Drawable.h"
 
 /// <summary>
-/// GeneralRender
+/// iFrame
+/// Èםעונפויס
 /// </summary>
-class GeneralRender {
+class iFrame {
 
 public:
 
-	virtual const glm::ivec2& getSize()const = 0;
-
-	inline unsigned int getId()const  {
-		return id_;
-	}
+	virtual const glm::ivec2& size()const = 0;
+	inline unsigned int id()const  {return id_;}
 
 protected:
-
+	friend class Render;
 	unsigned int id_;
 };
 
@@ -28,33 +26,22 @@ class RenderTarget {
 
 public:
 
-	inline void setView(const View& view) {
-		view_ = &view;
-	}
-	inline const View* getView()const {
-		return view_;
-	}
+	inline void setView(const View& view) { view_ = &view; }
+	inline const View* getView()const {		return view_;}
 
-	inline void draw(Drawable& object) {
-		object.draw(view_, glShader::get(getHint(object.getShaderHint())));
-	}
+	inline void draw(Drawable& object) {								object.draw(view_, glShader::get(getHint(object.getShaderHint())));}
 
-	inline void draw(Drawable& object, glShader::Object index_shader) {
-		object.draw(view_, glShader::get(index_shader));
-	}
+	inline void draw(Drawable& object, glShader::Object index_shader) {	object.draw(view_, glShader::get(index_shader));}
 
-	inline void draw(Drawable& object, const Shader& shader) {
-		object.draw(view_, shader);
-	}
-	void setDefaultHintShader(glShader::Object hint) {
-		defaultHintShader_ = hint;
-	}
-	glShader::Object getHintShader(Drawable& object) {
-		return getHint(object.getShaderHint());
-	}
+	inline void draw(Drawable& object, const Shader& shader) {			object.draw(view_, shader);}
+
+	inline void setDefaultHintShader(glShader::Object hint) {			defaultHintShader_ = hint; }
+
+	inline glShader::Object getHintShader(Drawable& object) const {		return getHint(object.getShaderHint()); }
+
 protected:
 
-	glShader::Object getHint(glShader::Object objectHint) {
+	glShader::Object getHint(glShader::Object objectHint)const {
 		if (objectHint == glShader::any) 
 		{
 			return defaultHintShader_;

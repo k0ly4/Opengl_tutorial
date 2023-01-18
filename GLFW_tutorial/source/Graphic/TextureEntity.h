@@ -5,83 +5,71 @@
 #include <list>
 #include "Math/Math.h"
 #include "System/Exception.h"
-
-
-class TextureCubeMap;
-class GeneralTexture2D;
-class Texture2D;
-class ArrayTexture2D;
-class TextureCubeDepth;
-
+#include "ContextTexture.h"
 /// <summary>
 /// TextureFilter
 /// </summary>
-class TextureFilter {
+class tFilter {
 public:
 
-    enum Mode : unsigned int
+    enum Mode : GLint
     {
-        Nearest = GL_NEAREST,
-        Linear = GL_LINEAR,
-        NearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
-        LinearMipmapNearest = GL_LINEAR_MIPMAP_NEAREST,
-        NearestMipmapLinear = GL_NEAREST_MIPMAP_LINEAR,
-        LinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR,
+        Nearest =               GL_NEAREST,
+        Linear =                GL_LINEAR,
+        NearestMipmapNearest =  GL_NEAREST_MIPMAP_NEAREST,
+        LinearMipmapNearest =   GL_LINEAR_MIPMAP_NEAREST,
+        NearestMipmapLinear =   GL_NEAREST_MIPMAP_LINEAR,
+        LinearMipmapLinear =    GL_LINEAR_MIPMAP_LINEAR,
 
     };
 
-    TextureFilter() :
-        filter_min_(NearestMipmapLinear),
-        filter_max_(Linear)
+    tFilter() :
+        min(NearestMipmapLinear),
+        max(Linear)
     {}
-    TextureFilter(GLenum filter_max,GLenum filter_min) :
-        filter_min_(filter_min),
-        filter_max_(filter_max)
+    tFilter(GLint filter_max, GLint filter_min) :
+        min(filter_min),
+        max(filter_max)
     {}
-    TextureFilter(GLenum filter) :
-        TextureFilter(filter,filter)
+    tFilter(GLint filter) :
+        tFilter(filter,filter)
     {}
 
-    void set(unsigned mag, unsigned min) {
-        filter_min_ = min;
-        filter_max_ = mag;
+    inline void set(GLint mag, GLint min) {
+        min = min;
+        max = mag;
     }
 
-    void setup(GLenum target)const {
-
-        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter_max_);
-        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filter_min_);
-
+    inline void setup(GLenum target)const {
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, min);
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, max);        
     }
 
-    void setup(GLenum target, unsigned mag, unsigned min) {
+    inline void setup(GLenum target, GLint mag, GLint min) {
         set(mag, min);
         setup(target);
     }
-    unsigned getMin()const {
-        return filter_min_;
-    }
-    unsigned getMax()const {
-        return filter_max_;
-    }
-protected:
-
-    unsigned filter_min_; // режим фильтрации, если пикселей текстуры < пикселей экрана
-    unsigned filter_max_; // режим фильтрации, если пикселей текстуры > пикселей экрана
-
+   union{
+        struct {
+            GLint min; // режим фильтрации, если пикселей текстуры < пикселей экрана
+            GLint max; // режим фильтрации, если пикселей текстуры > пикселей экрана};
+       };
+        glm::ivec2 vec;
+   };
+   
 };
 
 /// <summary>
 /// TextureWrap
 /// </summary>
-class TextureWrap {
+class tWrap {
 public:
     enum Mode : unsigned int
     {
-        ClampToEdge = GL_CLAMP_TO_EDGE,
-        ClampToBorder = GL_CLAMP_TO_BORDER,
-        MirroredRepeat = GL_MIRRORED_REPEAT,
-        Repeat = GL_REPEAT,
+        ClampToEdge =       GL_CLAMP_TO_EDGE,
+        ClampToBorder =     GL_CLAMP_TO_BORDER,
+        MirroredRepeat =    GL_MIRRORED_REPEAT,
+        Repeat =            GL_REPEAT,
     };
 
     inline void setBorderColor(GLenum target, const glm::vec4& borderColor) {
@@ -94,11 +82,11 @@ public:
 /// <summary>
 /// TextureWrap3D
 /// </summary>
-class TextureWrap3D :public TextureWrap {
+class tWrap3D :public tWrap {
 
 public:
 
-    TextureWrap3D() :
+    tWrap3D() :
         Wrap_S(Repeat),
         Wrap_T(Repeat),
         Wrap_R(Repeat)
@@ -111,7 +99,6 @@ public:
     }
 
     void setup(GLenum target) {
-
         glTexParameteri(target, GL_TEXTURE_WRAP_S, Wrap_S);
         glTexParameteri(target, GL_TEXTURE_WRAP_T, Wrap_T);
         glTexParameteri(target, GL_TEXTURE_WRAP_R, Wrap_R);
@@ -123,9 +110,7 @@ public:
         setup(target);
     }
 
-    glm::uvec3 get()const {
-        return glm::uvec3(Wrap_S, Wrap_T, Wrap_R);
-    }
+    glm::uvec3 get()const { return { Wrap_S, Wrap_T, Wrap_R}; }
 
 protected:
     // Конфигурация текстуры
@@ -138,37 +123,44 @@ protected:
 /// <summary>
 /// TextureWrap2D
 /// </summary>
-class TextureWrap2D :public TextureWrap {
+class tWrap2D :public tWrap {
 public:
 
-    TextureWrap2D() :
-        Wrap_S(Repeat),
-        Wrap_T(Repeat)
+    tWrap2D() :
+        s(Repeat),
+        t(Repeat)
     {}
-
-    void set(unsigned S, unsigned T) {
-        Wrap_S = S;
-        Wrap_T = T;
+    tWrap2D(GLint S_, GLint T_) :
+        s(S_),
+        t(T_)
+    {}
+    tWrap2D(GLint ST_) :
+        s(ST_),
+        t(ST_)
+    {}
+    void set(GLint S_, GLint T_) {
+        s = S_;
+        t = T_;
     }
 
     void setup(GLenum target) {
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, Wrap_S);
-        glTexParameteri(target, GL_TEXTURE_WRAP_T, Wrap_T);
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, s);
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, t);
     }
 
-    void setup(GLenum target, unsigned S, unsigned T) {
-        set(S, T);
+    void setup(GLenum target, GLint S_, GLint T_) {
+        set(S_, T_);
         setup(target);
     }
-
-    glm::uvec2 get()const {
-        return glm::uvec2(Wrap_S, Wrap_T);
-    }
-
-protected:
-    // Конфигурация текстуры
-    unsigned int Wrap_S; // режим наложения по оси S
-    unsigned int Wrap_T; // режим наложения по оси T
+    union 
+    {
+        struct { // Конфигурация текстуры
+            GLint s; // режим наложения по оси S
+            GLint t; // режим наложения по оси T
+        };
+        glm::ivec2 vec;
+    };
+   
 };
 
 /// <summary>
@@ -197,28 +189,21 @@ protected:
 class TextureID {
 public:
     unsigned int id;
-
-    TextureID() {
-        glGenTextures(1, &id);
-    }
-
-    ~TextureID() {
-        glDeleteTextures(1, &id);
-    }
+    TextureID() {           glTexture::gen(id); }
+    virtual ~TextureID() {  glTexture::free(id); }
 };
 
 /// <summary>
 /// TextureShell
 /// </summary>
-class TexturePointer {
+class TexPtr {
 
 public:
 
-    TexturePointer() :
-        texture(std::make_shared<TextureID>())
+    TexPtr() :texture(std::make_shared<TextureID>())
     {}
 
-    inline bool reBuild() {
+    inline bool make() {
         if (texture.unique() == 0) {
             texture = std::make_shared<TextureID>();
             return 1;
@@ -226,9 +211,7 @@ public:
         return 0;
     }
 
-    inline unsigned int get() const {
-        return texture->id;
-    }
+    inline unsigned int id() const { return texture->id;}
 
 private:
     std::shared_ptr<TextureID> texture;
@@ -237,66 +220,59 @@ private:
 /// <summary>
 /// TextureDataFormat
 /// </summary>
-class TextureFormat
+class TextureFormatData
 {
 public:
 
-    TextureFormat(GLint internalformat, GLint  format) :
-        internalFormat_(internalformat),
-        format_(format)
+    TextureFormatData(GLint internalformat_, GLint format_) :
+        internalFormat(internalformat_),
+        format(format_)
     {}
 
-    inline void TexImage2D(GLenum target, const glm::ivec2& size, const void* data)const {
+    inline void dataImage2D(GLenum target, const glm::ivec2& size, const void* data)const {
         glTexImage2D(
             target,
             0,
-            internalFormat_,
+            internalFormat,
             size.x,
             size.y,
             0,
-            format_,
-            getType(internalFormat_),
+            format,
+            getType(internalFormat),
             data);
     }
-
-    inline void TexImage3D(GLenum target, const glm::ivec2& size, GLsizei depth, const void* data)const {
+    inline void dataImage2D(const glm::ivec2& size, const void* data)const {
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            internalFormat,
+            size.x,
+            size.y,
+            0,
+            format,
+            getType(internalFormat),
+            data);
+    }
+    inline void dataImage3D(GLenum target, const glm::ivec2& size, GLsizei depth, const void* data)const {
         glTexImage3D(
             target,
             0,
-            internalFormat_,
+            internalFormat,
             size.x,
             size.y,
             depth,
             0,
-            format_,
-            getType(internalFormat_),
+            format,
+            getType(internalFormat),
             data);
     }
-
-    inline void setDataTexture2D(const glm::ivec2& size, const void* data)const {
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            internalFormat_,
-            size.x,
-            size.y,
-            0,
-            format_,
-            getType(internalFormat_),
-            data);
-    }
-
     static GLenum getType(GLenum internal_format) {
-        return 	internal_format == GL_RGBA16F || internal_format == GL_DEPTH_COMPONENT || internal_format == GL_DEPTH_COMPONENT32F ?
+        return internal_format == GL_RGBA16F || internal_format == GL_DEPTH_COMPONENT || internal_format == GL_DEPTH_COMPONENT32F ?
             GL_FLOAT : GL_UNSIGNED_BYTE;
     }
-
+    GLint internalFormat, format;
 private:
-
-    GLint
-        internalFormat_,
-        format_;
-
+    
 };
 
 /// <summary>
@@ -304,7 +280,7 @@ private:
 /// </summary>
 struct TextureData
 {
-    TextureData(const TextureFormat& format, const TextureFilter& filter) :
+    TextureData(const TextureFormatData& format, const tFilter& filter) :
         format_(format),
         filter_(filter)
     {}
@@ -325,42 +301,33 @@ struct TextureData
     }
 
     inline void setDataTexture2D(const glm::ivec2& size,const void * data)const {
-        format_.setDataTexture2D(size, data);
+        format_.dataImage2D(size, data);
     }
 
-    inline const TextureFormat& getFormat()const {
-        return format_;
-    }
+    inline const TextureFormatData& getFormat()const {  return format_; }
 
-    inline const TextureFilter& getFilter()const {
-        return filter_;
-    }
+    inline const tFilter& getFilter()const {            return filter_;}
 private:
 
-    TextureFormat format_;
-    TextureFilter filter_;
+    TextureFormatData   format_;
+    tFilter       filter_;
 
 };
 
 /// <summary>
 /// Texture
 /// </summary>
-class Texture {
+class iTexture {
 
 public:
 
-    Texture(const TexturePointer& id) :id_(id) {}
-    Texture() {}
+    iTexture(const TexPtr& id) :id_(id) {}
+    iTexture() {}
+    const TexPtr& getId()const {    return id_; }
+    virtual inline bool detach() {  return id_.make();}
 
-    const TexturePointer& getId()const {
-        return id_;
-    }
-
-    virtual inline bool detach() {
-        return id_.reBuild();
-    }
 protected:
-    TexturePointer id_;
+    TexPtr id_;
 };
 
 #endif

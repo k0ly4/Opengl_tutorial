@@ -7,7 +7,7 @@
 		
 		static const Event::Type type_event[3] = {Event::KeyReleased,Event::KeyPressed,Event::KeyRepeated};
 		ContextWindow::events.push(Event(type_event[action],Event::KeyEvent(key,mods)));
-		ContextWindow::events.last().key = Event::KeyEvent(key, mods);
+		ContextWindow::events.back().key = Event::KeyEvent(key, mods);
 	}
 
 	void Keyboard::callback::OnChar(GLFWwindow* window, unsigned int codepoint) {

@@ -11,8 +11,8 @@
 	 void  ContextWindow::callback::window_position(GLFWwindow* window, int xpos, int ypos)
 	{
 		//printf("PosWindowCallback %d %d\n", xpos, ypos);
-		position = glm::ivec2(xpos, ypos);
-		ContextWindow::events.push(Event::MoveEvent(position));
+		pos = glm::ivec2(xpos, ypos);
+		ContextWindow::events.push(Event::MoveEvent(pos));
 	}
 
 	 void ContextWindow::callback::window_refresh(GLFWwindow* window)
@@ -33,8 +33,8 @@
 		 glfwSetWindowFocusCallback(window, ContextWindow::callback::window_focus);
 	 }
 
-GLFWwindow* ContextWindow::context = 0;
-glm::uvec2 ContextWindow::size = glm::uvec2(0);
-glm::ivec2 ContextWindow::position = glm::uvec2(0);
-EventStack ContextWindow::events;
-bool ContextWindow::focus = 1;
+GLFWwindow*			ContextWindow::context = 0;
+glm::uvec2			ContextWindow::size = glm::uvec2(0);
+glm::ivec2			ContextWindow::pos = glm::uvec2(0);
+std::queue<Event>	ContextWindow::events;
+bool				ContextWindow::focus = 1;

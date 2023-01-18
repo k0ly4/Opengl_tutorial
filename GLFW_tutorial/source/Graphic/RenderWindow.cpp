@@ -32,7 +32,7 @@
 		return 1;
 	}
 
-	void RenderWindow::setMonitor(GLFWmonitor* monitor, glm::vec2 pos) {
+	void RenderWindow::setMonitor(GLFWmonitor* monitor, glm::ivec2 pos) {
 		const  GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
 		/*glfwWindowHint(GLFW_RED_BITS, mode->redBits);
@@ -61,8 +61,8 @@
 	
 	bool RenderWindow::pollEvent(Event& event) {
 		glfwPollEvents();
-		if (ContextWindow::events.isEmpty()) return 0;
-		event = ContextWindow::events.get();
-		ContextWindow::events.next();
+		if (ContextWindow::events.empty()) return 0;
+		event = ContextWindow::events.front();
+		ContextWindow::events.pop();
 		return 1;
 	}

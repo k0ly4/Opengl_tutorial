@@ -1,43 +1,63 @@
 #ifndef CONTEXT_TEXTURE_H
 #define CONTEXT_TEXTURE_H
-#include "Graphic/TextureEntity.h"
+//#include "Graphic/TextureEntity.h"
+#include "Game/Lib/GLFW.h"
+class TexPtr;
+class iTexture;
 
 class glTexture {
 
 public:
-
-	static void active(size_t text_unit);
-
-	static void bind2D(unsigned int texture);
-	inline static void bind2D(const TexturePointer& texture) {
-		bind2D(texture.get());
+	
+	inline static void gen(unsigned int& id) {
+		glGenTextures(1, &id);
+		total_count++;
 	}
-	inline static void bind2D(const Texture& texture) {
-		bind2D(texture.getId());
-	}
-	static void bind2D(const TexturePointer& texture, size_t text_unit);
-
-	static void bind2DArray(unsigned int texture);
-	inline static void bind2DArray(const TexturePointer& texture)
-	{
-		bind2DArray(texture.get());
-	}
-	inline static void bind2DArray(const Texture& texture)
-	{
-		bind2DArray(texture.getId());
+	inline static void free(unsigned int id) {	
+		glDeleteTextures(1, &id);
+		total_count--;
 	}
 
-	static void bindCubeMap(unsigned int texture);
-	inline static void bindCubeMap(const TexturePointer& texture) {
-		bindCubeMap(texture.get());
+	inline static void active(size_t text_unit) {
+		if (text_unit != active_unit) {
+			active_unit = text_unit;
+			glActiveTexture(active_unit);
+		}
 	}
-	inline static void bindCubeMap(const Texture& texture) {
-		bindCubeMap(texture.getId());
+
+	inline static void bind2D(unsigned int texture) {
+		if (texture != last) {
+			last = texture;
+			glBindTexture(GL_TEXTURE_2D, last);
+		}
 	}
+	static void bind2D(const TexPtr& texture);
+	static void bind2D(const iTexture& texture);
+	static void bind2D(const TexPtr& texture, size_t text_unit);
+
+	inline static void bind2DArray(unsigned int texture) {
+		if (texture != last) {
+			last = texture;
+			glBindTexture(GL_TEXTURE_2D_ARRAY, last);
+		}
+	}
+	 static void bind2DArray(const TexPtr& texture);
+	 static void bind2DArray(const iTexture& texture);
+
+	 inline static void bindCubeMap(unsigned int texture) {
+		if (texture != last) {
+			last = texture;
+			glBindTexture(GL_TEXTURE_CUBE_MAP, last);
+		}
+	}
+	 static void bindCubeMap(const TexPtr& texture);
+	 static void bindCubeMap(const iTexture& texture);
+
+	 static int total_count;
 private:
-
+	
 	static unsigned int last;
-	static GLenum active_unit;
+	static GLenum		active_unit;
 
 	glTexture() {}
 	~glTexture() {}

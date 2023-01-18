@@ -22,11 +22,11 @@ public:
     }
 
     inline void useTexture()const noexcept { texture_->use(0);  }
-    inline void dellTexture()noexcept {texture_ = 0; }
+    inline void dellTexture()noexcept { texture_ = 0; }
 
 private:
 
-    std::shared_ptr<GeneralTexture2D> texture_ =0 ;
+    std::shared_ptr<Texture2DLite> texture_ =0 ;
 
 };
 typedef std::map<size_t, Glyph> Glyphs;

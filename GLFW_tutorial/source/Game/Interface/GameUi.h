@@ -6,6 +6,7 @@
 #include "Game/Entities/Player.h"
 #include "UI/Shape.h"
 #include "Scene/Text.h"
+#include "Graphic/ContextTexture.h"
 
 //GameUi -----------------------------------------------------
 class GameUi

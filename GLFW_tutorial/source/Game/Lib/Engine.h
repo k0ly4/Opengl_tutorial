@@ -23,6 +23,7 @@ public:
         graphic.initialize(window);
         event.initialize(scene);
         physics.init(scene);
+        Render::Line::Width(5.f);
     }
 
     void launch() {
@@ -64,7 +65,7 @@ private:
 
         window.setFrameInterval(1);
         window.setLimitSizeable(true, glm::ivec2(GLFW_DONT_CARE), glm::ivec2(GLFW_DONT_CARE));
-        GlRender::setClearColor(Color::ColorU(150, 199, 196));
+        Render::setClearColor(Color::ColorU(150, 199, 196));
 
     }
 

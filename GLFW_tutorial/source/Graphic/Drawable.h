@@ -11,18 +11,11 @@
 /// </summary>
 class Drawable {
 public:
-
-	virtual void draw(const View * view, const Shader & shader) = 0;
-
-	inline glShader::Object getShaderHint()const {
-		return shaderHint;
-	}
-
+	inline virtual void draw(const View * view, const Shader & shader) = 0;
+	inline glShader::Object getShaderHint()const { return shaderHint; }
 protected:
-
 	glShader::Object shaderHint;
 };
-
 ///---------------------------------------------
 /// <summary>
 /// Texturable

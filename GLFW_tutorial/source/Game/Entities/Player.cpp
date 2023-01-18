@@ -48,7 +48,7 @@ Cursor3D::Cursor3D():
 	pos(0),
 	norm(0.f)
 {
-	GlRender::Line::Width(5.f);
+	
 	std::vector<unsigned>& ind = mesh.indices;
 	push_back(mesh, glm::vec3(0.f, 0.f, 0.f));//0
 	push_back(mesh, glm::vec3(1.f, 0.f, 0.f));
@@ -91,5 +91,5 @@ void Cursor3D::draw(RenderTarget& target){
 	shader.use();
 	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(pos)));
 	target.getView()->use(shader);
-	mesh.draw(GlRender::LINES);
+	mesh.draw(Render::LINES);
 }

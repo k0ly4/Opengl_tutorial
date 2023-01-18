@@ -114,60 +114,83 @@ glm::ivec3 off[] = {
 		{1,0,0 },
 		{0,0,-1 },
 		{0,0,1 },
-		{0,1,0 },
 		{0,-1,0 },
+		{0,1,0 },
+		
 };
 inline bool isSource(Voxel cur, Voxel tar) { return (cur.e.id == tar.e.id) && (cur.e.m1 < tar.e.m1); }
 inline bool isSource(size_t cur, glm::ivec3 targ, Voxels& voxs) { return voxs.is(targ) == 0 ? 0 : isSource(voxs[cur], voxs(targ)); }
 inline bool isFree(Voxel dest, Voxel source) {
 	return !((dest.id_ == source.id_) && (dest.e.m1 >= source.e.m1 - 1));
 }
-void spreadLiquid(Voxel src, Voxels& voxs, Chunk* chunk,const glm::ivec3& local) {
-	if (src.e.m1 > 0)
-		for (size_t k = 0; k < 4; k++) {
-			Voxel* dst = voxs.get(local + off[k]);
-			if (dst && VoxPack::isGas(*dst))
-				chunk->setVoxel(Voxel(src.id_, 0), local + off[k] + glm::ivec3(chunk->voxelPos()));
+void PhysicsSolver::spreadLiquid(Voxel src, Voxels& voxs, Chunk* chunk,const glm::ivec3& global) {
+	//является вершиной
+	{
+		glm::uvec3 coord(glm::ivec3(0,-1,0) + global);
+		const Voxel* vox = chunk->getGlobal(coord);
+		if (vox) {
+			if (VoxPack::isGas(*vox)) {
+				chunk->setVoxel(Voxel(src.id_, 0), coord);
+				return;
+			}
+			else if (VoxPack::isLiquid(*vox))return;
 		}
-	//if top
-	Voxel* dst = voxs.get(local + off[5]);
-	if (dst && VoxPack::isGas(*dst)) chunk->setVoxel(Voxel(src.id_, 0), local + off[5] + glm::ivec3(chunk->voxelPos()));
+	}
+	//горизонтальную плоскость
+	if (src.e.m1 > 0) {
+		for (size_t k = 0; k < 4; k++) {
+			glm::uvec3 coord(off[k] + global);
+			Chunk* targ = world->region.getByVoxel(coord);
+			if (targ) {
+				if (VoxPack::isGas(*targ->getGlobal(coord)))targ->setVoxel(Voxel(src.id_, 0), coord);
+			}
+			else LOG("spreadLiquid::chunk ==0\n");
+		}
+	}
 }
 
 void PhysicsSolver::modelingLuqid(size_t i,Voxels& voxs, Chunk* chunk) {
 	glm::ivec3 local = voxs.coord(i);
-	//test source
+	glm::ivec3 global(glm::ivec3(chunk->voxelPos())+local);
 	Voxel src = voxs[i];
+	//Если безусловный источник
 	if (src.e.m1 == VoxPack::maxConcLiquid) {
-		spreadLiquid(src, voxs, chunk, local);
+		spreadLiquid(src, voxs, chunk, global);
 		return;
 	}
-	byte m1 =0;
-	for (size_t k = 0; k < 4; k++) {
-		const Voxel* targ = voxs.get(local + off[k]);
-		if(targ && isSource(voxs[i], *targ)&& targ->e.m1>m1) m1 = targ->e.m1;
-	}
-	const Voxel* targ = voxs.get(local + off[5]);
-	if (targ && (targ->e.id == voxs[i].e.id)) m1 = VoxPack::maxConcLiquid - 1;
-	if (m1 == 0) {
-		//source is not exist
-		//to air
-		for (size_t k = 0; k < 6; k++) {
-			glm::ivec3 pos(local + off[k]);
-			if (voxs.is(pos)) chunk->nonStatic.insert(voxs.ind(pos));
+	//Ищем источник
+	byte m1 = 0;
+	{
+		for (size_t k = 0; k < 4; k++) {
+			const Voxel* targ = world->region.getVoxel(global + off[k]);
+			if (targ && isSource(voxs[i], *targ) && targ->e.m1 > m1) m1 = targ->e.m1;
 		}
+		//Сверху
+		const Voxel* targ = voxs.get(local + glm::ivec3(0, 1, 0));
+		if (targ && (targ->e.id == voxs[i].e.id)) m1 = VoxPack::maxConcLiquid;
+		//Если есть снизу то стремится к нулю
+		targ = voxs.get(local + glm::ivec3(0, -1, 0));
+		if (targ && (targ->e.id == voxs[i].e.id)) m1 = 1;
+	}
+	//Источника нет
+	if (m1 == 0) {
+		for (size_t k = 0; k < 5; k++) {
+			glm::ivec3 pos(global + off[k]);
+			world->region.getByVoxel(pos)->nonStatic.insert(voxs.ind(pos));
+		}
+		//to air
 		if (src.e.m1 == 0) chunk->setVoxelLocal(vox::air, local);
 		//else decrement m1
 		else chunk->setVoxelLocal(Voxel(src.e.id, src.e.m1 - 1), local);
 	}
 	else {
 		if(m1> src.e.m1+1) chunk->setVoxelLocal(Voxel(src.e.id, src.e.m1 +1), local);
-		spreadLiquid(src, voxs, chunk, local);
+		spreadLiquid(src, voxs, chunk, global);
 	}
 }
 
 void PhysicsSolver::step_world() {
-	
+	SupReg& reg = world->region;
 	ChunkPtrs& chunks = world->chunks.chunks();
 	for (size_t j = 0; j < chunks.size(); j++) {
 		Voxels& voxs = chunks[j]->voxels();

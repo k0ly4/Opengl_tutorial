@@ -3,22 +3,22 @@
 #define CONTEXT_WINDOW_H
 
 #include <list>
-
+#include <queue>
 #include "Game/Lib/GLFW.h"
 #include "Math/Math.h"
 #include "Input/Event.h"
 #include "Graphic/RenderEntity.h"
 
-
 class ContextWindow {
 	
 public:
 
-	static inline bool isFocus() {
-		return focus;
-	}
+	static inline bool isFocus() { return focus;}
 
 private:
+
+	~ContextWindow() {}
+	ContextWindow() {}
 
 	struct callback {
 		static void framebuffer_size(GLFWwindow* window, int width, int height);
@@ -29,21 +29,20 @@ private:
 	};
 
 
-	static GLFWwindow* context;
-	static glm::uvec2 size;
-	static glm::ivec2 position;
-	static bool focus;
-	
-	~ContextWindow() {}
-	ContextWindow() {}
+	static GLFWwindow*	context;
+	static glm::uvec2	size;
+	static glm::ivec2	pos;
+	static bool			focus;
+
+	static std::queue<Event> events;
 
 	friend class RenderWindow;
 	friend class Cursor;
 	friend class Mouse;
 	friend class Keyboard;
-	friend class GlRender;
+	friend class Render;
 	
-	static EventStack events;
+	
 };
 
 #endif

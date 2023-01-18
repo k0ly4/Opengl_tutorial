@@ -19,16 +19,21 @@ public:
 		clear();
 	}
 	bool save();
-	inline const glm::uvec2& getPosInChunk() { return beg_ch; }
+	inline const glm::uvec2& posChunk() { return beg_ch; }
+	inline const glm::uvec2& posReg() { return beg_reg; }
 	//Если чанк не сгенирирован генерирует
 	inline Chunk& getChunk(const glm::uvec2& local_ch) {
 		Chunk& ch = chunks_(local_ch);
 		if (ch.flag.isGenerated() == 0) generate(ch);
 		return ch;
 	}
-	inline Chunk& getChunk(size_t x, size_t z) noexcept {return getChunk(glm::uvec2(x, z));}
-	inline Chunk& getChunkGlobal(const glm::uvec2& coord_ch) { return getChunk(coord_ch - beg_ch); }
-	inline Chunk& getChunkGlobal(size_t x, size_t y) { return getChunkGlobal(glm::uvec2(x, y)); }
+	inline Chunk& getChunk(size_t x, size_t z) noexcept {				return getChunk(glm::uvec2(x, z));}
+	inline Chunk& getChunkGlobal(const glm::uvec2& coord_ch) {			return getChunk(coord_ch - beg_ch); }
+	inline Chunk& getChunkGlobal(size_t x, size_t y) {					return getChunkGlobal(glm::uvec2(x, y)); }
+	inline Chunk* getGlobal(const glm::uvec2& coord_ch) {				return chunks_.get(coord_ch - beg_ch); }
+
+	inline bool isChunkGeneratedGlobal(const glm::uvec2& coord_ch) {	return chunks_(coord_ch - beg_ch).flag.isGenerated();}
+	inline bool isChunkGeneratedGlobal(size_t x, size_t y) {			return isChunkGeneratedGlobal(glm::uvec2(x,y)); }
 	inline Chunks& chunks() { return chunks_; };
 
 protected:
@@ -71,7 +76,7 @@ public:
 
 	Region() {}
 	Region(const glm::uvec2& begin) {init(begin);}
-
+	
 	inline Chunk* getByVoxel(size_t x, size_t y, size_t z) {	return get(toLocal(x, y, z)); }
 	inline Chunk* getByVoxel(const glm::uvec3& coord) {			return getByVoxel(coord.x, coord.y, coord.z); }
 	/// <summary>
@@ -85,10 +90,9 @@ public:
 	}
 
 private:
-
+	inline Chunk* get(const glm::uvec3& local) noexcept { return isInCh(local) ? &getChunk(local.x, local.z) : 0; }
 	//Проверяет допустимость локальных кординат
 	inline bool isInCh(const glm::uvec3& local) noexcept{		return (local.x < REGION_SIZE && local.z < REGION_SIZE&& local.y == 0); }
-	inline Chunk* get(const glm::uvec3& local) noexcept {		return isInCh(local) ? &getChunk(local.x, local.z) : 0; }
 	inline glm::uvec3 toLocal(size_t x, size_t y, size_t z) {	return glm::uvec3(x / CHUNK_W - beg_ch.x, y / CHUNK_H, z / CHUNK_D - beg_ch.y); }
 	
 };

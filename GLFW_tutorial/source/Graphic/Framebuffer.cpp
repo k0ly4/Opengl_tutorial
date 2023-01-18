@@ -27,7 +27,7 @@ bool FrameBuffer::setSize(const glm::ivec2& size) {
 
     size_ = size;
     std::vector<unsigned int> attachment(texturesFormat_.size());
-    GlRender::bind(*this,0);
+    Render::bind(*this,0);
 
     for (size_t i = 0; i < texturesFormat_.size(); i++) {
         glTexture::bind2D(textures_[i]);
@@ -35,7 +35,7 @@ bool FrameBuffer::setSize(const glm::ivec2& size) {
         texturesFormat_[i].setDataTexture2D(size_, NULL);
 
         attachment[i] = GL_COLOR_ATTACHMENT0 + i;
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment[i], GL_TEXTURE_2D, textures_[i].get(), 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment[i], GL_TEXTURE_2D, textures_[i].id(), 0);
 
     }
 
@@ -45,26 +45,26 @@ bool FrameBuffer::setSize(const glm::ivec2& size) {
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size_.x, size_.y);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rendereBuffer_);
 
-    if(GlRender::checkFramebufferStatus()) {
+    if(Render::checkFramebufferStatus()) {
         LOG(LogError,"FrameBuffer::Non complete\n");
         return 0;
     }
 
-    GlRender::unbind();
+    Render::unbind();
     return 1;
 }
 
 bool FrameBuffer::create(const glm::ivec2& size, size_t sizeTextures, const TextureData* setupTextures)
 {
-        if (testSize("RenderTexture", size))
-            return 0;
+        if (testSize("RenderTexture", size)) return 0;
+
         size_ = size;
         std::vector<unsigned int> attachment(sizeTextures);
         textures_.clear();
         textures_.reserve(sizeTextures);
         texturesFormat_ = std::vector<TextureData>(setupTextures, setupTextures + sizeTextures);
 
-        GlRender::bind(*this,0);
+        Render::bind(*this,0);
         for (size_t i = 0; i < sizeTextures; i++) {
 
             textures_.push_back({});
@@ -74,7 +74,7 @@ bool FrameBuffer::create(const glm::ivec2& size, size_t sizeTextures, const Text
             texturesFormat_[i].setParameteriTexture2D();
 
             attachment[i] = GL_COLOR_ATTACHMENT0 + i;
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachment[i], GL_TEXTURE_2D, textures_[i].get(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, attachment[i], GL_TEXTURE_2D, textures_[i].id(), 0);
         }
         glDrawBuffers(attachment.size(), attachment.data());
 
@@ -82,11 +82,11 @@ bool FrameBuffer::create(const glm::ivec2& size, size_t sizeTextures, const Text
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size_.x, size_.y);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rendereBuffer_);
 
-        if (GlRender::checkFramebufferStatus()) {
+        if (Render::checkFramebufferStatus()) {
             LOG(LogError,"FrameBuffer::Non complete\n");
             return 0;
         }
-        GlRender::unbind();
+        Render::unbind();
         return 1;
 }
 
@@ -102,7 +102,7 @@ bool RenderColor::create(const glm::ivec2& size, size_t sizeTextures, const Text
     textures_.clear();
     textures_.reserve(sizeTextures);
 
-    GlRender::bind(*this,0);
+    Render::bind(*this,0);
     for (size_t i = 0; i < sizeTextures; i++) {
         textures_.push_back({});
         glTexture::bind2D(textures_[i]);
@@ -111,62 +111,39 @@ bool RenderColor::create(const glm::ivec2& size, size_t sizeTextures, const Text
         setupTextures[i].setParameteriTexture2D();
 
         attachment[i] = GL_COLOR_ATTACHMENT0 + i;
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment[i], GL_TEXTURE_2D, textures_[i].get(), 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment[i], GL_TEXTURE_2D, textures_[i].id(), 0);
     }
         glDrawBuffers(attachment.size(), attachment.data());
 
-    if (GlRender::checkFramebufferStatus()) {
-        LOG(LogError, "RenderColor::Non complete\n");
-        return 0;
-    }
+    if (Render::checkFramebufferStatus("RenderColor::Non complete\n"))return 0;
 
-    GlRender::unbind();
+    Render::unbind();
     return 1;
 }
 
 /// <summary>
 /// RenderTexture
 /// </summary>
-
-bool RenderTexture::create(const glm::ivec2& size, const TextureData& format_data) {
-        
-        if (testSize("RenderTexture",size))
-            return 0;
-
-        size_ = size;
-        data_format_ = format_data.getFormat();
-        
-        texture.create(size_, data_format_);
-        texture.filter(format_data.getFilter());
-        texture.wrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-
-        GlRender::bind(*this,0);
-        texture.bindToFramebuffer(0);
-
-        if (GlRender::checkFramebufferStatus()) {
-            LOG(LogError, "RenderTexture::Non complete\n");
-            return 0;
-        }   
-
-        GlRender::unbind();
-        return 1;
+//TextureFormatData data_format_;
+bool RenderTexture::create(const glm::ivec2& size, const TextureFormatData& dFormat,tFilter filter, tWrap2D wrap) {
+        //test 
+        if (testSize("RenderTexture",size)) return 0;
+        if (texture_ != 0 && texture_->getSize() == size)return 0;
+        //texture
+        createTexture(size, dFormat, filter, wrap);
+        //bind
+        return bind();
 }
 
 bool RenderTexture::create(const glm::ivec2& size) {
-
-    if (size_ == size) return 1; 
-    if (testSize("RenderTexture", size))
-        return 0;
-
-    texture.create(size_, data_format_);
-    GlRender::bind(*this, 0);
-    texture.bindToFramebuffer(0);
-
-    if (GlRender::checkFramebufferStatus()) {
-        LOG(LogError,"RenderTexture::Non complete\n");
-        return 0;
-    }
-
-    GlRender::unbind();
-    return 1;
+    //test
+    testSize("RenderTexture", size);
+    if (texture_ != 0 && texture_->getSize() == size  )return 0;
+   //texture
+    if (texture_ == 0) 
+        createTexture(size, TextureFormatData(GL_RGBA, GL_RGBA), tFilter::Nearest, tWrap::ClampToEdge);
+    else 
+        createTexture(size, TextureFormatData(GL_RGBA, GL_RGBA), texture_->resource()->getFilter(), texture_->resource()->getWrap());
+   //bind
+    return bind();
 }

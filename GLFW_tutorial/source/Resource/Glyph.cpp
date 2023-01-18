@@ -1,7 +1,7 @@
 #include "Glyph.h"
 
 void Glyph::load(const FT_Face& face) {
-    texture_ = std::make_shared<GeneralTexture2D>();
+    texture_ = std::make_shared<Texture2DLite>();
     size = glm::uvec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
     bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
     advantage = face->glyph->advance.x >> 6;

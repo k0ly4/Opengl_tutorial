@@ -13,7 +13,7 @@ public:
 
 	bool create(glm::uvec2 Size, const std::string& title);
 
-	void setMonitor(GLFWmonitor* monitor, glm::vec2 pos = glm::vec2(0.f));
+	void setMonitor(GLFWmonitor* monitor, glm::ivec2 pos = glm::ivec2(0));
 	//Заголовок 
 	inline void setTitle(const std::string& title) { glfwSetWindowTitle(window, title.c_str()); }
 	//Иконка: По умолчанию: 0, Null
@@ -25,8 +25,8 @@ public:
 	//Позиция окна
 	inline void setPosition(glm::ivec2 position) { glfwSetWindowPos(window, position.x, position.y); }
 
-	inline const glm::uvec2& getSize() { return ContextWindow::size; }
-	inline const glm::ivec2& getPosition() { return ContextWindow::position; }
+	inline const glm::uvec2& getSize() {		return ContextWindow::size; }
+	inline const glm::ivec2& getPosition() {	return ContextWindow::pos; }
 	//Задать размеры окна
 	inline void setSize(glm::uvec2 Size) { glfwSetWindowSize(window, Size.x, Size.y); }
 

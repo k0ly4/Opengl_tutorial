@@ -27,7 +27,7 @@ void gChunk::setVoxelLocal(Voxel voxel, const glm::uvec3& coord) {
 	if (VoxPack::isActive(voxel)) {
 		nonStatic.insert(index);
 	}
-	else if (VoxPack::isActive(dest)) {
+	else if (VoxPack::isActive(voxel)||VoxPack::isActive(dest)) {
 		glm::ivec3 off[6] = { 
 			glm::ivec3(-1, 0, 0),
 			glm::ivec3(1, 0, 0),
@@ -37,8 +37,18 @@ void gChunk::setVoxelLocal(Voxel voxel, const glm::uvec3& coord) {
 			glm::ivec3(0, 0, 1) 
 		};
 		for (size_t i = 0; i < 6; i++) {
-			const Voxel* vox = voxs.get(glm::ivec3(coord) + off[i]);
-			if (vox && VoxPack::isActive(*vox)) nonStatic.insert(voxs.ind(glm::ivec3(coord) + off[i]));
+			glm::ivec3 pos(glm::ivec3(coord) + off[i]);
+			if ((size_t)pos.y >= CHUNK_H) continue;
+				if (voxs.is(pos)) {
+					if (VoxPack::isActive(voxs(pos))) nonStatic.insert(voxs.ind(pos));
+				}
+				else {
+					gChunk* cl = closes.chunk(pos.x, pos.z);
+					pos = { clip(pos.x,CHUNK_W),pos.y,clip(pos.z,CHUNK_D) };
+					if (cl&& VoxPack::isActive(cl->voxs(pos))) 
+						cl->nonStatic.insert(voxs.ind(pos));
+				}
+			
 		}
 	}
 }
@@ -197,44 +207,71 @@ void MeshChunk::buildSortBox(ShellGeometry& mesh, Voxel voxel, size_t x, size_t 
 void MeshChunk::buildLiquidBox(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z) {
 	float uvsize = VoxPack::get()->getNormalizeSizeVoxel();
 	byte dGroup = VoxPack::get(voxel).drawGroup;
-	heights[0] = heights[1] = heights[2] = heights[3] = (float)voxel.e.m1/(float)(VoxPack::maxConcLiquid+1);
-	Voxel targ = VOXEL(x, y+1, z);
-	if (targ.e.id == voxel.e.id) {
+	float mx = VoxPack::maxConcLiquid + 1;
+	heights[0] = heights[1] = heights[2] = heights[3] = voxel.e.m1/ mx;
+	Voxel trg = VOXEL(x, y+1, z);
+	//Top
+	if (trg.e.id == voxel.e.id) {
 		heights[0] = heights[1] = heights[2] = heights[3] = 1.f;
 	}
-	else { 
-	targ = VOXEL(x + 1, y, z);
-	if (targ.e.id == voxel.e.id && targ.e.m1> voxel.e.m1) {
-		heights[2] = (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1);
-		heights[3] = (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1);
-	}
-	targ = VOXEL(x - 1, y, z);
-	if (targ.e.id == voxel.e.id && targ.e.m1 > voxel.e.m1) {
-		heights[0] = (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1);
-		heights[1] = (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1);
-	}
-	targ = VOXEL(x, y, z+1);
-	if (targ.e.id == voxel.e.id && targ.e.m1 > voxel.e.m1) {
-		heights[1] = (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1);
-		heights[2] = (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1);
-	}
-	targ = VOXEL(x, y, z-1);
-	if (targ.e.id == voxel.e.id && targ.e.m1 > voxel.e.m1) {
-		heights[0] = (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1);
-		heights[3] = (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1);
-	}
-	targ = VOXEL(x - 1, y, z - 1);
-	if (targ.e.id == voxel.e.id && targ.e.m1 > voxel.e.m1)
-		heights[0] = std::max(heights[0], (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1));
-	targ = VOXEL(x - 1, y, z + 1);
-	if (targ.e.id == voxel.e.id && targ.e.m1 > voxel.e.m1)
-		heights[1] = std::max(heights[1], (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1));
-	targ = VOXEL(x+1, y, z + 1);
-	if (targ.e.id == voxel.e.id && targ.e.m1 > voxel.e.m1) 
-		heights[2] = std::max(heights[2],(float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1));
-	targ = VOXEL(x + 1, y, z-1);
-	if (targ.e.id == voxel.e.id && targ.e.m1 > voxel.e.m1) 
-		heights[3] = std::max(heights[3], (float)targ.e.m1 / (float)(VoxPack::maxConcLiquid + 1));
+	else {
+
+		trg = VOXEL(x + 1, y + 1, z);
+		if (trg.e.id == voxel.e.id)								 heights[2] = heights[3] = 1.f;
+		else {
+			trg = VOXEL(x + 1, y, z);
+			if (trg.e.id == voxel.e.id && trg.e.m1 > voxel.e.m1) heights[2] = heights[3] = (float)trg.e.m1 / mx;
+		}
+
+		trg = VOXEL(x - 1, y + 1, z);
+		if (trg.e.id == voxel.e.id)								 heights[0] = heights[1] = 1.f;
+		else {
+			trg = VOXEL(x - 1, y, z);
+			if (trg.e.id == voxel.e.id && trg.e.m1 > voxel.e.m1) heights[0] = heights[1] = (float)trg.e.m1 / mx;
+		}
+
+		trg = VOXEL(x, y + 1, z+1);
+		if (trg.e.id == voxel.e.id)								 heights[1] = heights[2] = 1.f;
+		else {
+			trg = VOXEL(x, y, z + 1);
+			if (trg.e.id == voxel.e.id && trg.e.m1 > voxel.e.m1) {
+				float val = (float)trg.e.m1 / mx;
+				heights[1] = std::max(heights[1], val);
+				heights[2] = std::max(heights[2], val);
+			}
+		}
+		trg = VOXEL(x, y + 1, z - 1);
+		if (trg.e.id == voxel.e.id)								 heights[0] = heights[3] = 1.f;
+		else {
+			trg = VOXEL(x, y, z - 1);
+			{
+				if (trg.e.id == voxel.e.id && trg.e.m1 > voxel.e.m1){
+					float val = (float)trg.e.m1 / mx;
+					heights[0] = std::max(heights[0], val);
+					heights[3] = std::max(heights[3], val);
+			}
+		}
+		}
+		if(VOXEL(x - 1, y+1, z - 1).e.id == voxel.e.id)heights[0] = 1.f;
+		else {
+			trg = VOXEL(x - 1, y, z - 1);
+			if (trg.e.id == voxel.e.id && trg.e.m1 > voxel.e.m1) heights[0] = std::max(heights[0], (float)trg.e.m1 / mx);
+		}
+		if (VOXEL(x - 1, y + 1, z + 1).e.id == voxel.e.id)heights[1] = 1.f;
+		else {
+			trg = VOXEL(x - 1, y, z + 1);
+			if (trg.e.id == voxel.e.id && trg.e.m1 > voxel.e.m1)heights[1] = std::max(heights[1], (float)trg.e.m1 / mx);
+		}
+		if (VOXEL(x + 1, y + 1, z + 1).e.id == voxel.e.id)heights[2] = 1.f;
+		else {
+			trg = VOXEL(x + 1, y, z + 1);
+			if (trg.e.id == voxel.e.id && trg.e.m1 > voxel.e.m1)heights[2] = std::max(heights[2], (float)trg.e.m1 / mx);
+		}
+		if (VOXEL(x + 1, y + 1, z - 1).e.id == voxel.e.id)heights[3] = 1.f;
+		else {
+			trg = VOXEL(x + 1, y, z - 1);
+			if (trg.e.id == voxel.e.id && trg.e.m1 > voxel.e.m1)heights[3] = std::max(heights[3], (float)trg.e.m1 / mx);
+		}
 	}
 	
 

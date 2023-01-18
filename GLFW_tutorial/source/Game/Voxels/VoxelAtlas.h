@@ -78,7 +78,7 @@ struct Block {
 
 	std::string name;
 	//uv wrap
-	int idSide[6];
+	size_t idSide[6];
 	//emission
 	Uint8RGB emission;
 	//Draw method
@@ -88,10 +88,37 @@ struct Block {
 	//is emission
 	bool isEmission;
 
-	inline void setSolid(int fill) { for (size_t i = 0; i < 6; i++) idSide[i] = fill;}
+	inline void fillSide(int fill) { for (size_t i = 0; i < 6; i++) idSide[i] = fill;}
 	inline void setEmissionFlag() {isEmission = emission.r || emission.g || emission.b;}
 };
 
+class TexturePack {
+public:
+	const Block& get(Voxel id)const noexcept { return blocks[id.e.id]; }
+	//path to json file
+	bool load(const std::string& directory);
+	inline const glm::vec2& get(Voxel id, int side)const noexcept { return uv[blocks[id.e.id].idSide[side]]; }
+
+	inline float getNormalizeSizeVoxel()const noexcept { return uvSize_; }
+	inline size_t getSizeVoxel()const noexcept { return sizeVoxel_; }
+
+	inline void use(const Shader& shader)const {
+		shader.uniform("configMaterial", 1);
+		shader.uniform("baseColor", glm::vec3(1.f));
+		atlas_.use(0);
+	}
+	const Texture2D& getAtlas()const { return atlas_; }
+	const Texture2D& getIcons()const { return icons_; }
+private:
+	std::vector<glm::vec2> uv;
+	std::vector<Block> blocks;
+
+	float uvSize_;
+	size_t voxelInSide;
+	size_t sizeVoxel_;
+	Texture2D icons_, atlas_;
+	RenderTexture render;
+};
 ///VoxelAtlas---------------------------
 /// <summary>
 /// 

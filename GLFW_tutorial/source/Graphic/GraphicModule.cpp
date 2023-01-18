@@ -13,7 +13,7 @@ void GraphicPipeline::initialize(RenderWindow& window) {
 
     frame.create(window.getSize(), TextureData(GL_RGBA16F, GL_RGBA, GL_NEAREST));
   /*  gBuffer.create(window.getSize());*/
-    ui.create(window.getSize(), TextureData(GL_RGBA, GL_RGBA, GL_NEAREST));
+    ui.create(window.getSize(), { GL_RGBA, GL_RGBA }, GL_NEAREST);
 }
 
 void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule& event) {
@@ -33,8 +33,8 @@ void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule&
     }
     ////////////////---------------------------------
     else {
-    GlRender::bind(frame);
-    GlRender::setClearColor(sc.sc3d.world.weather.colorSky());
+    Render::bind(frame);
+    Render::setClearColor(sc.sc3d.world.weather.colorSky());
     glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
     }
     //Forward render ----------------------
@@ -42,13 +42,13 @@ void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule&
     sc.sc3d.inForward(window);
 
     //UI----------------------
-    GlRender::bind(ui);
-    GlRender::setClearColor(clearUI);
+    Render::bind(ui);
+    Render::setClearColor(clearUI);
     glClear(GL_COLOR_BUFFER_BIT);
     sc.ui.inRender(ui);
 
     //Постобработка - гамма коррекция----------------------
-    GlRender::unbind();
+    Render::unbind();
     Blend::Enable(true);
     Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
     Depth::Enable(false);
@@ -58,7 +58,7 @@ void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule&
     ////else 
     filter.drawExposure(frame.getTexture());
     //ui render
-    if (event.f.showUi) display(ui.getTexture());
+    if (event.f.showUi) display(*ui.texture());
     //
     window.display();
 }

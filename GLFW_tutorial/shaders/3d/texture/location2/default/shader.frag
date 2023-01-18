@@ -9,4 +9,5 @@ out vec4 FragColor;
 void main()
 {
        FragColor =texture(diffuse1,texCoord)*color;
+	   if(FragColor.a<0.1)discard;
 }

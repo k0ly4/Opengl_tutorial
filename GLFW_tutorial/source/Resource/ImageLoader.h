@@ -4,6 +4,7 @@
 #include"stb_image.h"
 #include "Graphic/ContextTexture.h"
 #include "System/Exception.h"
+#include "Graphic/TextureEntity.h"
 
 /// <summary>
 /// STBI_Data
@@ -11,41 +12,22 @@
 class STBI_Data {
 
 	struct Data {
-
 		unsigned char* data;
-
-		Data(unsigned char* data_)
-			:data(data_) {}
-
-		~Data() {
-			stbi_image_free(data);
-		}
+		Data(unsigned char* data_) :data(data_) {}
+		~Data() { stbi_image_free(data); }
 	};
 
 public:
+	STBI_Data(unsigned char* data):data_(std::make_shared<Data>(data)) {}
+	STBI_Data():data_(0) {}
 
-	STBI_Data(unsigned char* data):
-	data_(std::make_shared<Data>(data)) 
-	{}
+	void set(unsigned char* data){ data_ = std::make_shared<Data>(data);}
 
-	STBI_Data() 
-	{}
-
-	void set(unsigned char* data){
-		data_ = std::make_shared<Data>(data);
-	}
-
-	const std::shared_ptr<Data> get()const {
-		return data_;
-	}
-
-	bool isEmpty()const {
-		return (data_->data == 0);
-	}
+	inline const std::shared_ptr<Data> get()const { return data_;}
+	inline		unsigned char* data()		const {	return data_->data; }
+	inline bool isEmpty()const { return (data_->data == 0);}
 private:
-
 	std::shared_ptr<Data> data_;
-
 };
 
 /// <summary>
@@ -63,105 +45,124 @@ public:
 		size_(0),
 		data_(0)
 	{}
-	const glm::ivec2& getSize()const {
-		return size_;
-	}
-
-	const STBI_Data& getData()const  {
-		return data_;
-	}
-
-	int getNumChannels()const {
-		return nrChannels_;
-	}
-
-	bool isEmtpy()const  {
-		return data_.isEmpty();
-	}
-
-	GLenum getFormat()const {
+	
+	inline GLenum format()const {
 		if (nrChannels_ == 3)		return  GL_RGB;
 		else if (nrChannels_ == 4)	return  GL_RGBA;
-		else						return GL_RED;
+		else						return	GL_RED;
 	}
 
-	GLenum getInternalFormat(bool gamma)const {
-		
+	inline GLenum internalFormat(bool gamma)const {
 		if (nrChannels_ == 3)		return gamma ? GL_SRGB : GL_RGB;
 		else if (nrChannels_ == 4)	return  gamma ? GL_SRGB_ALPHA : GL_RGBA;
 		else						return GL_RED;
 	}
 
-	GLFWimage getImage()const {
-		GLFWimage result;
-		result.height = size_.y;
-		result.width = size_.x;
-		result.pixels = data_.get()->data;
-		return result;
+	inline GLFWimage getImage()const {
+		//GLFWimage result = ;
+		//result.width = size_.x;
+		//result.height = size_.y;
+		//result.pixels = data_.get()->data;
+		return { size_.x ,size_.y ,data_.get()->data};
 	}
-private:
 
 	glm::ivec2 size_;
 	int nrChannels_;
 	STBI_Data data_;
+private:
 };
 
 /// <summary>
 /// TextureResource
 /// </summary>
-class TextureResource {
+class ResourceTexture2D {
 public:
 
-	TextureResource(const glm::ivec2& size,unsigned nrChannels,bool gamma, const unsigned char * data) {
+	ResourceTexture2D(const glm::ivec2& size,unsigned nrChannels,bool gamma, const byte * data):
+		format_(GL_RED, GL_RED),
+		size_(size),
+		sizeMipmaps_(0)
+	{
 		size_ = size;
+		
 		if (nrChannels == 3) {
-			internal_format_ = gamma ? GL_SRGB : GL_RGB;
-			format_ = GL_RGB;
+			format_.internalFormat = gamma ? GL_SRGB : GL_RGB;
+			format_.format = GL_RGB;
 		}
 		else if (nrChannels == 4) {
-			internal_format_ = gamma ? GL_SRGB_ALPHA : GL_RGBA;
-			format_ = GL_RGBA;
+			format_.internalFormat = gamma ? GL_SRGB_ALPHA : GL_RGBA;
+			format_.format = GL_RGBA;
 		}
-		else format_ = internal_format_ = GL_RED;
-
 		glTexture::bind2D(id_);
-		glTexImage2D(GL_TEXTURE_2D, 0, internal_format_, size_.x, size_.y, 0, format_, GL_UNSIGNED_BYTE, data);
+		format_.dataImage2D(size_, data);
+		setupPar();
 	}
-
-	TextureResource(const STBI_Resource& resource,bool gamma):
-	TextureResource(resource.getSize(),resource.getNumChannels(),gamma,resource.getData().get()->data)
+	
+	ResourceTexture2D(const STBI_Resource& resource,bool gamma):
+		ResourceTexture2D(resource.size_,resource.nrChannels_,gamma,resource.data_.get()->data)
 	{}
-
-	TextureResource():
+	/*ResourceTexture2D():
 		size_(0),
-		id_(),
-		internal_format_(GL_RED),
-		format_(GL_RED)
-	{}
-
-	GLenum getFormat()const {
-		return format_;
+		format_(GL_RED, GL_RED),
+		sizeMipmaps_(0)
+	{
+		glTexture::bind2D(id_);
+		setupPar();
+	}*/
+	ResourceTexture2D(const glm::ivec2& size, const TextureFormatData& format, const void* data, int sizeMipmaps) :
+		size_(size),
+		format_(format),
+		sizeMipmaps_(sizeMipmaps)
+	{
+		glTexture::bind2D(id_);
+		format.dataImage2D(size_, data);
+		setupPar();
+		if (sizeMipmaps_ != 0) {
+			if (sizeMipmaps_ != -1) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, sizeMipmaps_);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		
 	}
 
-	GLenum getInternalFormat()const {
-		return internal_format_;
-	}
+	TexPtr id_;
+	glm::ivec2 size_;
+	TextureFormatData format_;
 
-	const glm::ivec2& getSize()const {
-		return size_;
-	}
 
-	const TexturePointer& getId()const {
-		return id_;
-	}
 
+	inline void filter(GLint filter_max, GLint filter_min) {
+		if (filter_.max == filter_max && filter_.min == filter_min)return;
+		glTexture::bind2D(id_);
+		filter_.setup(GL_TEXTURE_2D, filter_max, filter_min);
+	}
+	inline void wrap(GLint S, GLint T) {
+		if (wrap_.vec == glm::ivec2(S, T)) return;
+		glTexture::bind2D(id_);
+		wrap_.setup(GL_TEXTURE_2D, S, T);
+	}
+	inline const tFilter& getFilter()	const { return filter_; }
+	inline const tWrap2D& getWrap()		const { return wrap_; }
+	inline int sizeMipmaps()			const { return sizeMipmaps_; }
+
+	inline void setMipmaps(int sizeMipmaps) {
+		if (sizeMipmaps == sizeMipmaps_) return;
+		glTexture::bind2D(id_);
+		sizeMipmaps_ = sizeMipmaps;
+		if (sizeMipmaps_ != 0) {
+			if (sizeMipmaps_ != -1) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, sizeMipmaps_);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+	}
 private:
 
-	glm::ivec2 size_;
-	TexturePointer id_;
-	GLenum internal_format_;
-	GLenum format_;
+	inline void setupPar() {
+		wrap_.setup(GL_TEXTURE_2D);
+		filter_.setup(GL_TEXTURE_2D);
+	}
 
+	tFilter filter_;
+	tWrap2D wrap_;
+	int sizeMipmaps_;
 };
 
 /// <summary>
@@ -170,17 +171,12 @@ private:
 class ImageLoader {
 
 public:
+	static const void flipVerticallyOnLoad(bool enable) { stbi_set_flip_vertically_on_load(enable);}
 
-	static const void flipVerticallyOnLoad(bool enable) {
-		stbi_set_flip_vertically_on_load(enable);
-	}
-
-	static const TextureResource* getTexture(const std::string& path, bool gamma = 1, int nrChannels_need = 0) {
+	static std::shared_ptr <ResourceTexture2D> getTex2D(const std::string& path, bool gamma = 1, int nrChannels_need = 0) {
 		auto resource = rTextures_.find(path);
-
-		if (resource == rTextures_.end()) 
-			return loadTexture(path, gamma, nrChannels_need) ? &rTextures_[path]:0;
-		return &resource->second;
+		if (resource == rTextures_.end()) return loadTexture(path, gamma, nrChannels_need);;
+		return resource->second;
 	}
 
 	static const STBI_Resource* getSTBI(const std::string& path, int nrChannels_need = 0) {
@@ -190,14 +186,14 @@ public:
 	}
 	
 private:
-	static bool loadTexture(const std::string& path,bool gamma, int nrChannels_need);
+
+	static std::shared_ptr <ResourceTexture2D> loadTexture(const std::string& path,bool gamma, int nrChannels_need);
 	static bool loadSTBI(const std::string& path, int nrChannels_need = 0);
 
-	static std::map<std::string, TextureResource> rTextures_;
+	static std::map<std::string, std::shared_ptr<ResourceTexture2D>> rTextures_;
 	static std::map<std::string, STBI_Resource> rSTBI;
 
 	ImageLoader() {}
 	~ImageLoader() {}
-
 };
 #endif

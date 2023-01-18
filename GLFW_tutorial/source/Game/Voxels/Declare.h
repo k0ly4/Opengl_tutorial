@@ -6,7 +6,7 @@ typedef unsigned short twobyte;
 //Chunk--------------------------------------------------------
 #define CHUNK_D 16
 #define CHUNK_W 16
-#define CHUNK_H 126
+#define CHUNK_H 128
 
 #define CHUNK_VOL CHUNK_W * CHUNK_H * CHUNK_D
 #define CHUNK_VEC glm::uvec3(CHUNK_W,CHUNK_H,CHUNK_D)

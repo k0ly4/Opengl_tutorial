@@ -39,5 +39,5 @@ private:
     
     static Context lib;
 };
-
+struct iID { unsigned int id;};
 #endif

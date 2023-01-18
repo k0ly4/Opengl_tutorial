@@ -18,22 +18,22 @@
             if (resource == 0)  return 0;
 
             if (size_init == 0) {
-                size_ = resource->getSize();
+                size_ = resource->size_;
             }
-            else if (resource->getSize()!= size_) {
+            else if (resource->size_ != size_) {
                 printf("(!)Error::TextureCubeMap::STBI_Resource(path = \"%s\") have size not equal cube map size\n",path[i].c_str());
                 return 0;
             }
 
             glTexImage2D(
-                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 
-                resource->getInternalFormat(gammaMod), 
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
+                resource->internalFormat(gammaMod),
                 size_.x,
                 size_.y,
-                0, 
-                resource->getFormat(),
-                GL_UNSIGNED_BYTE, 
-                resource->getData().get()->data
+                0,
+                resource->format(),
+                GL_UNSIGNED_BYTE,
+                resource->data_.data()
             );
         }
 
@@ -41,12 +41,12 @@
         return 1;
     }
 
-    void TextureCubeMap::create(const glm::ivec2& size, const TextureFormat& format) {
+    void TextureCubeMap::create(const glm::ivec2& size, const TextureFormatData& format) {
         detach();
         glTexture::bindCubeMap(id_);
         size_ = size;
         for (unsigned int i = 0; i < 6; ++i){
-            format.TexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, size_, NULL);
+            format.dataImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, size_, NULL);
         }
         glTexture::bindCubeMap(0);
     }
@@ -54,45 +54,23 @@
     /// <summary>
     /// Texture2D
     /// </summary>
-    bool Texture2D::getPath(const std::string& path, int sizeMipmaps, bool gammaMod) {
-        const TextureResource* resource = ImageLoader::getTexture(path, gammaMod);
-        if(resource == 0) return 0;
-
-        id_ = resource->getId();
-        size_ = resource->getSize();
-        sizeMipmaps_ = sizeMipmaps;
-
-        glTexture::bind2D(id_);
-        wrap_.setup(GL_TEXTURE_2D);
-        filter_.setup(GL_TEXTURE_2D);
-        if (sizeMipmaps_ != 0) {
-            if (sizeMipmaps_ != -1) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, sizeMipmaps_);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
+    bool Texture2D::load(const std::string& path, int sizeMipmaps, bool gammaMod) {
+        res_ = ImageLoader::getTex2D(path, gammaMod);
+        if(res_ == 0) return 0;
+        res_->setMipmaps(sizeMipmaps);
         return 1;
     }
 
-    void Texture2D::create(const glm::ivec2& size, const TextureFormat& format, const void* data, int sizeMipmaps) {
-
-        detach();
-        size_ = size;
-        sizeMipmaps_ = sizeMipmaps;
-        format.setDataTexture2D(size, data);
-
-        if (sizeMipmaps_ != 0) {
-            if (sizeMipmaps_ != -1) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, sizeMipmaps_);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-    }
+    
     
     /// <summary>
     /// ArrayTexture2D
     /// </summary>
   
-    void ArrayTexture2D::create(size_t count, const glm::ivec2& size, const TextureFormat& format,const void* data){
+    void ArrayTexture2D::create(size_t count, const glm::ivec2& size, const TextureFormatData& format,const void* data){
 
         detach();
         size_ = size;
         count_ = count;
-        format.TexImage3D(GL_TEXTURE_2D_ARRAY, size_, count, data);
+        format.dataImage3D(GL_TEXTURE_2D_ARRAY, size_, count, data);
     }

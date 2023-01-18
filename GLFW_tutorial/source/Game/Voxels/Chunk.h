@@ -109,6 +109,13 @@ public:
 			else if (bottom && right)	modifyAlpha(Side2D::right_bottom);
 			else if (bottom && left)	modifyAlpha(Side2D::left_bottom);
 		}
+		inline gChunk* chunk(int x, int y) {
+			if ((x == CHUNK_W))					return chunks[Side2D::right];
+			if ((x == -1))						return chunks[Side2D::left];
+			if ((y == CHUNK_D))					return chunks[Side2D::top];
+			if ((y == -1))						return chunks[Side2D::bottom];
+			return 0;
+		}
 	private:
 		gChunk* chunks[Side2D::NuN];
 	};
@@ -300,7 +307,7 @@ public:
 	
 
 private:
-	void lightFace(int x, int yT, int z, Vec4Array* face);
+	
 };
 #endif
 

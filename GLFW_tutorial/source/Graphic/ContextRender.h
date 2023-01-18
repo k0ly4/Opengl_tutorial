@@ -236,11 +236,11 @@ private:
 	static ActionPass action_;
 };
 
-/// GlRender------------------------------------------------------------
+/// Render------------------------------------------------------------
 /// <summary>
-/// GlRender
+/// Render
 /// </summary>
-class GlRender {
+class Render {
 
 public:
 
@@ -252,6 +252,13 @@ public:
 	inline static bool checkFramebufferStatus() {
 		return glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE;
 	}
+	inline static bool checkFramebufferStatus(const char* logInfo) { 
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+				LOG(LogError, logInfo);
+				return 1;
+			}
+			return 0;
+	}
 	static void setClearColor(const Color& color);
 	static inline void setClearColor(float color) {
 		setClearColor(Color(color));
@@ -260,7 +267,7 @@ public:
 		setClearColor(Color(r, g, b, a));
 	}
 	
-
+	/// Viewport------------------------------------------------------------
 	class  Viewport {
 		
 	public:
@@ -291,7 +298,7 @@ public:
 	private:
 		static IntRect cur;
 	};
-
+	/// Point------------------------------------------------------------
 	class Point {
 		
 	public:
@@ -317,7 +324,7 @@ public:
 		static bool smooth;
 
 	};
-
+	/// Line------------------------------------------------------------
 	class Line {
 		
 	public:
@@ -350,12 +357,15 @@ public:
 	}
 
 	static void unbind();
-	static void bind(const GeneralRender& fbo, bool renderMode = 1);
+	static void bind(const iFrame& fbo, bool renderMode = 1);
+
+	static inline void gen(iFrame& fbo) {	glGenFramebuffers(1, &fbo.id_);}
+	static inline void free(iFrame& fbo) { glDeleteFramebuffers(1, &fbo.id_); }
 
 private:
 
-	GlRender() {}
-	~GlRender() {}
+	Render() {}
+	~Render() {}
 	static Color cur_color_clear;
 	static GLenum polygonMode;
 	
@@ -371,7 +381,7 @@ private:
 class Graphic {
 public:
 	Graphic() {
-		VAO.data_draw = DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES, 0);
+		VAO.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES, 0);
 	}
 	void setMesh(const std::vector<Vertex>& vertices) {
 		VAO.data_draw.data.count_vertex = vertices.size();

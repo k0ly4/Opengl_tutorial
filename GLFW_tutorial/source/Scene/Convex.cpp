@@ -7,7 +7,7 @@
 Convex::Convex() {
 
     shaderHint = glShader::color_layout;
-    VAO.data_draw = DataDraw(DataDraw::DrawArrays, GlRender::LINE_STRIP, 0);
+    VAO.data_draw = DataDraw(DataDraw::DrawArrays, Render::LINE_STRIP, 0);
     VBO.setMode(GBO::DYNAMIC);
     VAO.begin();
     VBO.begin();
@@ -19,13 +19,13 @@ Convex::Convex() {
 void Convex::draw(const View* view, const Shader& shader) {
     shader.use();
     view->use(shader);
-    if (VAO.data_draw.data.mode_primitive == GlRender::POINTS) {
-        GlRender::Point::Size(setup.size);
-        GlRender::Point::Smooth(1);
+    if (VAO.data_draw.data.mode_primitive == Render::POINTS) {
+        Render::Point::Size(setup.size);
+        Render::Point::Smooth(1);
     }
-    else if (VAO.data_draw.data.mode_primitive < GlRender::TRIANGLES) {
-        GlRender::Line::Width(setup.size);
-        GlRender::Line::Smooth(1);
+    else if (VAO.data_draw.data.mode_primitive < Render::TRIANGLES) {
+        Render::Line::Width(setup.size);
+        Render::Line::Smooth(1);
     }
 
     shader.uniform("model", glm::mat4(1.f));

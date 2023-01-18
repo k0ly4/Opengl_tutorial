@@ -30,8 +30,6 @@ GLenum Blend::srcFunc = Blend::None;
 GLenum Blend::dstFunc = Blend::None;
 
 GLenum Blend::modeEquation = Blend::Add;
-
-
 /// Depth------------------------------------------------------------
  /// <summary>
  /// Depth
@@ -97,22 +95,21 @@ Stencil::ActionPass Stencil::action_;
  /// GlRender
  /// </summary>
 
- void GlRender::setClearColor(const Color& color) {
+ void Render::setClearColor(const Color& color) {
 	if (cur_color_clear != color) {
 		cur_color_clear = color;
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 }
 
-
-void GlRender::PolygonMode(GLenum mode) {
+void Render::PolygonMode(GLenum mode) {
 	if (polygonMode != mode) {
 		polygonMode = mode;
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 	}
 }
 
-void GlRender::unbind() {
+void Render::unbind() {
 	if (last_fbo != 0) {
 		last_fbo = 0;
 		glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
@@ -120,12 +117,11 @@ void GlRender::unbind() {
 	}
 }
 
-void GlRender::bind(const GeneralRender& fbo,bool renderMode) {
-	if (last_fbo != fbo.getId()) {
-		last_fbo = fbo.getId();
+void Render::bind(const iFrame& fbo,bool renderMode) {
+	if (last_fbo != fbo.id()) {
+		last_fbo = fbo.id();
 		glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
-		if(renderMode)
-			Viewport::set(fbo.getSize());
+		if(renderMode) Viewport::set(fbo.size());
 	}
 }
 
@@ -134,15 +130,14 @@ bool CullFace::enable = 0;
 GLenum  CullFace::mode = CullFace::Back;
 GLenum CullFace::frontFace = CullFace::ccw;
 
-GLfloat GlRender::Line::width = 0.f;
-bool GlRender::Line::smooth = 0;
+GLfloat			Render::Line::width = 0.f;
+bool			Render::Line::smooth = 0;
 
-GLfloat GlRender::Point::size = 0.f;
-bool GlRender::Point::smooth = 0;
+GLfloat			Render::Point::size = 0.f;
+bool			Render::Point::smooth = 0;
 
-IntRect  GlRender::Viewport::cur;
+IntRect			Render::Viewport::cur;
 
-unsigned int GlRender::last_fbo = 0;
-Color GlRender::cur_color_clear(0.f);
-
-GLenum GlRender::polygonMode = GL_FILL;
+unsigned int	Render::last_fbo = 0;
+Color			Render::cur_color_clear(0.f);
+GLenum			Render::polygonMode = GL_FILL;

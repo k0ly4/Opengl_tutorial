@@ -36,7 +36,7 @@ public:
 
 	inline void draw() {
 		VAO.begin();
-		glDrawElements(GlRender::TRIANGLES, size_vertex_to_draw, GL_UNSIGNED_INT, 0);
+		glDrawElements(Render::TRIANGLES, size_vertex_to_draw, GL_UNSIGNED_INT, 0);
 	}
 	inline void draw(GLenum primitive) {
 		VAO.begin();
@@ -111,13 +111,13 @@ public:
 		//VAO.end();
 	}
 
-	inline void drawArrays(GLenum primitive = GlRender::TRIANGLES) {
+	inline void drawArrays(GLenum primitive = Render::TRIANGLES) {
 		VAO.begin();
 		glDrawArrays(primitive, 0, vertices.size());
 	}
 	inline void drawArrayInstanced(size_t count_obj) {
 		VAO.begin();
-		glDrawArraysInstanced(GlRender::TRIANGLES, 0, vertices.size(), count_obj);
+		glDrawArraysInstanced(Render::TRIANGLES, 0, vertices.size(), count_obj);
 	}
 	inline void drawArrayInstanced(GLenum primitive, size_t count_obj) {
 		VAO.begin();

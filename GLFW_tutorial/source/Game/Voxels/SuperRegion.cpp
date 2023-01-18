@@ -4,7 +4,7 @@ inline bool isOut(const glm::uvec2& p_ch, const glm::uvec2& c_ch,size_t size_ch)
 	return (p_ch.x > c_ch.x || p_ch.y > c_ch.y || p_ch.x+ SUPREG_VOL_CH < c_ch.x+ size_ch || p_ch.y + SUPREG_VOL_CH < c_ch.y + size_ch);
 }
 
-void SupReg::fillSector(ChunkPtrs& sec, size_t sec_size, const glm::uvec2& sec_beg_ch) {
+void fSupReg::fillSector(ChunkPtrs& sec, size_t sec_size, const glm::uvec2& sec_beg_ch) {
 
 	if (isOut(beg_ch, sec_beg_ch, sec_size)) {
 		//Установка нового центра
@@ -25,7 +25,7 @@ void SupReg::fillSector(ChunkPtrs& sec, size_t sec_size, const glm::uvec2& sec_b
 
 
 
-void SupReg::translate(const glm::ivec2& new_beg_reg) {
+void fSupReg::translate(const glm::ivec2& new_beg_reg) {
 	//Вычисление сдвига по индексу
 	glm::ivec2 offset_rg((glm::ivec2)beg_reg - new_beg_reg);
 	int offsetInd = offset_rg.y * SUPREG_SIZE + offset_rg.x;
@@ -74,7 +74,7 @@ void setCloses(size_t x, size_t y, size_t cur, Regions& r) {
 			gChunk::Closes::link(reg(i, REGION_SIZE - 1), Side2D::top, reg_(i, 0), Side2D::bottom);
 	}
 }
-void SupReg::setCloses(int new_region) {
+void fSupReg::setCloses(int new_region) {
 	glm::ivec2 coord(toCoord2(new_region, SUPREG_SIZE));
 	::setCloses(coord.x, coord.y, new_region, reg);
 }

@@ -10,8 +10,8 @@ bool ResourcePack::load(const std::string& directory) {
 	if (FileManager::read(directory+"atlas.json", json) == 0)return 0;
 	//Texture
 	ImageLoader::flipVerticallyOnLoad(1);
-	if (texture_.getPath(directory +json.value("path", ""), 4) == 0) return 0;
-	texture_.filter(TextureFilter::Nearest, TextureFilter::NearestMipmapNearest);
+	if (texture_.load(directory +json.value("path", ""), 4) == 0) return 0;
+	texture_.filter(tFilter::Nearest, tFilter::NearestMipmapNearest);
 	//Parse
 	sizeVoxel_ = json.value("size_uv",0);
 	if (sizeVoxel_ == 0)

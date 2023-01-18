@@ -82,7 +82,7 @@ public:
     TypeConvex()
     {
         vertices_.reserve(10);
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES, 0);
+        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES, 0);
         VBO_.setMode(GBO::DYNAMIC);
         VBO_.begin();
         VAO_.begin();
@@ -91,7 +91,7 @@ public:
 
     TypeConvex(size_t amount_vertex) {
         vertices_.resize(amount_vertex);
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES, amount_vertex);
+        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES, amount_vertex);
         VBO_.setMode(GBO::DYNAMIC);
         VBO_.begin();
         VAO_.begin();
@@ -169,7 +169,7 @@ public:
  
     {
         vertices_.reserve(10);
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES_STRIP, 0);
+        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES_STRIP, 0);
         VBO_.setMode(GBO::DYNAMIC);
         VBO_.begin();
         VAO_.begin();
@@ -179,7 +179,7 @@ public:
 
     ConvexUV(size_t amount_vertex) {
         vertices_.resize(amount_vertex);
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, GlRender::TRIANGLES_STRIP, amount_vertex);
+        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES_STRIP, amount_vertex);
         VBO_.setMode(GBO::DYNAMIC);
         VBO_.begin();
         VAO_.begin();
