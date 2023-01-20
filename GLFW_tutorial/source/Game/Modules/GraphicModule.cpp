@@ -1,7 +1,6 @@
-#include "GraphicModule.h"
-
-#include "Input/EventModule.h"
-#include "Scene/Scene.h"
+#include "Game/Modules/GraphicModule.h"
+#include "Game/Modules/EventModule.h"
+#include "Game/Modules/Scene.h"
 
 /// <summary>
 /// GraphicPipeline
@@ -12,8 +11,8 @@ inline void display(const Texture2D& texture) { Debugger::display(texture); }
 void GraphicPipeline::initialize(RenderWindow& window) {
 
     frame.create(window.getSize(), TextureData(GL_RGBA16F, GL_RGBA, GL_NEAREST));
-  /*  gBuffer.create(window.getSize());*/
     ui.create(window.getSize(), { GL_RGBA, GL_RGBA }, GL_NEAREST);
+    clock.restart();
 }
 
 void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule& event) {
@@ -61,5 +60,7 @@ void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule&
     if (event.f.showUi) display(*ui.texture());
     //
     window.display();
+    time = clock.restart();;
+    fps = (3.f*fps + 1.f / time)/4.f;
 }
 //

@@ -104,11 +104,8 @@ public:
 	}
 
 	inline void saveInBuffer() {
-		//VAO.begin();
 		VBO.begin();
 		VBO.data(vertices);
-		//T::attrib(VAO);
-		//VAO.end();
 	}
 
 	inline void drawArrays(GLenum primitive = Render::TRIANGLES) {

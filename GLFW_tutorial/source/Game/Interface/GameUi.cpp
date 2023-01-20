@@ -1,7 +1,14 @@
 #include "GameUi.h"
-void GameUi::init(Player* player_, World* world_) {
-	world = world_;
-	player = player_;
+#include "Game/Modules/GraphicModule.h"
+#include "Game/Modules/EventModule.h"
+#include "Game/Modules/Scene.h"
+
+void GameUi::init(EventModule* event_, GraphicPipeline* graphic_, GlobalScene* scene_) {
+	scene = scene_;
+	graphic = graphic_;
+	event = event_;
+	world = &scene->sc3d.world;
+	player = &scene->sc3d.player;
 	font.load("asset\\font\\UbuntuMono-R.ttf");
 	text.setFont(font);
 	text.transform.setOrigin(beg);
@@ -25,7 +32,9 @@ void GameUi::drawDebugInfo(RenderTarget& target) {
 	if (chunk)voxel = chunk->getGlobal(player->input.cursor.pos);
 	else voxel = 0;
 	//Player
-	info = L"player:\npos." +
+	info = L"FPS.update:"+std::to_wstring((int)event->f.fps)+L", "+
+		L".render:" + std::to_wstring((int)graphic->fps) + L"\n" +
+		L"player:\npos." +
 		to_wstring(player->getBasis().position) + L"\n" +
 		L"front." + to_wstring(player->getBasis().front) + L"\n" +
 		L"cursor:\n" +

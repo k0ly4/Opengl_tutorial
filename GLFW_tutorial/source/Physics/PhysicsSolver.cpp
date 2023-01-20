@@ -1,5 +1,5 @@
 #include "PhysicsSolver.h"
-#include "Scene/Scene.h"
+#include "Game/Modules/Scene.h"
 #define E 0.03f
 void PhysicsSolver::init(GlobalScene* scene_) {
 	scene = scene_;

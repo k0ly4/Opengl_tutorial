@@ -7,11 +7,14 @@
 #include "Graphic/RenderWindow.h"
 #include "Shape.h"
 class Scene3D;
+class EventModule;
+class GraphicPipeline;
+class GlobalScene;
 class UiScene
 {
 public:
 	UiScene(Scene3D* sc3d_) :main(sc3d_) {}
-	void init(RenderWindow& window);
+	void init(RenderWindow& window, GraphicPipeline* graphic, EventModule*event, GlobalScene* scene);
 	inline void setContext()noexcept {
 		Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 		CullFace::Enable(false);
@@ -25,6 +28,7 @@ public:
 	View2D view2D;
 	Scene3D* main;
 private:
+
 };
 #endif
 

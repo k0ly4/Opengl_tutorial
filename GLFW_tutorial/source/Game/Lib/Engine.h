@@ -2,9 +2,9 @@
 #define ENGINE_H
 
 #include "Game/Lib/GameModules.h"
-#include "Input/EventModule.h"
-#include "Graphic/GraphicModule.h"
-#include "Scene/Scene.h"
+#include "Game/Modules//EventModule.h"
+#include "Game/Modules//GraphicModule.h"
+#include "Game/Modules//Scene.h"
 #include "System/Clock.h"
 #include "Physics/sPhysics.h"
 #include "Game/Entities/ProcessQueue.h"
@@ -19,7 +19,7 @@ public:
     {
         setupWindow();
         procQueue.launch();
-        scene.initialize(window);
+        scene.initialize(window,&graphic,&event);
         graphic.initialize(window);
         event.initialize(scene);
         physics.init(scene);

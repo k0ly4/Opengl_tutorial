@@ -1,6 +1,6 @@
-#include "Input/EventModule.h"
-#include "Graphic/GraphicModule.h"
-#include "Scene/Scene.h"
+#include "Game/Modules/EventModule.h"
+#include "Game/Modules/GraphicModule.h"
+#include "Game/Modules/Scene.h"
 
 /// <summary>
 /// update
@@ -34,6 +34,7 @@ void EventModule::initialize(GlobalScene& sc) {
 }
 
 void EventModule::update(float time, RenderWindow& window, GraphicPipeline& graphic, GlobalScene& sc) {
+    f.fps = (3.f*f.fps +1.f/time)/4.f;
     //PollEvent
     while (window.pollEvent(event))
     {
@@ -57,5 +58,6 @@ void EventModule::update(float time, RenderWindow& window, GraphicPipeline& grap
     sc.sc3d.player.input.moveUpdate(time);
     sc.sc3d.player.cursorUpdate(sc.sc3d.world.chunks);
     //RenderSectorChunks
-    sc.sc3d.world.chunks.setCameraPos(sc.sc3d.player.getPosition());
+    sc.sc3d.world.chunks.upView(sc.sc3d.camera);
+   
 }

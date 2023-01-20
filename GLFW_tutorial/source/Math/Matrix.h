@@ -7,35 +7,33 @@
 /// <summary>
 /// MatrixShell
 /// </summary>
-class MatrixShell {
+class Mat4Shell {
 
 public:
 
-    MatrixShell() :
-        needUpInverse_(0),
+    Mat4Shell() :
+        modified(0),
         matrix_(1.f),
         inverse_(1.f) {}
 
     void set(const glm::mat4& matrix) {
         matrix_ = matrix;
-        needUpInverse_ = 1;
+        modified = 1;
     }
 
-    const glm::mat4& get()const {
-        return matrix_;
-    }
+    const glm::mat4& mat4()const { return matrix_; }
 
-    const glm::mat4& getInverse()const {
-        if (needUpInverse_) {
+    const glm::mat4& inverse()const {
+        if (modified) {
             inverse_ = glm::inverse(matrix_);
-            needUpInverse_ = 0;
+            modified = 0;
         }
         return inverse_;
     }
 
 private:
    
-    mutable bool needUpInverse_;
+    mutable bool modified;
     mutable glm::mat4 inverse_;
     glm::mat4 matrix_;
    
@@ -44,41 +42,33 @@ private:
 /// <summary>
 /// ProjectionMatrix
 /// </summary>
-class ProjectionMatrix {
+class ProjMat{
 
 public:
-    ProjectionMatrix() {}
-    inline const MatrixShell& getMatrixShell()const {
-        return matrix;
-    }
+    ProjMat() {}
+    inline const Mat4Shell& mat4Shell()const { return mat_; }
 
-    inline const ProjData& getData()const {
-        return data;
-    }
+    inline const ProjData& data()const { return data_; }
 
-    inline const glm::mat4& get()const {
-        return matrix.get();
-    }
+    inline const glm::mat4& mat4()const { return mat_.mat4();}
 
-    inline const glm::mat4& getInverse()const {
-        return matrix.getInverse();
-    }
+    inline const glm::mat4& inverse()const { return mat_.inverse();}
 
-    void set(float ratio_screen, float angle_fov, float _near, float _far) {
-        data.persp.near = _near;
-        data.persp.far = _far;
-        data.persp.ratio = ratio_screen;
-        data.persp.fov = angle_fov;
-        set(data.persp);
+    inline void set(float ratio_screen, float angle_fov, float _near, float _far) {
+        data_.persp.near = _near;
+        data_.persp.far = _far;
+        data_.persp.ratio = ratio_screen;
+        data_.persp.fov = angle_fov;
+        set(data_.persp);
     }
-    void set(const Perspective& proj) {
-        data.persp = proj;
-        matrix.set(proj.getMatrix());
+    inline void set(const Perspective& proj) {
+        data_.persp = proj;
+        mat_.set(proj.getMatrix());
     }
 
     void set(const Box& box) {
-        data.ortho = box;
-        matrix.set(box.getMatrix());
+        data_.ortho = box;
+        mat_.set(box.getMatrix());
     }
     void set(const FloatRect& rect, float _near, float _far) {
         set(Box(rect, _near, _far));
@@ -86,70 +76,63 @@ public:
 
 private:
 
-    MatrixShell matrix;
-    ProjData data;
+    Mat4Shell mat_;
+    ProjData data_;
 
 };
 
 /// <summary>
 /// BasisMatrix
 /// </summary>
-class BasisMatrix {
+class BasisMat {
 
 public:
 
-    BasisMatrix() {
-        needUpMatrix_ = 1;
+    BasisMat() { modified = 1; }
+
+   inline const Mat4Shell& mat4Shell()const {
+       solve();
+       return matrix_;
+   }
+
+    inline const glm::mat4& mat4()const {
+        solve();
+        return matrix_.mat4();
     }
 
-    inline const MatrixShell& getMatrixShell()const {
-        upMatrix();
-        return matrix_;
-    }
+    inline const glm::mat4& inverse()const { return matrix_.inverse();}
 
-    inline const glm::mat4& get()const {
-        upMatrix();
-        return matrix_.get();
-    }
-
-    inline const glm::mat4& getInverse()const {
-        return matrix_.getInverse();
-    }
-
-    inline const Basis& getBasis()const {
-        return basis_;
-    }
+    inline const Basis& basis()const { return basis_; }
 
     inline void setPosition(const glm::vec3& position) {
         if (basis_.position != position) {
             basis_.position = position;
-            needUpMatrix_ = 1;
+            modified = 1;
+        }
+    }
+    inline void set(const Basis& basis) {
+        if (basis_ != basis) {
+            basis_ = basis;
+            modified = 1;
         }
     }
 
     inline void lookInDir(const glm::vec3& direction) {
         basis_.front = glm::normalize(-direction);
-        needUpMatrix_ = 1;
-    }
-
-    void setBasis(const Basis& basis) {
-        if (basis_ != basis) {
-            basis_ = basis;
-            needUpMatrix_ = 1;
-        }
+        modified = 1;
     }
 
 private:
 
-    mutable MatrixShell matrix_;
-    mutable bool needUpMatrix_;
+    mutable Mat4Shell matrix_;
+    mutable bool modified;
 
     Basis basis_;
 
-    inline void upMatrix() const{
-        if (needUpMatrix_) {
-            matrix_.set(basis_.getMatrix());
-            needUpMatrix_ = 0;
+    inline void solve() const{
+        if (modified) {
+            matrix_.set(basis_.mat4());
+            modified = 0;
         }
     }
 };

@@ -1,5 +1,5 @@
 #include "sPhysics.h"
-#include"Scene/Scene.h"
+#include"Game/Modules/Scene.h"
 
 void PhysicsModule::init(GlobalScene& scene) {
 	//core.setGravity(glm::vec3(0.f, -80.f, 0.f));

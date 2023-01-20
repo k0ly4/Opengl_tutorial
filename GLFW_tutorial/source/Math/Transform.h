@@ -204,9 +204,7 @@ struct Basis {
 		position(glm::vec3(0.f)) 
 	{}
 
-	inline glm::mat4 getMatrix()const {
-		return glm::lookAt(position, position + front, GAME::WORLD_UP);
-	}
+	inline glm::mat4 mat4()const { return glm::lookAt(position, position + front, GAME::WORLD_UP);}
 };
 
 inline bool operator ==(const Basis& left, const Basis& right) {

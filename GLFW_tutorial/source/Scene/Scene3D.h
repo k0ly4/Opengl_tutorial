@@ -5,6 +5,7 @@
 #include "Graphic/RenderWindow.h"
 #include "Game/Voxels/World.h"
 #include "Game/Entities/Player.h"
+#include "Math/Frustum.h"
 class UiScene;
 class Scene3D
 {
@@ -33,7 +34,7 @@ public:
 	std::vector<Drawable*>shadowObjects;
 	std::vector<Drawable*>forwardObjects;
 	UiScene* ui;
-
+	
 private:
 	
 };

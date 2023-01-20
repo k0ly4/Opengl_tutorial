@@ -37,6 +37,7 @@ public:
 	}
 	/// modifiedAlpha = 1; 
 	inline void modifyAlpha() { modifiedAlpha=1; }
+	bool isDraw = 1;
 private:
 
 	friend class gChunk;
@@ -304,7 +305,6 @@ class Chunk:public MeshChunk {
 public:
 	Chunk():
 		MeshChunk(){}
-	
 
 private:
 	

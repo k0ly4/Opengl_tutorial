@@ -22,7 +22,7 @@ void FrameBuffer::implementDepth(unsigned int write_fbo) {
 
 bool FrameBuffer::setSize(const glm::ivec2& size) {
 
-    if (testSize("RenderTexture", size))
+    if (testSize("FrameBuffer", size))
         return 0;
 
     size_ = size;
@@ -95,7 +95,7 @@ bool FrameBuffer::create(const glm::ivec2& size, size_t sizeTextures, const Text
 /// </summary>
 bool RenderColor::create(const glm::ivec2& size, size_t sizeTextures, const TextureData* setupTextures)
 {   
-    if (testSize("RenderTexture", size))
+    if (testSize("RenderColor", size))
         return 0;
     size_ = size;
     std::vector<unsigned int> attachment(sizeTextures);

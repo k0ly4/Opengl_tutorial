@@ -1,7 +1,55 @@
 #ifndef CONVEX_H
 #define CONVEX_H
 #include "Resource/ShaderArguments.h"
+#include "Graphic/Geometry.h"
+#include "Resource/Shader.h"
+template<typename T>
+class MeshShell {
 
+public:
+
+    MeshShell() { mesh.VBO.setMode(GBO::DYNAMIC); }
+
+    inline void resize(size_t new_size) {
+        modified = 1;
+        mesh.vertices.resize(new_size);
+    }
+
+    inline void pop_back() {
+        modified = 1;
+        mesh.vertices.pop_back();
+    }
+
+    inline T& operator [](size_t index) {
+        modified = 1;
+        return mesh.vertices[index];
+    }
+
+    inline size_t size()const { return mesh.vertices.size(); }
+    inline void push_back(const T& vertex) {
+        modified = 1;
+        mesh.push_back(vertex);
+    }
+    inline void clear() {
+        modified = 1;
+        mesh.clear();
+    }
+    inline void draw(const RenderTarget& target,size_t primitive = Render::LINES, glShader::Object shaderHint = glShader::color_layout) {
+        const Shader& shader = glShader::get(shaderHint);
+        shader.use();
+        target.getView()->use(shader);
+        shader.uniform("model", model);
+        if (modified)mesh.saveInBuffer();
+        mesh.drawArrays(primitive);
+    }  
+
+    glm::mat4 model = glm::mat4(1.f);
+
+private:
+
+    bool modified = 0;
+    qGeometry<T> mesh;
+};
 /// <summary>
 /// Convex
 /// </summary>

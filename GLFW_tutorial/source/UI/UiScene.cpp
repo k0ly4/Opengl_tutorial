@@ -1,7 +1,9 @@
 #include "UiScene.h"
-#include "Scene/Scene3D.h"
+#include "Game/Modules/GraphicModule.h"
+#include "Game/Modules/EventModule.h"
+#include "Game/Modules/Scene.h"
 
-void UiScene::init(RenderWindow& window) {
+void UiScene::init(RenderWindow& window, GraphicPipeline* graphic, EventModule* event, GlobalScene* scene) {
 	view2D.setProjection(FloatRect(0.f, 0.f, window.getSize()));
 	//view2D.setProjection(Box(0.f, window.getSize().x, 0.f, window.getSize().y, -1.f, 1.f));
 	texCowBoy.load("asset\\image\\The fastest camp in the west.png");
@@ -9,7 +11,7 @@ void UiScene::init(RenderWindow& window) {
 
 	texError.wrap(tWrap::ClampToEdge);
 
-	gameUi.init(&main->player,&main->world);
+	gameUi.init(event, graphic, scene);
 }
 void UiScene::inRender(RenderTarget& target) {
 	target.setView(view2D);

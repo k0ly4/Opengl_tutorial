@@ -147,10 +147,10 @@ public:
 		input.camera = &camera;
 	}
 
-	const glm::vec3& getPosition()const {return camera_->getPosition(); }
+	const glm::vec3& getPosition()const {return camera_->position(); }
 
 	inline Basis getBasis()const { 
-		return Basis(camera_->getBasis().position, camera_->getBasis().right, camera_->getBasis().up, camera_->getBasis().front);}
+		return Basis(camera_->basis().position, camera_->basis().right, camera_->basis().up, camera_->basis().front);}
 	inline void cursorUpdate(ChunkSectorRender& chunks) { input.cursor.rayCast(chunks, getBasis()); }
 
 	std::shared_ptr<Hitbox> hitbox;

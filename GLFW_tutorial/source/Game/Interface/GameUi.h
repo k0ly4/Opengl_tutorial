@@ -7,13 +7,15 @@
 #include "UI/Shape.h"
 #include "Scene/Text.h"
 #include "Graphic/ContextTexture.h"
-
+class EventModule;
+class GraphicPipeline;
+class GlobalScene;
 //GameUi -----------------------------------------------------
 class GameUi
 {
 public:
 	GameUi():player(0) {}
-	 void init(Player* player_,World* world_);
+	void init(EventModule* event, GraphicPipeline* graphic, GlobalScene* scene);
 	inline void draw(RenderTarget& target) {
 		drawDebugInfo(target);
 	}
@@ -26,6 +28,9 @@ private:
 	Text text;
 	void drawDebugInfo(RenderTarget& target);
 	Player* player;
+	EventModule* event;
+	GraphicPipeline* graphic;
+	GlobalScene* scene;
 	RectangleShape back;
 };
 #endif

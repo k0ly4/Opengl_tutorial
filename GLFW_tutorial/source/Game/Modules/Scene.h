@@ -4,6 +4,9 @@
 #include "UI/UiScene.h"
 #include "Scene/Scene3D.h"
 #include "Game/Lib/GameModules.h"
+
+class EventModule;
+class GraphicPipeline;
 /// <summary>
 /// Scene
 /// </summary>
@@ -14,8 +17,8 @@ public:
 		ui(&sc3d),
 		sc3d(&ui)
 	{}
-	void initialize(RenderWindow& window) {
-		ui.init(window);
+	void initialize(RenderWindow& window, GraphicPipeline* graphic, EventModule* event) {
+		ui.init(window, graphic,event,this);
 		sc3d.init(window);
 	}
 	

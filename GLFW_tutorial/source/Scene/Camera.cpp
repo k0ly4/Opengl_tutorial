@@ -16,10 +16,10 @@ void Camera::mouse_move(glm::vec2 pos_mouse) {
     angle.pitch += -offset.y * SENSITIVITY;
     angle.normalizePitch(89.f);
 
-    Basis basis = view.getBasis();
+    Basis basis = view_.basis();
     angle.getBasis(basis);
     basis.front = glm::normalize(basis.front);
     basis.right = glm::normalize(glm::cross(basis.front, GAME::WORLD_UP));
     basis.up = glm::normalize(glm::cross(basis.right, basis.front));
-    view.setBasis(basis);
+    view_.set(basis);
 }

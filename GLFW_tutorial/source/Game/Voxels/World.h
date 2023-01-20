@@ -10,7 +10,7 @@ public:
     World();
     void save();
     inline void init(Camera& camera) {
-        chunks.create(sSetup::distance_render, camera.getPosition());
+        chunks.create(sSetup::distance_render, camera.position());
         chunks.weather = &weather;
     }
     WeatherHandle weather;

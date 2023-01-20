@@ -1,7 +1,7 @@
 #include "Command.h"
 #include "Keyboard.h"
 #include "Mouse.h"
-#include "Scene/Scene.h"
+#include "Game/Modules/Scene.h"
 namespace com {
 
 	

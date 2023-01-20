@@ -133,7 +133,7 @@ void Shader::uniform(const std::string& name, const glm::vec4& vec) const
 }
 void Shader::uniform(const std::string& name, const Color& color) const
 {
-    uniform(name, color.vec4());
+    uniform(name, color.vec4);
 }
 void Shader::uniform(const std::string& name, const glm::vec3& vec) const
 {

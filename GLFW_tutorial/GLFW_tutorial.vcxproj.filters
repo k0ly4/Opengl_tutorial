@@ -198,13 +198,13 @@
     <ClCompile Include="source\Resource\Glyph.cpp">
       <Filter>Исходные файлы\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="source\Graphic\GraphicModule.cpp">
+    <ClCompile Include="source\Game\Modules\GraphicModule.cpp">
       <Filter>Исходные файлы\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="source\Scene\Scene.cpp">
+    <ClCompile Include="source\Game\Modules\Scene.cpp">
       <Filter>Исходные файлы\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="source\Input\EventModule.cpp">
+    <ClCompile Include="source\Game\Modules\EventModule.cpp">
       <Filter>Исходные файлы\Modules</Filter>
     </ClCompile>
     <ClCompile Include="source\Game\Voxels\VoxelAtlas.cpp">
@@ -274,6 +274,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="source\Math\Vectors.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Math\Frustum.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -419,13 +422,13 @@
     <ClInclude Include="source\Resource\Glyph.h">
       <Filter>Исходные файлы\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="source\Graphic\GraphicModule.h">
+    <ClInclude Include="source\Game\Modules\GraphicModule.h">
       <Filter>Исходные файлы\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="source\Scene\Scene.h">
+    <ClInclude Include="source\Game\Modules\Scene.h">
       <Filter>Исходные файлы\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="source\Input\EventModule.h">
+    <ClInclude Include="source\Game\Modules\EventModule.h">
       <Filter>Исходные файлы\Modules</Filter>
     </ClInclude>
     <ClInclude Include="source\Resource\FileManager.h">
@@ -516,6 +519,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="source\Game\Entities\WeatherHandle.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Math\Frustum.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Math\Plane.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

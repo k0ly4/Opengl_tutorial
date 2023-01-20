@@ -17,6 +17,7 @@ public:
         bool checkCollision = 0;
         bool showUi = 1;
         bool showDebugInfo = 1;
+        float fps = 0.f;
     }f;
 
     void initialize(GlobalScene& scene);

@@ -216,6 +216,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Math\Frustum.cpp" />
     <ClCompile Include="source\Math\Vectors.cpp" />
     <ClCompile Include="source\Scene\Scene3D.cpp" />
     <ClCompile Include="source\Game\Interface\GameUi.cpp" />
@@ -248,7 +249,7 @@
     <ClCompile Include="source\Input\Cursor.cpp" />
     <ClCompile Include="source\Graphic\Drawable.cpp" />
     <ClCompile Include="source\Input\Event.cpp" />
-    <ClCompile Include="source\Input\EventModule.cpp" />
+    <ClCompile Include="source\Game\Modules\EventModule.cpp" />
     <ClCompile Include="source\System\Exception.cpp" />
     <ClCompile Include="source\Resource\FontLoader.cpp" />
     <ClCompile Include="source\Graphic\PostEffects.cpp" />
@@ -259,7 +260,7 @@
       <FileType>CppCode</FileType>
     </ClCompile>
     <ClCompile Include="source\Game\Lib\GLFW.cpp" />
-    <ClCompile Include="source\Graphic\GraphicModule.cpp" />
+    <ClCompile Include="source\Game\Modules\GraphicModule.cpp" />
     <ClCompile Include="source\Resource\ImageLoader.cpp" />
     <ClCompile Include="source\Input\Keyboard.cpp" />
     <ClCompile Include="source\Game\Lib\main.cpp" />
@@ -273,7 +274,7 @@
     <ClCompile Include="source\Graphic\RenderEntity.cpp" />
     <ClCompile Include="source\Graphic\RenderWindow.cpp" />
     <ClCompile Include="source\Resource\FileManager.cpp" />
-    <ClCompile Include="source\Scene\Scene.cpp" />
+    <ClCompile Include="source\Game\Modules\Scene.cpp" />
     <ClCompile Include="source\Resource\Shader.cpp" />
     <ClCompile Include="source\Game\Entities\Player.cpp" />
     <ClCompile Include="source\System\LuaFile.cpp" />
@@ -291,6 +292,8 @@
     <ClCompile Include="source\Game\Entities\WeatherHandle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Math\Frustum.h" />
+    <ClInclude Include="source\Math\Plane.h" />
     <ClInclude Include="source\Resource\ShaderArguments.h" />
     <ClInclude Include="source\Scene\Scene3D.h" />
     <ClInclude Include="source\Game\Interface\GameUi.h" />
@@ -329,14 +332,14 @@
     <ClInclude Include="source\Input\Cursor.h" />
     <ClInclude Include="source\Graphic\Drawable.h" />
     <ClInclude Include="source\Input\Event.h" />
-    <ClInclude Include="source\Input\EventModule.h" />
+    <ClInclude Include="source\Game\Modules\EventModule.h" />
     <ClInclude Include="source\System\Exception.h" />
     <ClInclude Include="source\Resource\FontLoader.h" />
     <ClInclude Include="source\Graphic\PostEffects.h" />
     <ClInclude Include="source\Resource\Font.h" />
     <ClInclude Include="source\Game\Lib\Game.h" />
     <ClInclude Include="source\Game\Lib\GameModules.h" />
-    <ClInclude Include="source\Graphic\GraphicModule.h" />
+    <ClInclude Include="source\Game\Modules\GraphicModule.h" />
     <ClInclude Include="source\Resource\ImageLoader.h" />
     <ClInclude Include="source\Input\Input.h" />
     <ClInclude Include="source\Input\Keyboard.h" />
@@ -354,7 +357,7 @@
     <ClInclude Include="source\Math\Rects.h" />
     <ClInclude Include="source\Graphic\Render.h" />
     <ClInclude Include="source\Graphic\RenderEntity.h" />
-    <ClInclude Include="source\Scene\Scene.h" />
+    <ClInclude Include="source\Game\Modules\Scene.h" />
     <ClInclude Include="source\Resource\Shader.h" />
     <ClInclude Include="source\Game\Entities\Player.h" />
     <ClInclude Include="source\UI\Shape.h" />

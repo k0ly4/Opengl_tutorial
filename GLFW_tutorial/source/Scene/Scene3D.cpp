@@ -18,6 +18,9 @@ void Scene3D::init(RenderWindow& window) {
 	ImageLoader::flipVerticallyOnLoad(1);
 	filin.load("asset\\image\\favor.jpg");
 	world.init(camera);
+	
+	world.chunks.frustum.setCamInternals(camera.projData());
+	world.chunks.frustum.setCamDef(camera.basis());
 }
 
 void Scene3D::inForward(RenderTarget& target) {
@@ -27,6 +30,7 @@ void Scene3D::inForward(RenderTarget& target) {
 	CullFace::Enable(false);
 	target.draw(world.chunks);
 	player.input.cursor.draw(target);
+	//world.chunks.frustum.draw(&target);
 	/*Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 	CullFace::Enable(true);*/
 	//target.draw(light.getPoints());

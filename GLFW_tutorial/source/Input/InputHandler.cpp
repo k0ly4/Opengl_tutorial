@@ -1,7 +1,7 @@
 #include "InputHandler.h"
 #include "Keyboard.h"
 #include "Mouse.h"
-#include "Scene/Scene.h"
+#include "Game/Modules/Scene.h"
 
 void InputHandler::solveKey(Event& event) {
 	switch (event.key.code)

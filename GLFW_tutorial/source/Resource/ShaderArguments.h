@@ -52,7 +52,7 @@ struct VertexConvex2D {
     }
     VertexConvex2D() :pos(0.f),color(0.f) {}
     VertexConvex2D(glm::vec2 pos_,const glm::vec4& color_) :pos(pos_),color(color_) {}
-    VertexConvex2D(glm::vec2 pos_, const Color& color_) :pos(pos_), color(color_.vec4()) {}
+    VertexConvex2D(glm::vec2 pos_, const Color& color_) :pos(pos_), color(color_.vec4) {}
 };
 /// <summary>
 /// ConvexVertex
@@ -74,6 +74,10 @@ struct ConvexVertex {
     ConvexVertex(const glm::vec3& pos_, const glm::vec4& color_) :
         pos(pos_),
         color(color_)
+    {}
+    ConvexVertex(const glm::vec3& pos_, const Color& color_) :
+        pos(pos_),
+        color(color_.vec4)
     {}
 };
 

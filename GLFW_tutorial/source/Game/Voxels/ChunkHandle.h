@@ -5,7 +5,7 @@
 #include "Region.h"
 #include "Game/Voxels/SuperRegion.h"
 #include "Game/Voxels/ChunkMeshQueue.h"
-
+#include "Math/Frustum.h"
 ///ChunkHandle---------------------------------------------
 /// <summary>
 ///  
@@ -33,7 +33,7 @@ public:
 	}
 	//определяет сторону сектора в центре которого наблюдатель
 	void setSize(size_t size);
-	void setCameraPos(const glm::ivec3& positionCamera);
+	void upView(const Camera& camera);
 	inline Chunk* getByVoxel(size_t x, size_t y, size_t z) {	return get(toLocal(x, y, z)); }
 	inline Chunk* getByVoxel(const glm::uvec3& coord) {			return getByVoxel(coord.x,coord.y,coord.z); }
 	/// <summary>
@@ -65,8 +65,13 @@ public:
 		VoxPack::get()->use(shader);
 		shader.uniform("color_factor", weather->getSunFactor());
 		shader.uniform("ambient", 0.015f);
-		for (int i = ch_sort.size() - 1; i > -1; i--)	ch_sort[i].ch->drawOpaqueMesh(shader);
-		for (int i = ch_sort.size()-1; i > -1; i--)		ch_sort[i].ch->drawSortMesh(shader);
+		
+		for (int i = ch_sort.size() - 1; i > -1; i--) {
+			if(ch_sort[i].ch->flag.isDraw) ch_sort[i].ch->drawOpaqueMesh(shader);
+		}
+		for (int i = ch_sort.size() - 1; i > -1; i--) {
+			if (ch_sort[i].ch->flag.isDraw)	ch_sort[i].ch->drawSortMesh(shader);
+		}
 	}
 
 	void setVoxel(const Voxel&, const glm::ivec3& coord);
@@ -104,10 +109,11 @@ public:
 	}
 	inline unsigned char getChannelLight(int x, int y, int z, int channel) { return getChannelLight(glm::ivec3(x, y, z), channel); }
 
-	inline size_t size()const {				return size_; }
-	const glm::uvec2& getBegin()const {		return begCh_; }
-	ChunkPtrs& chunks() {					return chunks_;}
+	inline size_t size()const {						return size_; }
+	inline const glm::uvec2& getBegin()const {		return begCh_; }
+	inline ChunkPtrs& chunks() {					return chunks_;}
 	WeatherHandle* weather;
+	FrustumG frustum;
 private:
 
 	void upChunks_sort();
@@ -126,6 +132,7 @@ private:
 
 	size_t size_;
 	glm::uvec2 begCh_;
+
 
 	glm::uvec2 viewCh_;
 	glm::ivec3 viewPos_;

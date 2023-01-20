@@ -4,7 +4,7 @@
 
 void InputPlayer::moveUpdate(float time) {
 	hitbox->velocity.x = hitbox->velocity.z =0.f;
-	const glm::vec3& vecRight = camera->getBasis().right;
+	const glm::vec3& vecRight = camera->basis().right;
 	if (Keyboard::getKey(Keyboard::W).action) {
 		hitbox->velocity += maxSpeed * glm::cross(GAME::WORLD_UP, vecRight);
 	}

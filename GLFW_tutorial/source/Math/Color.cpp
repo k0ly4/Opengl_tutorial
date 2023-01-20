@@ -20,13 +20,6 @@ Color Color::ColorU(const glm::uvec3& color) {
     return Color(color.r / 255.f, color.g / 255.f, color.b / 255.f, 1.f);
 }
 
-glm::vec4 Color::vec4()const {
-    return glm::vec4(r, g, b, a);
-}
-glm::vec3  Color::vec3()const {
-    return glm::vec3(r, g, b);
-}
-
 const Color Color::RED(1.f, 0.f, 0.f);
 const Color Color::BLUE(0.f, 0.f, 1.f);
 const Color Color::WHITE(1.f, 1.f, 1.f);
@@ -36,12 +29,12 @@ const Color Color::YELLOW(1.f, 1.f, 0.f);
 const Color Color::PURPLE(1.f, 0.f, 1.f);
 const Color Color::CYAN(0.f, 1.f, 1.f);
 
-bool operator ==(const Color& left, const Color& right) {
-    return ((left.r == right.r) &&
-        (left.b == right.b) &&
-        (left.g == right.g) &&
-        (left.a == right.a));
-}
-bool operator !=(const Color& left, const Color& right) {
-    return !(left == right);
-}
+//bool operator ==(const Color& left, const Color& right) {
+//    return ((left.r == right.r) &&
+//        (left.b == right.b) &&
+//        (left.g == right.g) &&
+//        (left.a == right.a));
+//}
+//bool operator !=(const Color& left, const Color& right) {
+//    return !(left == right);
+//}

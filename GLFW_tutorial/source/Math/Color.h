@@ -6,10 +6,17 @@
 
 struct Color
 {
-    static const Color
+    static const Color 
         RED, BLUE, WHITE, BLACK, GREEN, YELLOW, PURPLE, CYAN;
 
-    float r, g, b, a;
+    union 
+    {
+        struct { float m[4]; };
+        struct { float r, g, b, a; };
+        struct { glm::vec4 vec4; };
+        struct { glm::vec3 vec3; };
+    };
+    
     Color();
     Color(const glm::vec3& color);
     Color(const glm::vec4& color);
@@ -21,12 +28,19 @@ struct Color
     static Color ColorU(byte red, byte green, byte blue, byte alpha);
     static Color ColorU(byte red, byte green, byte blue);
     static Color ColorU(const glm::uvec3& color);
-
-    glm::vec4 vec4()const;
-    glm::vec3 vec3()const;
 };
-bool operator ==(const Color& left, const Color& right);
-bool operator !=(const Color& left, const Color& right);
+
+inline bool operator ==(const Color& left, const Color& right) {
+    return ((left.r == right.r) &&
+        (left.b == right.b) &&
+        (left.g == right.g) &&
+        (left.a == right.a));
+}
+inline bool operator !=(const Color& left, const Color& right) {
+    
+        return !(left == right);
+    
+}
 
 struct ColorU {
     union

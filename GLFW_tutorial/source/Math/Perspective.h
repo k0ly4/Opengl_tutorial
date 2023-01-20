@@ -63,6 +63,7 @@ struct Perspective {
     float near;
     float far;
     float ratio;
+    //in degres
     float fov;
 
     Perspective() :

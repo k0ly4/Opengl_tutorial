@@ -141,15 +141,12 @@ public:
         any_light_texture,
     };
 
-    static inline const Shader& get(Object index) {
-        return shader[index];
-    }
+    static inline const Shader& get(Object index) { return shader[index]; }
 
     static void init();
 
     static void free() {
-        for (auto& i : shader) 
-            glDeleteShader(i.ID);
+        for (auto& i : shader) glDeleteShader(i.ID);
     }
 
 private:

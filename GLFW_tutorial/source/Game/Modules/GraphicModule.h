@@ -5,7 +5,7 @@
 
 #include "Graphic/RenderWindow.h"
 #include "Graphic/PostEffects.h"
-
+#include "System/Clock.h"
 #include"Ui/Sprite.h"
 #include "Game/Lib/GameModules.h"
 
@@ -34,7 +34,11 @@ public:
     RenderTexture ui;
     FrameBuffer frame;
     Filter filter;
+    float time;
+    float fps;
 private:
+    
+    Clock clock;
 
 };
 

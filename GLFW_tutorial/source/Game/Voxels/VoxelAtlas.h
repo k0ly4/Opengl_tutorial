@@ -109,6 +109,7 @@ public:
 	}
 	const Texture2D& getAtlas()const { return atlas_; }
 	const Texture2D& getIcons()const { return icons_; }
+
 private:
 	std::vector<glm::vec2> uv;
 	std::vector<Block> blocks;
