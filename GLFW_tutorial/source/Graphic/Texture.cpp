@@ -14,7 +14,7 @@
         bool size_init = 0;
         glTexture::bindCubeMap(id_);
         for (int i = 0; i < 6; i++) {
-            const STBI_Resource* resource = ImageLoader::getSTBI(directory + path[i]);
+            auto resource = ImageLoader::getSTBI(directory + path[i]);
             if (resource == 0)  return 0;
 
             if (size_init == 0) {
@@ -51,17 +51,7 @@
         glTexture::bindCubeMap(0);
     }
 
-    /// <summary>
-    /// Texture2D
-    /// </summary>
-    bool Texture2D::load(const std::string& path, int sizeMipmaps, bool gammaMod) {
-        res_ = ImageLoader::getTex2D(path, gammaMod);
-        if(res_ == 0) return 0;
-        res_->setMipmaps(sizeMipmaps);
-        return 1;
-    }
-
-    
+   
     
     /// <summary>
     /// ArrayTexture2D

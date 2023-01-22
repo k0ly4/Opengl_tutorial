@@ -9,15 +9,24 @@
 //#define LightFace Vec4Array[4]
 ///Voxels---------------------------------------------
 typedef Array3d<CHUNK_W, CHUNK_H, CHUNK_D, Voxel> Voxels;
+///ShellGeometry---------------------------------------------
+struct ShellGeometry :public iGeometry<VoxelVertex> { bool needUpBuffer = 0; };
+///SortableVoxel---------------------------------------------
+struct SortableVoxel {
+	size_t ind;
+	size_t d;
+	SortableVoxel(size_t ind_) :ind(ind_) {}
+	SortableVoxel() {}
+};
 ///StateChunk---------------------------------------------
 struct StateChunk {
 
 public:
 
-	inline bool isInitLight()const noexcept {		return is_init_light; }
-	inline bool isGenerated()const noexcept {		return generated; }
-	inline bool isModified()const	noexcept {		return modified; }
-	inline bool isModifiedAlpha()const	noexcept {	return modifiedAlpha; }
+	inline bool isInitLight()		const		noexcept {		return is_init_light; }
+	inline bool isGenerated()		const		noexcept {		return generated; }
+	inline bool isModified()		const		noexcept {		return modified; }
+	inline bool isModifiedAlpha()	const		noexcept {		return modifiedAlpha; }
 	/// modified = 1; 
 	inline void modify()noexcept { modified = 1; }
 	/*modify();
@@ -40,9 +49,11 @@ public:
 	bool isDraw = 1;
 private:
 
+	friend class ChunkMeshBuilderDefault;
 	friend class gChunk;
-	friend class MeshChunk;
+	friend class ChunkGraphic;
 	friend class Chunk;
+
 	bool modifiedAlpha = 0;
 	bool is_init_light = 0;
 	bool generated = 0;
@@ -120,13 +131,7 @@ public:
 	private:
 		gChunk* chunks[Side2D::NuN];
 	};
-	///SortableVoxel---------------------------------------------
-	struct SortableVoxel {
-		size_t ind;
-		size_t d;
-		SortableVoxel(size_t ind_) :ind(ind_){}
-		SortableVoxel() {}
-	};
+
 	///gChunk---------------------------------------------
 	gChunk(): bg_vox(0){}
 
@@ -175,6 +180,7 @@ public:
 	std::set<size_t> nonStatic;
 
 protected:
+	friend class ChunkMeshBuilderDefault;
 	glm::ivec3 posView_;
 	std::vector<SortableVoxel> s_vox;
 	inline void upSortVox() {
@@ -193,6 +199,7 @@ protected:
 	}
 	//render
 	glm::uvec3 bg_ch, bg_vox;
+	//size == 32768
 	Voxels voxs;
 };
 
@@ -200,12 +207,10 @@ protected:
 /// <summary>
 /// 
 /// </summary>
-class MeshChunk :public gChunk {
+class ChunkGraphic :public gChunk {
 public:
-	///ShellGeometry---------------------------------------------
-	struct ShellGeometry :public iGeometry<VoxelVertex> {bool needUpBuffer = 0; };
 	///MeshChunk---------------------------------------------
-	MeshChunk() :
+	ChunkGraphic() :
 		gChunk(),
 		posView_(0)
 	{
@@ -229,18 +234,19 @@ protected:
 	glm::ivec3 posView_;
 
 	inline byte LIGHT(int x, int y, int z, int channel) {
-
 		if (voxs.is(x, y, z)) return lightMap.get(x, y, z, channel);
 		if ((size_t)y >= CHUNK_H) return 0;
 		gChunk* chunk = closes[Side2D::toSideI(x, z, CHUNK_W - 1)];
 		return chunk != 0 ? chunk->lightMap.get(::clip(x, CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D), channel) : 0;
 	}
+
 	inline ColorU LIGHT(int x, int y, int z) {
 		if (voxs.is(x, y, z)) return lightMap.get(x, y, z);
 		if ((size_t)y >= CHUNK_H) return ColorU(0, 0, 0, 0);
 		gChunk* chunk = closes[Side2D::toSideI(x, z, CHUNK_W - 1)];
 		return chunk != 0 ? chunk->lightMap.get(::clip(x, CHUNK_W), ::clip(y, CHUNK_H), ::clip(z, CHUNK_D)) : ColorU(0, 0, 0, 0);
 	}
+
 	inline Voxel VOXEL(int x, int y, int z)noexcept {
 		///Local test
 		if (voxs.is(x, y, z)) return voxs(x, y, z);
@@ -250,61 +256,23 @@ protected:
 		return chunk != 0? chunk->voxels().clip(x, y, z):0;
 	}
 
-	inline byte LIGHT(const glm::ivec3& coord, int channel) { LIGHT(coord.x, coord.y, coord.z, channel); }
-
-	inline glm::vec4 getChannels(int x, int y, int z) {
-		return {(float)LIGHT(x,y,z,0), (float)LIGHT(x,y,z,1), (float)LIGHT(x,y,z,2), (float)LIGHT(x,y,z,3) };
-	}
-	void lightFaceXZ(	int x, int y, int z,	Vec4Array* face);
-	void lightFaceYZ(	int x, int y, int z,	Vec4Array* face);
-	void lightFaceXY(	int x, int y, int z,	Vec4Array* face);
-
-	void buildTopFace(		ShellGeometry& mesh, int x, int y, int z, Voxel voxel, float uvsize);
-	inline void buildTopFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
-		if (isFree(x, y + 1, z, drawGroup))buildTopFace(mesh, x, y, z, voxel, uvsize);
-	}
-	void buildBottomFace(	ShellGeometry& mesh, int x, int y, int z, Voxel voxel, float uvsize);
-	inline void buildBottomFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
-		if (isFree(x, y - 1, z, drawGroup)) buildBottomFace(mesh, x, y, z, voxel, uvsize);
-	}
-	void buildRightFace(ShellGeometry& mesh, int x, int y, int z, Voxel voxel, float uvsize);
-	inline void buildRightFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
-		if (isFree(x + 1, y, z, drawGroup))buildRightFace(mesh, x, y, z, voxel, uvsize);
-	}
-	void buildLeftFace(		ShellGeometry& mesh, int x, int y, int z,Voxel voxel, float uvsize);
-	inline void buildLeftFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
-		if (isFree(x - 1, y, z, drawGroup)) buildLeftFace(mesh, x, y, z, voxel, uvsize);
-	}
-	void buildFrontFace(ShellGeometry& mesh, int x, int y, int z, Voxel voxel, float uvsize);
-	inline void buildFrontFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
-		if (isFree(x, y, z + 1, drawGroup))buildFrontFace(mesh, x, y, z, voxel, uvsize);
-	}
-	void buildBackFace(		ShellGeometry& mesh, int x, int y, int z, Voxel voxel, float uvsize);
-	inline void buildBackFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel, float uvsize) {
-		if (isFree(x, y, z - 1, drawGroup))buildBackFace(mesh, x, y, z, voxel, uvsize);
-	}
-
 	friend class ChunkMeshQueue;
 	friend class ChunkSectorRender;
-	void buildBox(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
-	void buildSortBox(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
-	void buildLiquidBox(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
-	void build—rossroad(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
-	void buildLiquid(ShellGeometry& mesh, Voxel voxel, size_t x, size_t y, size_t z);
+	friend class ChunkMeshBuilderDefault;
 
 	void buildMesh();
 	void buildSortMesh(glm::ivec3 posView);
 
-	float heights[4] = {1.f,1.f,1.f,1.f};
+	
 };
 ///Chunk---------------------------------------------
 /// <summary>
 /// 
 /// </summary>
-class Chunk:public MeshChunk {
+class Chunk:public ChunkGraphic {
 public:
 	Chunk():
-		MeshChunk(){}
+		ChunkGraphic(){}
 
 private:
 	

@@ -10,7 +10,7 @@ int main()
     GlBuffer::init();
     sBuffer::init();
     glShader::init();
-    luascr::Lua::init();
+    luke::Lua::init();
     MasterGeneration::setGenerator(new CustomGenerator("scripts/generator_config.lua"));
     Engine* engine = new Engine;
     engine->launch();

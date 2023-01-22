@@ -14,7 +14,6 @@ void ChunkMeshQueue::step() {
 		if (sBuff[i].ch->flag.isModified()) {
 			
 			for (int j = 4; j >-1; j--) {
-				if (sBuff[j].ch->flag.isDraw == 0)continue;
 				if (sBuff[j].ch->flag.isModified()) {
 					notify(_obs_event::solveQueueLight, 0);
 					sBuff[j].ch->buildMesh();

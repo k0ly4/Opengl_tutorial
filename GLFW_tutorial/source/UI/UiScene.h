@@ -28,6 +28,7 @@ public:
 	View2D view2D;
 	Scene3D* main;
 private:
+	EventModule* mEvent;
 
 };
 #endif

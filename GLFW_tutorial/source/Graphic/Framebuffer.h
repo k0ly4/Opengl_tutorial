@@ -112,7 +112,8 @@ public:
     );
     bool create(int width, int height, const TextureFormatData& dFormat) { return create(glm::ivec2(width, height), dFormat);}
    
-    inline std::shared_ptr<Texture2D>& texture() {  return texture_;}
+    inline std::shared_ptr<Texture2D>& texture()            {  return texture_;}
+    inline const std::shared_ptr<Texture2D>& texture()const { return texture_; }
     inline const glm::ivec2& size()const {          return texture_->getSize(); }
     virtual ~RenderTexture() {                      Render::free(*this); }
 

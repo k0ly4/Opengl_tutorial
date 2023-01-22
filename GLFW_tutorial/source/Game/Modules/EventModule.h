@@ -18,6 +18,7 @@ public:
         bool showUi = 1;
         bool showDebugInfo = 1;
         float fps = 0.f;
+        bool show_atlas = 0;
     }f;
 
     void initialize(GlobalScene& scene);

@@ -49,12 +49,11 @@ inline size_t toInt(const glm::uvec2& coord, size_t size) { return (coord.y * si
 
 inline size_t toInt(const glm::uvec2& coord, const glm::uvec2& size) { return (coord.y * size.x + coord.x); }
 
-inline glm::uvec2 toCoord2(size_t index, size_t size) {
-	return glm::uvec2(index % size, index / size);
+inline glm::uvec2 toCoord2(size_t index, size_t row)noexcept {
+	return { index % row, index / row };
 }
-inline glm::uvec2 toCoord2(size_t index, glm::uvec2 size) {
-	return glm::uvec2(index % size.x, index / size.y);
-}
+///Не использовать!!!!
+inline glm::uvec2 toCoord2(size_t index, glm::uvec2 size) {	return glm::uvec2(index % size.x, index / size.y);	}
 inline glm::uvec2 toCoord2(size_t index) { return glm::uvec2(index % CHUNK_W, index / CHUNK_D); }
 inline glm::uvec3 toCoord3(size_t index) {
 	size_t xz_size = CHUNK_W * CHUNK_D;

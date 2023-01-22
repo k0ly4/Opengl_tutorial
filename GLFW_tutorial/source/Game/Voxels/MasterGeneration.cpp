@@ -70,18 +70,18 @@ void DefaultGenerator::generate(Chunk& chunk) {
 	}
 	chunk.flag.generate();
 }
-void setConstants(luascr::LuaInterface& script) {
+void setConstants(luke::LuaInterface& script) {
 	script
 		.beginNamespace("vox")
-		.addConstant("air", -1)
-		.addConstant("turf", 0)
-		.addConstant("earth", 1)
-		.addConstant("stone", 2)
-		.addConstant("bedrock", 6)
-		.addConstant("oak", 8)
-		.addConstant("oak_wood", 9)
-		.addConstant("snow", 10)
-		.addConstant("sand", 11)
+		.addConstant(	"air", 0)
+		.addConstant(	"turf", 1)
+		.addConstant(	"earth", 2)
+		.addConstant(	"stone", 3)
+		.addConstant(	"bedrock", 4)
+		.addConstant(	"oak", 9)
+		.addConstant(	"oak_wood", 10)
+		.addConstant(	"snow", 11)
+		.addConstant(	"sand", 12)
 		.endNamespace();
 }
 
@@ -113,9 +113,9 @@ void CustomGenerator::initScript() {
 	
 	try
 	{
-		luascr::LuaRef table = script.get("generator");
-		multFactorHeight = table["multHeightFactor"];
-		subFactorHeight =  table["subHeightFactor"];
+		luke::LuaRef table =	script.get("generator");
+		multFactorHeight = table		["multHeightFactor"];
+		subFactorHeight =  table		["subHeightFactor"];
 		table["init"]();
 	}
 	catch (const std::exception&e)

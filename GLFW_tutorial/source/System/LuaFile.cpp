@@ -1,3 +1,3 @@
 #include "LuaFIle.h"
-using namespace luascr;
+using namespace luke;
 LuaState* Lua::pState = 0;

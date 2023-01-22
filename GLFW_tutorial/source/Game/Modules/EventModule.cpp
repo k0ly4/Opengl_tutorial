@@ -18,6 +18,9 @@ void EventModule::inputDisabledCursor(Event& event, GlobalScene& sc,GraphicPipel
         else if (event.key.code >= Keyboard::Num0 && event.key.code <= Keyboard::Num9) {
             sc.sc3d.player.input.setCurVoxel(Voxel(event.key.code - Keyboard::Num0));
         }
+        else if (event.key.code == Keyboard::P) {
+            f.show_atlas = !f.show_atlas;
+        }
         else inputMain.solveKey(event);
     }
 

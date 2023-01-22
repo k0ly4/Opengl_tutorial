@@ -115,27 +115,31 @@ public:
 	WeatherHandle* weather;
 	FrustumG frustum;
 private:
-
+	inline void upFlagDraw() {
+		for (size_t i = 0; i < chunks_.size(); i++) {
+			chunks_[i]->flag.isDraw = frustum.box(AABox(chunks_[i]->voxelPos(), CHUNK_VEC));
+		}
+	}
 	void upChunks_sort();
 	friend class ChunkMeshQueue;
 	inline Chunk* get(const glm::uvec3& local) { return isIn(local) ? chunks_(local.x,local.z) : 0; }
 	void extractFromRegion();
-
 	//ѕровер€ет допустимость локальных кординат
 	inline bool isIn(const glm::uvec3& local) { return (local.x < size_ && local.z < size_ && local.y == 0);}
 
 	inline glm::uvec3 toLocal(size_t x,size_t y,size_t z) {
 		return glm::uvec3(x / CHUNK_W- begCh_.x, y / CHUNK_H, z / CHUNK_D - begCh_.y);
 	}
+	//chunks
 	ChunkPtrs chunks_;
 	SortableChunks ch_sort;
 
 	size_t size_;
 	glm::uvec2 begCh_;
-
-
+	//view
 	glm::uvec2 viewCh_;
 	glm::ivec3 viewPos_;
+	
 	
 	SupReg* region_;
 };

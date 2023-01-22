@@ -89,14 +89,28 @@ private:
 class Texture2D {
 
 public:
+    enum Channels:int
+    {
+        unlimited = -1,
+    };
     Texture2D() : res_(0) {}
     Texture2D(std::shared_ptr <ResourceTexture2D> res): res_(res){}
-    Texture2D(const glm::ivec2& size, const TextureFormatData& format, const void* data = nullptr, int sizeMipmaps = -1) : 
-        res_(std::make_shared<ResourceTexture2D>(size, format, data, sizeMipmaps)) 
-    {}
-    bool load(const std::string& path_to_image, int sizeMipmaps = -1, bool gammaMod = 1);
-
-    void create(const glm::ivec2& size, const TextureFormatData& format, const void* data = nullptr, int sizeMipmaps = -1) {
+    Texture2D(const glm::ivec2& size, const TextureFormatData& format, const void* data = nullptr, int sizeMipmaps = unlimited) :
+        res_(std::make_shared<ResourceTexture2D>(size, format, data, sizeMipmaps)) {}
+    inline bool load(const std::string& path_to_image, int sizeMipmaps = unlimited, bool gammaMod = 1) {
+        res_ = ImageLoader::getTex2D(path_to_image, gammaMod);
+        if (res_ == 0) return 0;
+        res_->setMipmaps(sizeMipmaps);
+        return 1;
+    }
+    //ImageLoader::loadTex2D 
+    inline bool load_no_reg(const std::string& path_to_image, int sizeMipmaps = unlimited, bool gammaMod = 1) {
+        res_ = ImageLoader::forwardLoadTex2D(path_to_image, gammaMod);
+        if (res_ == 0) return 0;
+        res_->setMipmaps(sizeMipmaps);
+        return 1;
+    }
+    inline void create(const glm::ivec2& size, const TextureFormatData& format, const void* data = nullptr, int sizeMipmaps = unlimited) {
        res_ = std::make_shared<ResourceTexture2D>(size, format, data, sizeMipmaps);
     }
 
@@ -120,11 +134,9 @@ public:
     inline void bindToFramebuffer(size_t unit) {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + unit, GL_TEXTURE_2D, res_->id_.id(), 0);
     }
-    inline void use(size_t text_unit)const {
-        glTexture::active(GL_TEXTURE0 + text_unit);
-        glTexture::bind2D(res_->id_);
-    }
+    inline void use(size_t text_unit)const { res_->use(text_unit); }
     inline const std::shared_ptr <ResourceTexture2D>& resource()const { return res_;}
+    inline bool isInit() const { return res_ !=0 ; }
 private:
     std::shared_ptr <ResourceTexture2D> res_;
 };

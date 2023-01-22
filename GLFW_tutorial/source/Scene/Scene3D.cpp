@@ -1,6 +1,6 @@
 #include "Scene3D.h"
 #include "UI/UiScene.h"
-
+#include "Game/Voxels/ChunkMesh.h"
 
 Scene3D::Scene3D(UiScene* ui_) :
 	ui(ui_),
@@ -21,6 +21,7 @@ void Scene3D::init(RenderWindow& window) {
 	
 	world.chunks.frustum.setCamInternals(camera.projData());
 	world.chunks.frustum.setCamDef(camera.basis());
+	sChunkMesh::set(std::make_shared<ChunkMeshBuilderDefault>());
 }
 
 void Scene3D::inForward(RenderTarget& target) {

@@ -26,7 +26,12 @@ public:
 class ViewMatrix :public View {
   
 public:
-
+    ViewMatrix() {}
+    ViewMatrix(const glm::mat4& proj,const glm::mat4& view)
+    {
+        setProjection(proj);
+        setView(view);
+    }
     inline const Mat4Shell& proj()const override { return proj_; }
     inline const Mat4Shell& view()const override {       return view_; }
     inline glm::mat4 VP()const {                return proj_.mat4() * view_.mat4();}

@@ -48,13 +48,21 @@ struct ColorU {
         struct { byte r, g, b, a; };
         struct { byte m[4]; };
     };
+
     ColorU(byte r_, byte g_, byte b_, byte a_) :
         r(r_),
         g(g_),
         b(b_),
         a(a_) {}
-    operator Color() { return Color(r / 255.f, g / 255.f, b / 255.f, a / 255.f); }
+    ColorU(byte r_, byte g_, byte b_) :
+        r(r_),
+        g(g_),
+        b(b_),
+        a(255u){}
+    ColorU(byte rgb) :ColorU(rgb,rgb,rgb){}
     ColorU() :ColorU(0, 0, 0, 0) {}
+    operator Color() { return Color(r / 255.f, g / 255.f, b / 255.f, a / 255.f); }
+   
 };
 #endif
 

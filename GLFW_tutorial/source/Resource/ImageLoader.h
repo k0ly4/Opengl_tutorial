@@ -128,8 +128,6 @@ public:
 	glm::ivec2 size_;
 	TextureFormatData format_;
 
-
-
 	inline void filter(GLint filter_max, GLint filter_min) {
 		if (filter_.max == filter_max && filter_.min == filter_min)return;
 		glTexture::bind2D(id_);
@@ -153,6 +151,11 @@ public:
 			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 	}
+
+	inline void use(size_t text_unit)const {
+		glTexture::active(GL_TEXTURE0 + text_unit);
+		glTexture::bind2D(id_);
+	}
 private:
 
 	inline void setupPar() {
@@ -172,26 +175,36 @@ class ImageLoader {
 
 public:
 	static const void flipVerticallyOnLoad(bool enable) { stbi_set_flip_vertically_on_load(enable);}
-
 	static std::shared_ptr <ResourceTexture2D> getTex2D(const std::string& path, bool gamma = 1, int nrChannels_need = 0) {
 		auto resource = rTextures_.find(path);
-		if (resource == rTextures_.end()) return loadTexture(path, gamma, nrChannels_need);;
+		if (resource == rTextures_.end()) {
+			auto res = loadTexture(path, gamma, nrChannels_need);
+			if(res) rTextures_[path] = res;
+			return res;
+		}
 		return resource->second;
 	}
-
-	static const STBI_Resource* getSTBI(const std::string& path, int nrChannels_need = 0) {
+	//Без синхронизации со списком подходит для кратковременных текстур
+	static std::shared_ptr <ResourceTexture2D> forwardLoadTex2D(const std::string& path, bool gamma = 1, int nrChannels_need = 0) {
+		return loadTexture(path, gamma, nrChannels_need);;
+	}
+	static const std::shared_ptr<STBI_Resource> getSTBI(const std::string& path, int nrChannels_need = 0) {
 		auto resource = rSTBI.find(path);
-		if (resource == rSTBI.end()) return loadSTBI(path, nrChannels_need) ? &rSTBI[path] : 0;
-		return &resource->second;
+		if (resource == rSTBI.end()) {
+			auto res = loadSTBI(path, nrChannels_need);
+			if (res) rSTBI[path] = res;
+			return res;
+		}
+		return resource->second;
 	}
 	
 private:
 
-	static std::shared_ptr <ResourceTexture2D> loadTexture(const std::string& path,bool gamma, int nrChannels_need);
-	static bool loadSTBI(const std::string& path, int nrChannels_need = 0);
+	static std::shared_ptr <ResourceTexture2D>	loadTexture(const std::string& path,bool gamma, int nrChannels_need);
+	static std::shared_ptr<STBI_Resource>		loadSTBI(const std::string& path, int nrChannels_need = 0);
 
 	static std::map<std::string, std::shared_ptr<ResourceTexture2D>> rTextures_;
-	static std::map<std::string, STBI_Resource> rSTBI;
+	static std::map<std::string, std::shared_ptr<STBI_Resource>> rSTBI;
 
 	ImageLoader() {}
 	~ImageLoader() {}

@@ -248,6 +248,11 @@ public:
 	{
 		POINTS = 0, LINES, LINE_LOOP, LINE_STRIP, TRIANGLES, TRIANGLES_STRIP, TRIANGLES_FAN, QUADS, SIZE
 	};
+	enum ClearBit :GLbitfield
+	{
+		COLOR_BIT = GL_COLOR_BUFFER_BIT,
+		DEPTH_BIT = GL_DEPTH_BUFFER_BIT,
+	};
 	//if not complete return 1
 	inline static bool checkFramebufferStatus() {
 		return glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE;
@@ -260,13 +265,9 @@ public:
 			return 0;
 	}
 	static void setClearColor(const Color& color);
-	static inline void setClearColor(float color) {
-		setClearColor(Color(color));
-	}
-	static inline void setClearColor(float r, float g, float b, float a) {
-		setClearColor(Color(r, g, b, a));
-	}
-	
+	static inline void setClearColor(float color) { setClearColor(Color(color));}
+	static inline void setClearColor(float r, float g, float b, float a) { setClearColor(Color(r, g, b, a));}
+	static inline void clear(GLbitfield bit)noexcept { glClear(bit); }
 	/// Viewport------------------------------------------------------------
 	class  Viewport {
 		

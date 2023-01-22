@@ -216,6 +216,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\System\LuaContext.cpp" />
+    <ClCompile Include="source\Game\Voxels\ChunkMesh.cpp" />
     <ClCompile Include="source\Math\Frustum.cpp" />
     <ClCompile Include="source\Math\Vectors.cpp" />
     <ClCompile Include="source\Scene\Scene3D.cpp" />
@@ -292,6 +294,9 @@
     <ClCompile Include="source\Game\Entities\WeatherHandle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\System\LuaContext.h" />
+    <ClInclude Include="source\Game\Voxels\ChunkMesh.h" />
+    <ClInclude Include="source\Graphic\RenderWindow.h" />
     <ClInclude Include="source\Math\Frustum.h" />
     <ClInclude Include="source\Math\Plane.h" />
     <ClInclude Include="source\Resource\ShaderArguments.h" />

@@ -23,18 +23,14 @@ void ChunkSectorRender::upView(const Camera& camera) {
 	frustum.setCamDef(camera.basis());
 	glm::uvec2 posViewCh(viewPos_.x / CHUNK_W, viewPos_.z / CHUNK_D);
 	if (posViewCh == viewCh_) {
-		for (size_t i = 0; i < chunks_.size(); i++) {
-			chunks_[i]->flag.isDraw = frustum.box(AABox(chunks_[i]->voxelPos(), CHUNK_VEC ));
-		}
+		upFlagDraw();
 		return;
 	}
 	viewCh_ = posViewCh;
 
 	LOG("CSR::x=%d,y=%d\n", viewCh_.x, viewCh_.y);
 	extractFromRegion();
-	for (size_t i = 0; i < chunks_.size(); i++) {
-		chunks_[i]->flag.isDraw = frustum.box(AABox(chunks_[i]->voxelPos(), CHUNK_VEC ));
-	}
+	upFlagDraw();
 }
 
 void ChunkSectorRender::setVoxel(const Voxel& voxel, const glm::ivec3& coord) {

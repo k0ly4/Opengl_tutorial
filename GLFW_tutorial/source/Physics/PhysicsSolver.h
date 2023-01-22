@@ -27,10 +27,10 @@ public:
 	}
 
 	inline void setGravity(const glm::vec3& gravity_) { gravity = gravity_;}
-	inline void solve(Hitbox& hitbox) {	for (size_t i = 0; i < rTime.count; i++) step(hitbox);}
+	inline void solve(Hitbox& hitbox) {	for (size_t i = 0; i < (size_t)rTime.count; i++) step(hitbox);}
 	inline void solveWorld() {
-		for (size_t i = 0; i < wTime.count; i++) step_world();
-		for (size_t i = 0; i < rTime.count; i++) world->weather.update(rTime.step);
+		for (size_t i = 0; i < (size_t)wTime.count; i++) step_world();
+		for (size_t i = 0; i < (size_t)rTime.count; i++) world->weather.update(rTime.step);
 	}
 
 private:

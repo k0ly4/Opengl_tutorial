@@ -42,7 +42,6 @@ public:
         if (modified)mesh.saveInBuffer();
         mesh.drawArrays(primitive);
     }  
-
     glm::mat4 model = glm::mat4(1.f);
 
 private:

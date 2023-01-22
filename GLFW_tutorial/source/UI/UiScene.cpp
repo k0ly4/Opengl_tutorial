@@ -12,6 +12,7 @@ void UiScene::init(RenderWindow& window, GraphicPipeline* graphic, EventModule* 
 	texError.wrap(tWrap::ClampToEdge);
 
 	gameUi.init(event, graphic, scene);
+	mEvent = event;
 }
 void UiScene::inRender(RenderTarget& target) {
 	target.setView(view2D);
@@ -19,4 +20,8 @@ void UiScene::inRender(RenderTarget& target) {
 	
 	main->player.inventory.draw(target);
 	gameUi.draw(target);
+	if (mEvent->f.show_atlas) {
+		Sprite dbg(VoxPack::get()->getAtlas());
+		target.draw(dbg);
+	}
 }

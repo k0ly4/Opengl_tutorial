@@ -3,11 +3,12 @@
 
 #include "lua/include/lua.hpp"
 #include <LuaBridge.h>
+#include "System/Exception.h"
 #include <iostream>
 
 #pragma comment( lib, "lib/lua/liblua54.a")
 
-namespace luascr {
+namespace luke {
 
     typedef lua_State LuaState;
     typedef luabridge::LuaRef LuaRef;
@@ -42,6 +43,7 @@ namespace luascr {
         }
         bool openB(const char* path) {
             if (luaL_loadfile(Lua::state(), path) || lua_pcall(Lua::state(), 0, 0, 0)) {
+                LOG(LogError, "Lua::Failed to open or compile file:%s\n", path);
                 return 0;
             }
             return 1;
@@ -63,7 +65,8 @@ namespace luascr {
         inline luabridge::Namespace beginNamespace(const char* name) { return global().beginNamespace(name); }
 
         inline LuaRef get(const char* name) { return luabridge::getGlobal(Lua::state(), name);}
-        template<typename T> T get(const char* name, const T& default_value) { return get(name).cast<T>();}
+        template<typename T> T get(const char* name, const T& default_value) {  return get(name).cast<T>();}
+        template<typename T> T get(const char* name) {                          return get(name).cast<T>(); }
     private:
     };
 }

@@ -17,7 +17,7 @@ public:
     //Generation
     LightHandle light;
     ChunkSectorRender chunks;
-    ResourcePack resPack;
+    TexturePack resPack;
     SupReg region;
 };
 #endif

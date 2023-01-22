@@ -126,6 +126,7 @@ public:
 	ArrayBufferObject VAO;
 	VertexBufferObject VBO;
 	std::vector<T> vertices;
+	inline T& operator [](size_t index) noexcept { return vertices[index]; }
 private:
 };
 #endif

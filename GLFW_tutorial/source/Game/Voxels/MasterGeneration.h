@@ -122,7 +122,7 @@ public:
 	inline void create(const char* path) {
 
 		integrateScript();
-		script.open(path);
+		script.openB(path);
 		initScript();
 
 	}
@@ -148,7 +148,7 @@ private:
 	float subFactorHeight;
 
 	static std::vector<Par> pars;
-	luascr::LuaInterface script;
+	luke::LuaInterface script;
 	FastNoise noise;
 
 };
