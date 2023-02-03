@@ -229,6 +229,7 @@ void glShader::init() {
 
     setup(color_layout, "shaders\\3d\\non-texture\\layout\\", 0, Uniform<int>("", 0));
 
+    setup(test, "shaders\\main\\test\\", 0, Uniform<int>("diffuse", 0));
     setup(texture, "shaders\\3d\\default\\", 0, Uniform<int>("diffuse", 0));
     setup(texture_loc2, "shaders\\3d\\texture\\location2\\default\\", 0, Uniform<int>("diffuse", 0));
 

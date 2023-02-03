@@ -24,4 +24,5 @@ void UiScene::inRender(RenderTarget& target) {
 		Sprite dbg(VoxPack::get()->getAtlas());
 		target.draw(dbg);
 	}
+	main->world.weather.draw(target);
 }

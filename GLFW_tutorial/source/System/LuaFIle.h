@@ -5,13 +5,19 @@
 #include <LuaBridge.h>
 #include "System/Exception.h"
 #include <iostream>
-
 #pragma comment( lib, "lib/lua/liblua54.a")
 
 namespace luke {
+    inline void what(const std::exception& e) {
+        ::LOG("%s\n", e.what());
+        abort();
+    }
+    #define LUA_TRY try {
+    #define LUA_CATCH } catch (const std::exception& e) { luke::what(e); }
 
     typedef lua_State LuaState;
     typedef luabridge::LuaRef LuaRef;
+    
     ////Lua-----------------------------------------------
     class Lua {
     public:

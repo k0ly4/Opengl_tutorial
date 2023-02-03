@@ -110,31 +110,31 @@ void RectangleShape::solve()
     mesh.vertices.resize(20);
     mesh.indices.clear();
     //rectangle
-    mesh.pushSquare(0);
+    mesh.pushSquareInd(0);
     mesh.vertices[0] = {glm::vec2(0.0f, 0.0f),                                      color };
     mesh.vertices[1] ={glm::vec2(size_.x, 0.0f  ),                                  color };
     mesh.vertices[2] ={glm::vec2(size_.x,size_.y),                                  color };
     mesh.vertices[3] ={glm::vec2(0.0f,    size_.y),                                 color };
     //top line
-    mesh.pushSquare(4);
+    mesh.pushSquareInd(4);
     mesh.vertices[4] ={ glm::vec2(-size_out,    -size_out),                         color_out };
     mesh.vertices[5] ={ glm::vec2(size_.x+ size_out,      -size_out),               color_out };
     mesh.vertices[6] ={ glm::vec2(size_.x,            0.f),                         color_out };
     mesh.vertices[7] ={ glm::vec2(0.f,                0.f),                         color_out };
     //right line
-    mesh.pushSquare(8);
+    mesh.pushSquareInd(8);
     mesh.vertices[8] ={ glm::vec2(size_.x,    0.f),                                 color_out };
     mesh.vertices[9] ={ glm::vec2(size_.x + size_out,      -size_out),              color_out };
     mesh.vertices[10] ={ glm::vec2(size_.x + size_out,size_.y + size_out),          color_out };
     mesh.vertices[11] ={ glm::vec2(size_.x,size_.y),                                color_out };
     //down line
-    mesh.pushSquare(12);
+    mesh.pushSquareInd(12);
     mesh.vertices[12] ={ glm::vec2(0.f,size_.y),                                    color_out };
     mesh.vertices[13] ={ glm::vec2(size_.x,size_.y),                                color_out };
     mesh.vertices[14] ={ glm::vec2(size_.x + size_out,size_.y + size_out),          color_out };
     mesh.vertices[15] ={ glm::vec2(-size_out,size_.y + size_out),                   color_out };
     //left line
-    mesh.pushSquare(16);
+    mesh.pushSquareInd(16);
     mesh.vertices[16] ={ glm::vec2(-size_out,    -size_out),                        color_out };
     mesh.vertices[17] ={ glm::vec2(0.f,0.f),                                        color_out };
     mesh.vertices[18] ={ glm::vec2(0.f,size_.y),                                    color_out };

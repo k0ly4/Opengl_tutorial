@@ -1,6 +1,8 @@
 #ifndef BILLBOARD_H
 #define BILLBOARD_H
 #include "PrimitiveEntity.h"
+#include "Graphic/Geometry.h"
+#include "Resource/ShaderArguments.h"
 
 ///Billboard------------------------------------------------
 /// <summary>
@@ -10,69 +12,35 @@ class Billboard :public Drawable
 {
     
 public:
+    Billboard() :size_(1.f) {shaderHint = glShader::billboard;}
 
-    Billboard() :size_(1.f) {
-        shaderHint = glShader::billboard;
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, GL_POINTS, 1);
-        VBO_.setMode(GL_DYNAMIC_DRAW);
+    inline void setPosition(const glm::vec3& new_pos, size_t index = 0) {
+        if (mesh.vertices.size() <= index)  mesh.vertices.resize(index + 1);        
+        else if (mesh[index].v1 == new_pos) return;
 
-        VAO_.begin();
-        VBO_.begin();
-        VAO_.attrib(0, 3, sizeof(glm::vec3), 0);
+        mesh[index].v1 = new_pos;
+        mesh.saveInBuffer();
     }
 
-    void setPosition(const glm::vec3& new_pos, size_t index = 0) {
-        if (position.size() <= index) {
-            position.resize(index + 1);
-            VAO_.setCountVertexDraw(position.size());
-        }
-        else if (position[index] == new_pos) return;
-
-        position[index] = new_pos;
-        VBO_.begin();
-        VBO_.data(position);
+    inline void setSize(const glm::vec2& size) { size_ = size;}
+    inline void setEye(const View3D* eye_) { eye = eye_; }
+    inline void setTexture(const Texture2D& texture) {  texture_ = &texture;}
+    inline void draw(const View* view, const Shader& shader) {
+        shader.use();
+        shader.uniform("VP",    view->VP());
+        shader.uniform("right", eye->basis().right);
+        shader.uniform("up",    eye->basis().up);
+        shader.uniform("size",  size_);
+        
+        texture_->use(0);
+        mesh.drawArrays(Render::POINTS);
     }
-
-    void setSize(const glm::vec2& size) {
-        size_ = size;
-    }
-
-    void setEye(const View3D* eye_) {
-        eye = eye_;
-    }
-
-    void setTexture(const Texture2D& texture) { 
-        texture_ = &texture;
-    }
-
-    void draw(const View* view, const Shader& shader) {
-        if (eye) {
-
-            shader.use();
-            shader.uniform("VP", view->getVP());
-            shader.uniform("right", eye->getBasis().right);
-            shader.uniform("up", eye->getBasis().up);
-            shader.uniform("size", size_);
-
-            if(texture_) 
-                texture_->use(0);
-            VAO_.draw();
-
-        }
-        else {
-            LOG("(!)Billbord::eye don't set\n");
-        }
-    }
-
+   
 private:
 
-    DrawBuffer VAO_;
-    VertexBufferObject VBO_;
-
+    qGeometry <Vertex1<glm::vec3>> mesh;
     const Texture2D* texture_ =0 ;
     const View3D* eye = 0;
-
-    std::vector< glm::vec3>position;
     glm::vec2 size_;
 
 };

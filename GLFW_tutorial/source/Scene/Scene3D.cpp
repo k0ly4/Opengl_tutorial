@@ -10,8 +10,7 @@ Scene3D::Scene3D(UiScene* ui_) :
 
 void Scene3D::init(RenderWindow& window) {
 	player.setCamera(camera);
-	player.hitbox->position = sSetup::getBeginPos();
-	camera.setPosition(sSetup::getBeginPos());
+
 	camera.setProjection(GAME::PROJECTION);
 	camera.cur_pos_mouse = Mouse::getPosition();
 
@@ -31,6 +30,7 @@ void Scene3D::inForward(RenderTarget& target) {
 	CullFace::Enable(false);
 	target.draw(world.chunks);
 	player.input.cursor.draw(target);
+	world.weather.draw(target,&camera,player.hitbox->position);
 	//world.chunks.frustum.draw(&target);
 	/*Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
 	CullFace::Enable(true);*/

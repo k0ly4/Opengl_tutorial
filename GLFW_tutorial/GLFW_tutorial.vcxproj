@@ -216,6 +216,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\System\ScriptIntegrator.cpp" />
+    <ClCompile Include="source\Game\Entities\Initiator.cpp" />
+    <ClCompile Include="source\Game\Entities\GeneralGameEntity.cpp" />
     <ClCompile Include="source\System\LuaContext.cpp" />
     <ClCompile Include="source\Game\Voxels\ChunkMesh.cpp" />
     <ClCompile Include="source\Math\Frustum.cpp" />
@@ -294,6 +297,8 @@
     <ClCompile Include="source\Game\Entities\WeatherHandle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\System\ScriptIntegrator.h" />
+    <ClInclude Include="source\Game\Entities\Initiator.h" />
     <ClInclude Include="source\System\LuaContext.h" />
     <ClInclude Include="source\Game\Voxels\ChunkMesh.h" />
     <ClInclude Include="source\Graphic\RenderWindow.h" />

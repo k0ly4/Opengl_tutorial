@@ -2,6 +2,8 @@
 #include <glm/gtc/noise.hpp>
 #include <glm/glm.hpp>
 
+qRandom sQrand::random;
+
 Generator* MasterGeneration::generator = 0;
 
 inline float getNoise(const glm::vec3& global) {
@@ -70,129 +72,99 @@ void DefaultGenerator::generate(Chunk& chunk) {
 	}
 	chunk.flag.generate();
 }
-void setConstants(luke::LuaInterface& script) {
-	script
-		.beginNamespace("vox")
-		.addConstant(	"air", 0)
-		.addConstant(	"turf", 1)
-		.addConstant(	"earth", 2)
-		.addConstant(	"stone", 3)
-		.addConstant(	"bedrock", 4)
-		.addConstant(	"oak", 9)
-		.addConstant(	"oak_wood", 10)
-		.addConstant(	"snow", 11)
-		.addConstant(	"sand", 12)
-		.endNamespace();
-}
-
-void CustomGenerator::integrateScript() {
-	try
-	{
-		setConstants(script);
-		
-		script.
-			beginNamespace("map")
-			.addFunction("addChannelHeight", &CustomGenerator::addChannelHeight)
-			.endNamespace();
-
-		script.global()
-			.beginClass<FastNoise>("FastNoise")
-			.addConstructor<void(*)(void)>()
-			.addFunction("getNormalize", &FastNoise::getNormalizeFactor)
-			.endClass();
-
-		}
-	catch (const std::exception& e)
-	{
-		LOG("%s\n", e.what());
-		abort();
-	}
-}
 
 void CustomGenerator::initScript() {
+	LUA_TRY
+		luke::LuaRef generator =	script.get("generator_config");
+		initBioms(generator);
+		luke::LuaRef h_map = generator["heights_map"];
+
+		m_heights.f_scale =		h_map["scaleFactor"];
+		m_heights.f_sub =		h_map["subFactor"];
+		m_heights.noise.setTypeNoise(static_cast<FastNoiseLite::NoiseType>(h_map["noiseType"].cast<int>()));
+
+		h_map["init"]();
+
 	
-	try
-	{
-		luke::LuaRef table =	script.get("generator");
-		multFactorHeight = table		["multHeightFactor"];
-		subFactorHeight =  table		["subHeightFactor"];
-		table["init"]();
-	}
-	catch (const std::exception&e)
-	{
-		LOG("%s\n", e.what());
-		abort();
-	}
+	LUA_CATCH
+}
+
+void CustomGenerator::initBioms(luke::LuaRef generator) {
+	using namespace vox;
+	LUA_TRY
+
+		luke::LuaRef biom_map = generator["biom_map"];
+	
+		m_biom.f_humidiy =	biom_map["scaleHumidity"];
+		m_biom.f_tmpr =		biom_map["scaleTemperature"];
+		m_biom.noise.setTypeNoise(static_cast<FastNoiseLite::NoiseType>(biom_map["noiseType"].cast<int>()));
+		
+		luke::LuaRef lua_biom = biom_map["bioms"];
+		lua_biom["getPlane"](&bioms[Biom::plain]);
+		lua_biom["getDesert"](&bioms[Biom::desert]);
+		lua_biom["getTundra"](&bioms[Biom::tundra]);
+
+		//LOG("Okay");
+	LUA_CATCH
 }
 
 size_t  CustomGenerator::calcHeight(const glm::vec2& real) {
 	float height = 0.f;
 
-	for (size_t i = 0; i < pars.size(); i++) {height += noise.getNormalize(real * pars[i].scale) * pars[i].influence; }
+	for (size_t i = 0; i < pars.size(); i++) { height += m_heights.noise.getNormalize(real * pars[i].scale) * pars[i].influence; }
 
-	height = height * multFactorHeight + subFactorHeight;
+	height = height * m_heights.f_scale + m_heights.f_sub;
 	return height;
 }
 
-int blockPlain(const glm::uvec3& real, size_t height) {
-	if (real.y == height) return vox::turf;
-	
-	if (real.y < height) {
-		if (real.y == 0) return vox::bedrock;
-		if (real.y < height - 6) return vox::stone;
-		return vox::earth;
-	}
-	return vox::air;
-}
-
-int blockDesert(const glm::uvec3& real, size_t height) {
-	if (real.y == height) return vox::sand;
+Voxel blockBiom(const glm::uvec3& real, size_t height, vox::Biom biom) {
+	if (real.y == height) return biom.ground;
 
 	if (real.y < height) {
 		if (real.y == 0) return vox::bedrock;
 		if (real.y < height - 6) return vox::stone;
-		return vox::sand;
+		return biom.underground;
 	}
 	return vox::air;
 }
 
-int blockTundra(const glm::uvec3& real, size_t height) {
-	if (real.y == height) return vox::snow;
-
-	if (real.y < height) {
-		if (real.y == 0) return vox::bedrock;
-		if (real.y < height - 6) return vox::stone;
-		return vox::earth;
-	}
-	return vox::air;
-}
 void CustomGenerator::generate(Chunk& chunk) {
-
-	size_t heights[CHUNK_D * CHUNK_W];
-
+	m_green.clear();
+	Voxels& voxels = chunk.voxels();
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
+
+			size_t index = toInt(x, z, CHUNK_D);
+
 			glm::vec2 real = glm::vec2(x + chunk.voxelPos().x, z + chunk.voxelPos().z);
-			heights[z * CHUNK_W + x] = calcHeight(real);
+			//height
+			m_heights.map[index] = calcHeight(real);
+			//biom
+			m_biom.map[index] = getBiom(real.x, real.y);
+			//greenary
+			if (m_green.map[index] == 0) {
+				m_green.map[index] =std::min(((std::rand() % 10)+1), 2);
+				if (m_green.map[index] == 1) m_green.fillCircle(index);
+			}
+
 		}
 	}
-
 	for (size_t z = 0; z < CHUNK_D; z++) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
-			size_t height = heights[z * CHUNK_W + x];
-			Biom::Type biom = getBiom(x+ chunk.voxelPos().x, z+ chunk.voxelPos().z);
+
+			size_t height = m_heights.map(x,z);
+			glm::uvec3 global = glm::uvec3(x + chunk.voxelPos().x,0, z + chunk.voxelPos().z);
+
 			for (size_t y = 0; y < CHUNK_H; y++) {
 
-				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.voxelPos();
-				short id = 55;
-				if (biom == Biom::plain)
-					id = blockPlain(real, height);
-				else if (biom == Biom::tundra)
-					id = blockTundra(real, height);
-				else if (biom == Biom::desert)
-					id = blockDesert(real, height);
-				chunk.voxels()(x, y, z) = Voxel(id);
+				glm::uvec3 local(x, y, z);
+				global.y = y + chunk.voxelPos().y;
+				Voxel id = vox::air;
+				id = blockBiom(global, height, bioms[m_biom.map(x, z)]);
+				voxels(local) = Voxel(id);
+				
 			}
+			if (m_green.map(x, z) == 1) initTree(voxels, glm::ivec3(x, height + 1, z));
 		}
 	}
 

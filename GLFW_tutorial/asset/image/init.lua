@@ -1,10 +1,11 @@
 
-
-
 asset = {
-	directory = "textures\\",
 	size_px =  32,
-	texture_block = 
+	dir_global = 	"textures\\",
+	dir_block = 	"blocks\\",
+	dir_items = 	"items\\",
+	dir_env = 		"environment\\",
+	tex_block = 
 	{
 		{path = "grass_top.png", 				color = {0,255,0}		},	--0
 		{path = "grass_side.png", 				color = 255				},	--1
@@ -22,14 +23,29 @@ asset = {
 		{path = "double_plant_grass_top.png",	color = {0,255,0}		},	--13
 		{path = "beacon.png",					color = 255				},	--14
 		{path = "redstone_block.png",			color = 255				},	--15
-		{path = "water_still.png",				frame  = 32				},	--16
-		{path = "water_flow.png",				frame  = 32				}	--17
+		{path = "leaves_oak.png",				color = {0,255,0}		},	--16
+		{path = "water_still.png",				frame  = 32				},	--17
+		{path = "water_flow.png",				frame  = 32				},	--18
+		
+	},
+	tex_items = 
+	{
+		{path = "bucket_water.png"},									--0
+		{path = "bucket_empty.png"}										--1
+	},
+	tex_env = 
+	{
+		{path = "sun.png"},									--0
+		{path = "rain.png"},									--1
+		{path = "moon_phases.png", col = 4, row = 2}	--2
 	}
+	
 }
 
 NON 	= 0
 NORM 	= 1
 SPEC    = 2
+ALPHA   = 3
 --PHYS
 GAS  =0
 SOLID 	= 1
@@ -141,10 +157,18 @@ pack = {
 		},
 		{	--14
 			name = "water",
-			drawGroup = SPEC,
+			drawGroup = ALPHA,
 			physGroup = LIQUID,
-			idle = 16,
-			act = 17
+			idle = 17,
+			act = 18,
+			icon = 0
+		},
+		{	--15
+			name = "leaves_oak",
+			drawGroup = SPEC,
+			physGroup = SOLID,
+			side = 16,
+			emission = NON
 		}
 	}
 }

@@ -110,6 +110,7 @@ public:
         voxel,
         color_layout,
 
+        test,
         texture,
         texture_loc2,
         texture_instance,

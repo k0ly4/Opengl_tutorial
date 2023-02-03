@@ -17,7 +17,7 @@ void PhysicsSolver::step(Hitbox& hitbox) {
 	float px = pos.x;
 	float pz = pos.z;
 	
-	vel += gravity * dt * hitbox.getGravityScale();
+	vel += gravity * dt * hitbox.mass * air_resistance;
 	hitbox.grounded = false;
 	
 		
@@ -109,20 +109,19 @@ void PhysicsSolver::step(Hitbox& hitbox) {
 }
 
 
-glm::ivec3 off[] = {
-		{-1,0,0 },
-		{1,0,0 },
-		{0,0,-1 },
-		{0,0,1 },
-		{0,-1,0 },
-		{0,1,0 },
-		
-};
+
 inline bool isSource(Voxel cur, Voxel tar) { return (cur.e.id == tar.e.id) && (cur.e.m1 < tar.e.m1); }
 inline bool isSource(size_t cur, glm::ivec3 targ, Voxels& voxs) { return voxs.is(targ) == 0 ? 0 : isSource(voxs[cur], voxs(targ)); }
 inline bool isFree(Voxel dest, Voxel source) {
 	return !((dest.id_ == source.id_) && (dest.e.m1 >= source.e.m1 - 1));
 }
+glm::ivec3 off[] = {
+		{-1,0,0 },
+		{1,0,0 },
+		{0,0,-1 },
+		{0,0,1 },
+		{0, -1, 0}
+};
 void PhysicsSolver::spreadLiquid(Voxel src, Voxels& voxs, Chunk* chunk,const glm::ivec3& global) {
 	//является вершиной
 	{
@@ -149,11 +148,11 @@ void PhysicsSolver::spreadLiquid(Voxel src, Voxels& voxs, Chunk* chunk,const glm
 	}
 }
 
-void PhysicsSolver::modelingLuqid(size_t i,Voxels& voxs, Chunk* chunk) {
+void PhysicsSolver::solveLiquid(size_t i,Voxels& voxs, Chunk* chunk) {
 	glm::ivec3 local = voxs.coord(i);
-	glm::ivec3 global(glm::ivec3(chunk->voxelPos())+local);
+	glm::ivec3 global(glm::ivec3(chunk->posVox())+local);
 	Voxel src = voxs[i];
-	//Если безусловный источник
+	//Если источник
 	if (src.e.m1 == VoxPack::maxConcLiquid) {
 		spreadLiquid(src, voxs, chunk, global);
 		return;
@@ -161,30 +160,35 @@ void PhysicsSolver::modelingLuqid(size_t i,Voxels& voxs, Chunk* chunk) {
 	//Ищем источник
 	byte m1 = 0;
 	{
-		for (size_t k = 0; k < 4; k++) {
-			const Voxel* targ = world->region.getVoxel(global + off[k]);
-			if (targ && isSource(voxs[i], *targ) && targ->e.m1 > m1) m1 = targ->e.m1;
-		}
 		//Сверху
 		const Voxel* targ = voxs.get(local + glm::ivec3(0, 1, 0));
 		if (targ && (targ->e.id == voxs[i].e.id)) m1 = VoxPack::maxConcLiquid;
-		//Если есть снизу то стремится к нулю
-		targ = voxs.get(local + glm::ivec3(0, -1, 0));
-		if (targ && (targ->e.id == voxs[i].e.id)) m1 = 1;
+		else {
+			// проверяем соседние
+			for (size_t k = 0; k < 4; k++) {
+				targ = world->region.getVoxel(global + off[k]);
+				if (targ && isSource(voxs[i], *targ) && targ->e.m1 > m1) m1 = targ->e.m1;
+			}
+		}
 	}
 	//Источника нет
 	if (m1 == 0) {
-		for (size_t k = 0; k < 5; k++) {
-			glm::ivec3 pos(global + off[k]);
-			world->region.getByVoxel(pos)->nonStatic.insert(voxs.ind(pos));
-		}
+		glm::ivec3 pos(global + glm::ivec3(0, -1, 0 ));
+		world->region.getByVoxel(pos)->toPhysBuffer(pos);
 		//to air
 		if (src.e.m1 == 0) chunk->setVoxelLocal(vox::air, local);
 		//else decrement m1
 		else chunk->setVoxelLocal(Voxel(src.e.id, src.e.m1 - 1), local);
 	}
 	else {
-		if(m1> src.e.m1+1) chunk->setVoxelLocal(Voxel(src.e.id, src.e.m1 +1), local);
+		//Если есть снизу то распространятся невозможно
+		const Voxel* targ = voxs.get(local + glm::ivec3(0, -1, 0));
+		if (targ && (targ->e.id == voxs[i].e.id)) {
+			if (src.e.m1>1) chunk->setVoxelLocal(Voxel(src.e.id, 1), local);
+			//m1 = 1;
+			return;
+		}
+		else if(m1> src.e.m1+1) chunk->setVoxelLocal(Voxel(src.e.id, src.e.m1 +1), local);
 		spreadLiquid(src, voxs, chunk, global);
 	}
 }
@@ -195,16 +199,16 @@ void PhysicsSolver::step_world() {
 	for (size_t j = 0; j < chunks.size(); j++) {
 		Voxels& voxs = chunks[j]->voxels();
 		std::set<size_t> buffer;
-		chunks[j]->nonStatic.swap(buffer);
-		
+		chunks[j]->swapPhysBuffer(buffer);
+
 		for (size_t i : buffer) {
 			if (VoxPack::isActive(chunks[j]->voxels()[i]) == 0)continue;
 			if (VoxPack::isLiquid(voxs[i])) {
-				modelingLuqid(i, voxs, chunks[j]);
+				solveLiquid(i, voxs, chunks[j]);
 			}
 			else LOG(LogError, "Physics it isn't liquid\n");
 		}
-		if (chunks[j]->nonStatic.size())LOG("NonStatic:%d\n", chunks[j]->nonStatic.size());
+		if (chunks[j]->phys_vox.size())LOG("NonStatic:%d\n", chunks[j]->phys_vox.size());
 	}
 	
 }

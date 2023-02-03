@@ -104,6 +104,7 @@ public:
 			else if (	bottom && right)modify(Side2D::right_bottom);
 			else if (	bottom && left)modify(Side2D::left_bottom);
 		}
+
 		inline void modifyAlpha(size_t x, size_t y) {
 			bool right = (x == CHUNK_W - 1);
 			bool left = (x == 0);
@@ -143,11 +144,12 @@ public:
 	//Local
 	inline bool isUnVisible(size_t x, size_t y, size_t z)const { return !(!voxs.is(x, y, z) || VoxPack::isRender(voxs(x, y, z)));}
 	//Global
-	inline const Voxel* getGlobal(const glm::uvec3& coord) const{return voxs.get(coord - bg_vox);}
-	inline Voxel* getGlobal(const glm::uvec3& coord) {return voxs.get(coord - bg_vox);}
+	inline const Voxel* getGlobal(const glm::uvec3& coord) const{	return voxs.get(coord - bg_vox);}
+	inline Voxel* getGlobal(const glm::uvec3& coord) {				return voxs.get(coord - bg_vox);}
 
-	inline const glm::uvec3& voxelPos()const { return bg_vox; }
-	inline const glm::uvec3& chunkPos()const { return bg_ch; }
+	inline const glm::uvec3& voxelPos()	const { return bg_vox; }
+	inline const glm::uvec3& posVox()	const { return bg_vox; }
+	inline const glm::uvec3& chunkPos()	const { return bg_ch; }
 	/// <summary>
 	/// »змен€ет заданный в глобальных кординатах coord воксель, устанавлива€ себе и 6 ближайшим чанкам modified в true
 	/// </summary>
@@ -169,23 +171,32 @@ public:
 		flag.modify();
 		lightMap.set(light.pos - bg_vox, channel_, light.light);
 	}
-
+	inline void swapPhysBuffer(std::set<size_t>& ph_vox)	noexcept{	phys_vox.swap(ph_vox); }
+	inline void toPhysBuffer(const glm::uvec3& pos)			noexcept {	toPhysBuffer(voxs.ind(pos)); }
+	inline void toPhysBuffer(size_t index)					noexcept {	phys_vox.insert(index); }
 	Voxels& voxels()				{ return voxs;}
 	const Voxels& voxels()const		{ return voxs;}
 	
 	Closes closes;
 	LightMap lightMap;
 	StateChunk flag;
-
-	std::set<size_t> nonStatic;
+	//physics voxel
+	
 
 protected:
+
 	friend class ChunkMeshBuilderDefault;
+	friend class PhysicsSolver;
+
+	std::set<size_t> phys_vox;
 	glm::ivec3 posView_;
-	std::vector<SortableVoxel> s_vox;
-	inline void upSortVox() {
-		s_vox.clear();
-		for (size_t i = 0; i < voxs.size(); i++) if (VoxPack::isAlpha(voxs[i])) s_vox.push_back(i);
+	std::vector<SortableVoxel> alpha_vox;
+
+
+	inline void upAlphaVoxBuffer() {
+		alpha_vox.clear();
+		//filling
+		for (size_t i = 0; i < voxs.size(); i++)  if (VoxPack::isAlpha(voxs[i])) alpha_vox.push_back(i);
 	}
 	static inline bool isFree(Voxel targ, byte drawGroup) { return !VoxPack::isRender(targ) || (VoxPack::get(targ).drawGroup != drawGroup);}
 	inline bool isFree(int x, int y, int z, byte drawGroup)noexcept {

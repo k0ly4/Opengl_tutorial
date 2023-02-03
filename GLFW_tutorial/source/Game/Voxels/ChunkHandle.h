@@ -17,7 +17,7 @@ public:
 	ChunkSectorRender(SupReg* region) :
 		size_(sSetup::distance_render),
 		begCh_(0),
-		viewCh_(glm::uvec3(sSetup::getBeginPos()) / CHUNK_VEC),
+		viewCh_(0.f),
 		region_(region) 
 	{ 
 		shaderHint = glShader::voxel; 
@@ -56,24 +56,7 @@ public:
 	/// </summary>
 	
 
-	inline void draw(const View* view, const Shader& shader) {
-		if (ch_sort.size() == 0)return;
-		//if (ch_sort[0].ch->flag.isModified()&& ch_sort[0].ch->flag.isInitLight()) ch_sort[0].ch->buildMesh();
-		//ch_sort[0].ch->buildSortMesh(viewPos_);
-		shader.use();
-		view->useVP(shader);
-		VoxPack::get()->use(shader);
-		shader.uniform("color_factor", weather->getSunFactor());
-		shader.uniform("ambient", 0.015f);
-		
-		for (int i = ch_sort.size() - 1; i > -1; i--) {
-			if(ch_sort[i].ch->flag.isDraw) ch_sort[i].ch->drawOpaqueMesh(shader);
-		}
-		for (int i = ch_sort.size() - 1; i > -1; i--) {
-			if (ch_sort[i].ch->flag.isDraw)	ch_sort[i].ch->drawSortMesh(shader);
-		}
-	}
-
+	void draw(const View* view, const Shader& shader);
 	void setVoxel(const Voxel&, const glm::ivec3& coord);
 	
 	/// <summary>

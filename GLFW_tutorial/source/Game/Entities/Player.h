@@ -5,6 +5,7 @@
 #include "Game/Voxels/World.h"
 #include "Physics/Hitbox.h"
 #include "UI/Shape.h"
+#include "Initiator.h"
 //Goods------------------------------------------------------
 struct Goods
 {
@@ -88,10 +89,11 @@ public:
 	void draw(RenderTarget& target);
 
 	float maxDistanceCursor = 10.f;
-	iGeometry <ConvexVertex> mesh;
+	
 	glm::ivec3 pos;
 	glm::vec3 norm;
 private:
+	iGeometry <ConvexVertex> mesh;
 };
 
 //InputPlayer------------------------------------------------------
@@ -114,10 +116,12 @@ public:
 
 	float jumpImpulse = 20.f;
 	float maxSpeed = 10.f;
+
 	std::shared_ptr<Hitbox> hitbox;
 	Camera* camera;
 	Inventory* inventory;
 	Cursor3D cursor;
+
 private:
 
 };
@@ -135,6 +139,7 @@ public:
 		inventory.init();
 		input.inventory = &inventory;
 		input.setCurVoxel(vox::grass);
+		sInitiator::init(*this);
 	}
 
 	inline void setHitbox(std::shared_ptr<Hitbox> hitbox_) {
@@ -144,10 +149,9 @@ public:
 
 	inline void setCamera(Camera& camera) {
 		camera_ = &camera;
+		camera.setPosition(hitbox->position);
 		input.camera = &camera;
 	}
-
-	const glm::vec3& getPosition()const {return camera_->position(); }
 
 	inline Basis getBasis()const { 
 		return Basis(camera_->basis().position, camera_->basis().right, camera_->basis().up, camera_->basis().front);}
@@ -161,5 +165,6 @@ private:
 
 	Camera* camera_ =0;
 };
+
 
 #endif

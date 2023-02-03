@@ -5,6 +5,7 @@
 #include "Math/Math.h"
 #include "Resource/Buffer.h"
 #include "Graphic/ContextRender.h"
+
 ///iGeometry---------------------------------------------
 /// <summary>
 /// 
@@ -50,7 +51,7 @@ public:
 	inline void pushInd(size_t ind)			noexcept {	indices.push_back(ind);}
 	inline void pushVert(const T& vertex)	noexcept {	vertices.push_back(vertex); }
 	inline void push_back(const T& vertex)	noexcept {	vertices.push_back(vertex);}
-	inline void pushSquare()				noexcept {
+	inline void pushSquareInd()			noexcept {
 		size_t begin = vertices.size();
 		pushInd(begin);
 		pushInd(begin + 1);
@@ -59,7 +60,7 @@ public:
 		pushInd(begin + 2);
 		pushInd(begin + 3);
 	}
-	inline void pushSquare(size_t begin)	noexcept {
+	inline void pushSquareInd(size_t begin)	noexcept {
 		pushInd(begin);
 		pushInd(begin + 1);
 		pushInd(begin + 2);

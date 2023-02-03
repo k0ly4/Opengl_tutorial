@@ -21,8 +21,8 @@ class LightMap
 			size_t i = map_.ind(x, y, z);
 			return {getR(i),getG(i) ,getB(i) ,getS(i) };
 		}
-		inline byte getR(int x, int y, int z)const noexcept	{ return map_(x, y, z) & 0xF; }
-		inline byte getG(int x, int y, int z)const noexcept	{ return (map_(x, y, z) >> 4) & 0xF;}
+		inline byte getR(int x, int y, int z)const noexcept	{return map_(x, y, z) & 0xF; }
+		inline byte getG(int x, int y, int z)const noexcept	{return (map_(x, y, z) >> 4) & 0xF;}
 		inline byte getB(int x, int y, int z)const noexcept	{return (map_(x, y, z) >> 8) & 0xF;}
 		inline byte getS(int x, int y, int z)const noexcept	{return (map_(x, y, z) >> 12) & 0xF;}
 		

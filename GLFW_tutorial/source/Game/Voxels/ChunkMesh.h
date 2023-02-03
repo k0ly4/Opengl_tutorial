@@ -20,6 +20,7 @@ public:
 		
 		void buildOpaqueMesh() override;
 		void buildSortMesh() override;
+		void buildMeshIcon(Voxel vox);
 		
 private:
 		inline byte LIGHT(int x, int y, int z, int channel)noexcept { return _this->LIGHT(x, y, z, channel);}
@@ -36,36 +37,61 @@ private:
 
 		inline bool isFree(int x, int y, int z, byte drawGroup)noexcept { return _this->isFree(x, y, z, drawGroup);}
 		
-		void buildTopFace(ShellGeometry& mesh, int x, int y, int z, Voxel voxel);
-		inline void buildTopFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
-			if (isFree(x, y + 1, z, drawGroup))buildTopFace(mesh, x, y, z, voxel);
+		void buildTopFace(			iGeometry<VoxelVertex>& mesh, int x, int y, int z, Voxel voxel);
+		inline void buildTopFace(	iGeometry<VoxelVertex>& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
+			if (isFree(x, y + 1, z, drawGroup)) {
+				lightFaceXZ(x, y + 1, z, lFace);
+				buildTopFace(mesh, x, y, z, voxel);
+			}
 		}
-		void buildBottomFace(ShellGeometry& mesh, int x, int y, int z, Voxel voxel);
-		inline void buildBottomFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
-			if (isFree(x, y - 1, z, drawGroup)) buildBottomFace(mesh, x, y, z, voxel);
+		void buildBottomFace(		iGeometry<VoxelVertex>& mesh, int x, int y, int z, Voxel voxel);
+		inline void buildBottomFace(iGeometry<VoxelVertex>& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
+			if (isFree(x, y - 1, z, drawGroup)) {
+				lightFaceXZ(x, y - 1, z, lFace);
+				buildBottomFace(mesh, x, y, z, voxel);
+			}
 		}
-		void buildRightFace(ShellGeometry& mesh, int x, int y, int z, Voxel voxel);
-		inline void buildRightFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
-			if (isFree(x + 1, y, z, drawGroup))buildRightFace(mesh, x, y, z, voxel);
+		void buildRightFace(		iGeometry<VoxelVertex>& mesh, int x, int y, int z, Voxel voxel);
+		inline void buildRightFace(	iGeometry<VoxelVertex>& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
+			if (isFree(x + 1, y, z, drawGroup)) {
+				lightFaceYZ(x + 1, y, z, lFace);
+				buildRightFace(mesh, x, y, z, voxel);
+			}
 		}
-		void buildLeftFace(ShellGeometry& mesh, int x, int y, int z, Voxel voxel);
-		inline void buildLeftFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
-			if (isFree(x - 1, y, z, drawGroup)) buildLeftFace(mesh, x, y, z, voxel);
+		void buildLeftFace(			iGeometry<VoxelVertex>& mesh, int x, int y, int z, Voxel voxel);
+		inline void buildLeftFace(	iGeometry<VoxelVertex>& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
+			if (isFree(x - 1, y, z, drawGroup)) {
+				lightFaceYZ(x - 1, y, z, lFace);
+				buildLeftFace(mesh, x, y, z, voxel);
+			}
 		}
-		void buildFrontFace(ShellGeometry& mesh, int x, int y, int z, Voxel voxel);
-		inline void buildFrontFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
-			if (isFree(x, y, z + 1, drawGroup))buildFrontFace(mesh, x, y, z, voxel);
+		void buildFrontFace(		iGeometry<VoxelVertex>& mesh, int x, int y, int z, Voxel voxel);
+		inline void buildFrontFace(	iGeometry<VoxelVertex>& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
+			if (isFree(x, y, z + 1, drawGroup)) {
+				lightFaceXY(x, y, z + 1, lFace);
+				buildFrontFace(mesh, x, y, z, voxel);
+			}
 		}
-		void buildBackFace(ShellGeometry& mesh, int x, int y, int z, Voxel voxel);
-		inline void buildBackFace(ShellGeometry& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
-			if (isFree(x, y, z - 1, drawGroup))buildBackFace(mesh, x, y, z, voxel);
+		void buildBackFace(			iGeometry<VoxelVertex>& mesh, int x, int y, int z, Voxel voxel);
+		inline void buildBackFace(	iGeometry<VoxelVertex>& mesh, int x, int y, int z, byte drawGroup, Voxel voxel) {
+			if (isFree(x, y, z - 1, drawGroup)) {
+				lightFaceXY(x, y, z - 1, lFace);
+				buildBackFace(mesh, x, y, z, voxel);
+			}
 		}
-		void buildBox(ShellGeometry& mesh,			Voxel voxel, size_t x, size_t y, size_t z);
-		void buildSortBox(ShellGeometry& mesh,		Voxel voxel, size_t x, size_t y, size_t z);
-		void buildLiquidBox(ShellGeometry& mesh,	Voxel voxel, size_t x, size_t y, size_t z);
-		void build—rossroad(ShellGeometry& mesh,	Voxel voxel, size_t x, size_t y, size_t z);
-		void buildLiquid(ShellGeometry& mesh,		Voxel voxel, size_t x, size_t y, size_t z);
+		void buildBox(			iGeometry<VoxelVertex>& mesh,		Voxel voxel, size_t x, size_t y, size_t z);
+		void buildSortBox(		iGeometry<VoxelVertex>& mesh,		Voxel voxel, size_t x, size_t y, size_t z);
+		void buildLiquidBox(	iGeometry<VoxelVertex>& mesh,		Voxel voxel, size_t x, size_t y, size_t z);
+		void build—rossroad(	iGeometry<VoxelVertex>& mesh,		Voxel voxel, size_t x, size_t y, size_t z);
+		void buildLiquid(		iGeometry<VoxelVertex>& mesh,		Voxel voxel, size_t x, size_t y, size_t z);
+
+		void setLiquidHeights(Voxel voxel, size_t x, size_t y, size_t z);
+		inline void setHeights(float value = 1.f) {
+			heights[0] = heights[1] = heights[2] = heights[3] = value;
+		}
+
 		float heights[4] = { 1.f,1.f,1.f,1.f };
+		Vec4Array lFace[4];
 };
 ///sChunkMesh-------------------------------------------------------------
 class sChunkMesh

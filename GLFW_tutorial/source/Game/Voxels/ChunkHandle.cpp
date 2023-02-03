@@ -51,6 +51,26 @@ void ChunkSectorRender::upChunks_sort() {
 	ch_sort=ch;
 }
 
+void ChunkSectorRender::draw(const View* view, const Shader& shader) {
+	if (ch_sort.size() == 0)return;
+	//if (ch_sort[0].ch->flag.isModified()&& ch_sort[0].ch->flag.isInitLight()) ch_sort[0].ch->buildMesh();
+	//ch_sort[0].ch->buildSortMesh(viewPos_);
+	shader.use();
+
+	view->use(shader);
+	VoxPack::get()->use(shader);
+	shader.uniform("color_sun", weather->getSunLight());
+	shader.uniform("ambient", 0.015f);
+	weather->fogShader.uniform(shader);
+
+	for (int i = ch_sort.size() - 1; i > -1; i--) {
+		if (ch_sort[i].ch->flag.isDraw) ch_sort[i].ch->drawOpaqueMesh(shader);
+	}
+	for (int i = ch_sort.size() - 1; i > -1; i--) {
+		if (ch_sort[i].ch->flag.isDraw)	ch_sort[i].ch->drawSortMesh(shader);
+	}
+}
+
 const Voxel* ChunkSectorRender::rayCast(const glm::vec3& a, const glm::vec3& dir, float maxDist, glm::vec3& end, glm::vec3& norm, glm::ivec3& iend) {
 	float px = a.x;
 	float py = a.y;

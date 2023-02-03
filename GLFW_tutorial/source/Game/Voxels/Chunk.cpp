@@ -14,45 +14,33 @@ void gChunk::setVoxelLocal(Voxel voxel, const glm::uvec3& coord) {
 	voxs[index] = voxel;
 	//Определям что потребуется перестроить
 	if (VoxPack::isAlpha(voxel) && ((VoxPack::isAlpha(dest) || VoxPack::isRender(dest) == 0))) {
-		//!!!!!-----------------
-		upSortVox();///TODO
-		//!!!!!-----------------
 		flag.modifyAlpha();
 		closes.modifyAlpha(coord.x, coord.z);
 	}
-	
 	else {
 		flag.modify();
 		closes.modify(coord.x, coord.z);
-	}
-	//Физическая оптимизация
-	//if (voxel.e.id == vox::water)LOG("Water:if == %d\n", VoxPack::isActive(voxel));
-	if (VoxPack::isActive(voxel)) {
-		nonStatic.insert(index);
-	}
-	else if (VoxPack::isActive(voxel)||VoxPack::isActive(dest)) {
-		glm::ivec3 off[6] = { 
-			glm::ivec3(-1, 0, 0),
-			glm::ivec3(1, 0, 0),
-			glm::ivec3(0, -1, 0),
-			glm::ivec3(0, 1, 0) ,
-			glm::ivec3(0, 0, -1) ,
-			glm::ivec3(0, 0, 1) 
-		};
-		for (size_t i = 0; i < 6; i++) {
-			glm::ivec3 pos(glm::ivec3(coord) + off[i]);
-			if ((size_t)pos.y >= CHUNK_H) continue;
-				if (voxs.is(pos)) {
-					if (VoxPack::isActive(voxs(pos))) nonStatic.insert(voxs.ind(pos));
-				}
-				else {
-					gChunk* cl = closes.chunk(pos.x, pos.z);
-					pos = { clip(pos.x,CHUNK_W),pos.y,clip(pos.z,CHUNK_D) };
-					if (cl&& VoxPack::isActive(cl->voxs(pos))) 
-						cl->nonStatic.insert(voxs.ind(pos));
-				}
-			
+	}	
+	//Физические флаги
+	if (VoxPack::isActive(voxel)) toPhysBuffer(index);
+	glm::ivec3 off[6] = {
+				glm::ivec3(-1, 0, 0),
+				glm::ivec3(1, 0, 0),
+				glm::ivec3(0, -1, 0),
+				glm::ivec3(0, 1, 0) ,
+				glm::ivec3(0, 0, -1) ,
+				glm::ivec3(0, 0, 1)
+	};
+	for (size_t i = 0; i < 6; i++) {
+		glm::ivec3 pos(glm::ivec3(coord) + off[i]);
+		if ((size_t)pos.y >= CHUNK_H) continue;
+		if (voxs.is(pos)) { if (VoxPack::isActive(voxs(pos))) toPhysBuffer(pos); }
+		else {
+			gChunk* cl = closes.chunk(pos.x, pos.z);
+			pos = { clip(pos.x,CHUNK_W),pos.y,clip(pos.z,CHUNK_D) };
+			if (cl && VoxPack::isActive(cl->voxs(pos))) cl->toPhysBuffer(pos);
 		}
+
 	}
 }
 
@@ -66,7 +54,7 @@ void ChunkGraphic::buildMesh() {
 void  ChunkGraphic::buildSortMesh(glm::ivec3 pos) {
 	
 	pos = pos- glm::ivec3(bg_vox);
-	if (((posView_  == pos) && (flag.isModifiedAlpha() == 0)) || flag.isModified()) return;
+	if (((posView_  == pos) && (flag.modifiedAlpha == 0)) || flag.isModified()) return;
 	//sync
 	cBlock = 1;
 	while (dBlock)std::this_thread::yield();

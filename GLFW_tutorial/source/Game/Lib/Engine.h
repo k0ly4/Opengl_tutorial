@@ -17,6 +17,7 @@ public:
 
     Engine()
     {
+        MasterGeneration::setGenerator(new CustomGenerator("scripts/i_generator.lua"));
         setupWindow();
         procQueue.launch();
         scene.initialize(window,&graphic,&event);

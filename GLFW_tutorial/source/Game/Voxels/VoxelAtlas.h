@@ -96,7 +96,8 @@ struct Block {
 	byte physGroup;
 	//is emission
 	bool isEmission;
-
+	//liquid
+	
 	inline void setSide(luke::LuaRef ref) {
 		if (ref.isTable()) {
 			for (size_t i = 0; i < 6; i++) {
@@ -123,6 +124,19 @@ struct Block {
 struct TexturePackMetadata {
 	std::string name, version;
 };
+namespace weather{
+	enum ID:size_t
+	{
+		Sun,Rain,Moon
+	};
+}
+struct UniversalAtlas {
+	// размер текстуры в пикселях
+	glm::ivec2 size_px;
+	std::vector<glm::vec4> uv;
+	std::shared_ptr<Texture2D> tex;
+
+};
 struct TexAtlas {
 	//кол-во элементов
 	size_t size_el;
@@ -130,7 +144,7 @@ struct TexAtlas {
 	size_t size_row_el;
 	// размер элемента в пикселях
 	float el_px;
-		// размер элемента в шейдере
+	// размер элемента в шейдере
 	glm::vec2 el_uv;
 	// размер текстуры в пикселях
 	glm::ivec2 size_px;
@@ -181,12 +195,12 @@ public:
 	const Block& get(Voxel id)const noexcept { return blocks[id.e.id]; }
 	//path to json file
 	bool load();
-	inline const glm::vec2& get(Voxel id, int side)const noexcept { return isLiquid(id) ? getLiqiud(id) : atlas.uv[blocks[id.e.id].idSide[side]];}
+	inline const glm::vec2& get(Voxel id, int side)const noexcept { return isLiquid(id) ? getLiqiud(id) : a_main.uv[blocks[id.e.id].idSide[side]];}
 	inline const glm::vec4& get4(Voxel id, int side)const noexcept { 
 		glm::vec2 v1(get(id,side));
-		return glm::vec4(v1, v1 + atlas.el_uv);
+		return glm::vec4(v1, v1 + a_main.el_uv);
 	}
-	inline const glm::vec2& getLiqiud(Voxel id)const noexcept	  {	return atlas.uv[blocks[id.e.id].idIdleSide]; }
+	inline const glm::vec2& getLiqiud(Voxel id)const noexcept	  {	return a_main.uv[blocks[id.e.id].idIdleSide]; }
 
 	inline void use(const Shader& shader)const {
 		shader.uniform("configMaterial", 1);
@@ -196,26 +210,29 @@ public:
 	inline const Texture2D& getAtlas()const {		return *(render.texture()); }
 	//path to json file
 	bool load(const std::string& directory);
-	inline const TexAtlas& data()const noexcept { return atlas; }
+	inline const TexAtlas& data()const noexcept { return a_main; }
 
 	inline Sprite& getSprite(Voxel id)const {
 		glm::vec2 size = glm::vec2(render.texture()->getSize());
 		glm::vec2 norm(get(id, Side::top));
 		glm::vec2 pos(
-			glm::vec2(norm.x, 1.f - norm.y -atlas.el_uv.y) * size
+			glm::vec2(norm.x, 1.f - norm.y - a_main.el_uv.y) * size
 		);
-		FloatRect rect(pos, glm::vec2((float)atlas.el_px));
+		FloatRect rect(pos, glm::vec2((float)a_main.el_px));
 		icon.setTextureRect(rect);
 		return icon;
 	}
-	inline glm::vec2 getNormalizeSizeVoxel()const noexcept {	return atlas.el_uv; }
-	inline size_t getSizeVoxel()const noexcept {				return atlas.el_px; }
+	inline glm::vec2 getNormalizeSizeVoxel()const noexcept {	return a_main.el_uv; }
+	inline size_t getSizeVoxel()const noexcept {				return a_main.el_px; }
 
 	inline bool isLiquid(Voxel id)const					noexcept { return get(id).physGroup == TexturePack::ph_liquid; }
+	Texture2D sun;
 private:
-	inline const glm::vec2& get(twobyte id, int side)const { return atlas.uv[blocks[id].idSide[side]]; }
+	inline const glm::vec2& get(twobyte id, int side)const { return a_main.uv[blocks[id].idSide[side]]; }
 
-	void renderTextureAtlas();
+	void renderMainAtlas(luke::LuaRef asset, const std::string& global_dir);
+	void renderEnvAtlas(luke::LuaRef asset, const std::string& global_dir);
+
 	inline void drawElRotate(glm::vec2 pos, glm::vec2 size) {
 		mesh[2].v1.x = pos.x;				mesh[2].v1.y = pos.y + size.x;
 		mesh[0].v1.x = pos.x + size.y,		mesh[0].v1.y = pos.y + size.x;
@@ -242,8 +259,9 @@ private:
 	qGeometry<Vertex1<glm::vec4>> mesh;
 	std::vector<Block> blocks;
 
-	TexAtlas atlas;
-	//std::shared_ptr<Texture2D> icons_;
+	TexAtlas	   a_main;
+	UniversalAtlas a_env;
+
 	RenderTexture render;
 	//temp
 	Texture2D res;

@@ -25,20 +25,20 @@ public:
 		wTime.up(time);
 		if (wTime.count > 5) LOG("wTime:%d\n", wTime.count);
 	}
-
-	inline void setGravity(const glm::vec3& gravity_) { gravity = gravity_;}
 	inline void solve(Hitbox& hitbox) {	for (size_t i = 0; i < (size_t)rTime.count; i++) step(hitbox);}
 	inline void solveWorld() {
 		for (size_t i = 0; i < (size_t)wTime.count; i++) step_world();
 		for (size_t i = 0; i < (size_t)rTime.count; i++) world->weather.update(rTime.step);
 	}
-
+	const size_t dist_mod = REGION_SIZE;
+	glm::vec3 gravity;
+	float air_resistance = 0.1f;
 private:
 
 	void step(Hitbox& hibox);
 	void step_world();
 	void spreadLiquid(Voxel src, Voxels& voxs, Chunk* chunk, const glm::ivec3& local);
-	void modelingLuqid(size_t index, Voxels& voxs, Chunk* chunk);
+	void solveLiquid(size_t index, Voxels& voxs, Chunk* chunk);
 	
 
 	struct PhStep {
@@ -57,10 +57,10 @@ private:
 
 	PhStep rTime;
 	PhStep wTime;
-	glm::vec3 gravity;
+	
 
 	GlobalScene*scene;
 	World* world;
-	size_t dist_mod = REGION_SIZE;
+
 };
 #endif

@@ -4,12 +4,11 @@
 #include "PrimitiveEntity.h"
 #include "Transformable.h"
 #include "Graphic/Drawable.h"
-
-class Plane :public Texturable, public Transformable3D {
+class pPlane :public Texturable, public Transformable3D {
    
 public:
    
-    Plane() 
+    pPlane()
     {}
 
     void draw(const View* view, const Shader& shader) {
@@ -19,7 +18,6 @@ public:
         uniformMaterial(shader);
         sBuffer::plane->getVAO().draw();
     }
-
 private:
 
 };
