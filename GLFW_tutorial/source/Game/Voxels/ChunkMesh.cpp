@@ -278,7 +278,6 @@ void ChunkMeshBuilderDefault::buildMeshIcon(Voxel vox) {
 }
 
 void ChunkMeshBuilderDefault::buildOpaqueMesh() {
-	_this->flag.modified = 0;
 	_this->mesh_.clear();
 	for (size_t i = 0; i < _this->voxs.size(); i++) {
 		Voxel v = _this->voxs[i];
@@ -290,15 +289,14 @@ void ChunkMeshBuilderDefault::buildOpaqueMesh() {
 			else												buildBox(	   _this->mesh_, v,pos.x, pos.y, pos.z);
 		}
 	}
+	_this->flag.modAlphMesh();
 	_this->mesh_.needUpBuffer = 1;
-	_this->flag.modifyAlpha();
 }
 
 void ChunkMeshBuilderDefault::buildSortMesh() {
-	if (_this->flag.modifiedAlpha) {
+	if (_this->flag.status == StateChunk::s_alph_mesh) {
 		//LOG("upAlpha\n");
 		_this->upAlphaVoxBuffer();
-		_this->flag.modifiedAlpha = 0;
 	}
 	//cash distance
 	for (size_t i = 0; i < _this->alpha_vox.size(); i++) {
@@ -321,6 +319,7 @@ void ChunkMeshBuilderDefault::buildSortMesh() {
 
 	}
 	//Flags
+	_this->flag.toReady();
 	_this->mesh_sort.needUpBuffer = 1;
 }
 

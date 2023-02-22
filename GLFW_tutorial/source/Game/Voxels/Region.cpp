@@ -1,6 +1,6 @@
 #include "Region.h"
+
 void  RegionFile::generate(Chunk& ch) {
-	LOG("Generate\n");
 	MasterGeneration::generateChunk(ch);
 }
 

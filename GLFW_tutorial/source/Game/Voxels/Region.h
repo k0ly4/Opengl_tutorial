@@ -3,7 +3,7 @@
 
 #include "Chunk.h"
 #include "Game/Loader/SaveManager.h"
-#include "Game/Voxels/MasterGeneration.h"
+#include "Game/Voxels/Generation/MasterGeneration.h"
 
 typedef Array2d<REGION_SIZE, Chunk> Chunks;
 typedef vector2d<Chunk*> ChunkPtrs;

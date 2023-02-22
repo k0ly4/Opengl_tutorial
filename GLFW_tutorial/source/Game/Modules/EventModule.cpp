@@ -21,6 +21,9 @@ void EventModule::inputDisabledCursor(Event& event, GlobalScene& sc,GraphicPipel
         else if (event.key.code == Keyboard::P) {
             f.show_atlas = !f.show_atlas;
         }
+        else if (event.key.code == Keyboard::G) {
+            f.show_biom_map != f.show_biom_map;
+        }
         else inputMain.solveKey(event);
     }
 

@@ -4,7 +4,7 @@
 #include "Resource/Shader.h"
 #include "Graphic/Texture.h"
 #include "Scene/Camera.h"
-
+#include "Graphic/ContextRender.h"
 ///Drawable---------------------------------------------
 /// <summary>
 /// Интерфейс между RenderGeneral* и объектом
@@ -49,9 +49,8 @@ public:
 	void setTexture(const Texture2D& texture) {
 		texture_ = &texture;
 	}
-	const Texture2D* getTexture()const {
-		return texture_;
-	}
+	const Texture2D* getTexture()const {return texture_;}
+
 protected:
 
 	const Texture2D* texture_;
@@ -195,7 +194,77 @@ protected:
 	Material material;
 
 };
+/// <summary>
+/// RenderTarget
+/// </summary>
+class RenderTarget {
 
+public:
+
+	inline void setView(const View& view) { view_ = &view; }
+	inline const View* getView()const { return view_; }
+
+	inline void draw(Drawable& object) { object.draw(view_, glShader::get(getHint(object.getShaderHint()))); }
+
+	inline void draw(Drawable& object, glShader::Object index_shader) { object.draw(view_, glShader::get(index_shader)); }
+
+	inline void draw(Drawable& object, const Shader& shader) { object.draw(view_, shader); }
+
+	inline void setDefaultHintShader(glShader::Object hint) { defaultHintShader_ = hint; }
+
+	inline glShader::Object getHintShader(Drawable& object) const { return getHint(object.getShaderHint()); }
+
+protected:
+
+	glShader::Object getHint(glShader::Object objectHint)const {
+		if (objectHint == glShader::any)
+		{
+			return defaultHintShader_;
+		}
+		else if (objectHint == glShader::any_skeletal_animation)
+		{
+			return defaultHintShader_ == glShader::gb_texture ? glShader::gb_texture_animation : glShader::any_light_texture;
+		}
+		else
+		{
+			return objectHint;
+		}
+	}
+
+	glShader::Object defaultHintShader_ = glShader::gb_texture;
+	const View* view_ = 0;
+};
+
+///Graphic---------------------------------------------
+/// <summary>
+///
+/// </summary>
+class Graphic {
+public:
+	Graphic() {
+		VAO.data_draw = DataDraw(DataDraw::DrawArrays, sRender::TRIANGLES, 0);
+	}
+	void setMesh(const std::vector<Vertex>& vertices) {
+		VAO.data_draw.data.count_vertex = vertices.size();
+		VAO.begin();
+		VBO.begin();
+		VBO.data(vertices);
+
+		VAO.attrib(0, 3, SIZE_VERTEX, 0);
+		VAO.attrib(1, 3, SIZE_VERTEX, 3 * sizeof(float));
+		VAO.attrib(2, 2, SIZE_VERTEX, 6 * sizeof(float));
+
+	}
+
+	void draw(const Shader& shader) {
+		shader.uniform(material);
+		VAO.draw();
+	}
+
+	Material material;
+	DrawBuffer VAO;
+	VertexBufferObject VBO;
+};
 
 #endif
 

@@ -95,9 +95,9 @@ void PhysicsSolver::step(Hitbox& hitbox) {
 	}
 
 	if (vel.y > 0.0) {
-		for (int x = floor(pos.x - half.x + E); x <= (size_t)floor(pos.x + half.x - E); x++) {
-			for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
-				int y = floor(pos.y + half.y + E);
+		for (int x = (int)floor(pos.x - half.x + E); x <= (size_t)floor(pos.x + half.x - E); x++) {
+			for (int z = (int)floor(pos.z - half.z + E); z <= (int)floor(pos.z + half.z - E); z++) {
+				int y = (int)floor(pos.y + half.y + E);
 				if (chunks.isObstacle(x, y, z)) {
 					vel.y = 0.f;
 					pos.y = y - half.y - E;
@@ -150,7 +150,7 @@ void PhysicsSolver::spreadLiquid(Voxel src, Voxels& voxs, Chunk* chunk,const glm
 
 void PhysicsSolver::solveLiquid(size_t i,Voxels& voxs, Chunk* chunk) {
 	glm::ivec3 local = voxs.coord(i);
-	glm::ivec3 global(glm::ivec3(chunk->posVox())+local);
+	glm::ivec3 global(glm::ivec3(chunk->posVx())+local);
 	Voxel src = voxs[i];
 	//Если источник
 	if (src.e.m1 == VoxPack::maxConcLiquid) {

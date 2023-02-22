@@ -14,7 +14,7 @@ void Scene3D::init(RenderWindow& window) {
 	camera.setProjection(GAME::PROJECTION);
 	camera.cur_pos_mouse = Mouse::getPosition();
 
-	ImageLoader::flipVerticallyOnLoad(1);
+	ImageLoader::setFlipOnLoad(1);
 	filin.load("asset\\image\\favor.jpg");
 	world.init(camera);
 	

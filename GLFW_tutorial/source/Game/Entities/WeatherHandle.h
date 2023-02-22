@@ -41,7 +41,7 @@ class WeatherHandle
 			Blend::Equation(Blend::Max);
 			Depth::Mask(false);
 			Depth::Func(Depth::Lequal);
-			mesh.drawArrays(Render::TRIANGLES_STRIP);
+			mesh.drawArrays(sRender::TRIANGLES_STRIP);
 			Depth::Mask(true);
 			Depth::Func(Depth::Less);
 			Blend::Equation(Blend::Add);

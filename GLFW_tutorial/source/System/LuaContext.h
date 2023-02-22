@@ -39,7 +39,7 @@ namespace luke {
 				);
 			}
 		}
-		return ColorU(ref.cast<size_t>());
+		return ColorU(ref.cast<byte>());
 	}
 }
 

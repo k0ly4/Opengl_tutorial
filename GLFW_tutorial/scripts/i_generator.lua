@@ -8,12 +8,9 @@ generator_config = {
 		--temperature = [0,255]
 		--humidity 	 = [0,255]
 		init = function()
-			map.addChannelHeight(0.05,	1.0)
-			map.addChannelHeight(0.1,	0.9)
-			map.addChannelHeight(0.9,	0.8)
-			map.addChannelHeight(3.0,	0.4)
-			--map.addChannelHeight(3.0,	0.2)
-			--map.addChannelHeight(3.0,	0.2)
+			map.addChannelHeight(0.05,	1.2)
+			map.addChannelHeight(0.9,	0.7)
+			map.addChannelHeight(3.0,	0.6)
 		end,
 	},
 	

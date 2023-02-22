@@ -213,7 +213,7 @@ public:
 	inline const TexAtlas& data()const noexcept { return a_main; }
 
 	inline Sprite& getSprite(Voxel id)const {
-		glm::vec2 size = glm::vec2(render.texture()->getSize());
+		glm::vec2 size = glm::vec2(render.texture()->resource->size_);
 		glm::vec2 norm(get(id, Side::top));
 		glm::vec2 pos(
 			glm::vec2(norm.x, 1.f - norm.y - a_main.el_uv.y) * size
@@ -223,7 +223,7 @@ public:
 		return icon;
 	}
 	inline glm::vec2 getNormalizeSizeVoxel()const noexcept {	return a_main.el_uv; }
-	inline size_t getSizeVoxel()const noexcept {				return a_main.el_px; }
+	inline size_t getSizeVoxel()const noexcept {				return (size_t)a_main.el_px; }
 
 	inline bool isLiquid(Voxel id)const					noexcept { return get(id).physGroup == TexturePack::ph_liquid; }
 	Texture2D sun;
@@ -239,7 +239,7 @@ private:
 		mesh[3].v1.x = pos.x,				mesh[3].v1.y = pos.y;
 		mesh[1].v1.x = pos.x + size.y,		mesh[1].v1.y = pos.y;
 		mesh.saveInBuffer();
-		mesh.drawArrays(Render::TRIANGLES_STRIP);
+		mesh.drawArrays(sRender::TRIANGLES_STRIP);
 	}
 	inline void drawEl(glm::vec2 pos,glm::vec2 size) {
 		mesh[0].v1.x = pos.x;			mesh[0].v1.y = pos.y + size.y;
@@ -247,7 +247,7 @@ private:
 		mesh[2].v1.x = pos.x,			mesh[2].v1.y = pos.y;
 		mesh[3].v1.x = pos.x + size.x,	mesh[3].v1.y = pos.y;
 		mesh.saveInBuffer();
-		mesh.drawArrays(Render::TRIANGLES_STRIP);
+		mesh.drawArrays(sRender::TRIANGLES_STRIP);
 	}
 	inline void initScript() {
 		const char* path = "asset\\image\\init.lua";
@@ -266,68 +266,6 @@ private:
 	//temp
 	Texture2D res;
 	luke::LuaInterface script;
-	mutable Sprite icon;
-};
-///VoxelAtlas---------------------------
-/// <summary>
-/// 
-/// </summary>
-class ResourcePack {
-
-public:
-
-	enum eDrawGroup:byte {
-		draw_non =0,
-		draw_opaque,
-		draw_transparent,
-		draw_alpha,
-	};
-
-	enum ePhysics :byte {
-		ph_gas = 0,
-		ph_solid,
-		ph_liquid,
-	};
-	const Block& get(Voxel id)const noexcept { return blocks[id.e.id];}
-	//path to json file
-	bool load(const std::string& directory);
-	inline const glm::vec2& get(Voxel id, int side)const noexcept { return uv[blocks[id.e.id].idSide[side]];}
-
-	inline float getNormalizeSizeVoxel()const noexcept {return uvSize_;}
-	inline size_t getSizeVoxel()const noexcept { return sizeVoxel_; }
-
-	inline void use(const Shader& shader)const {
-		shader.uniform("configMaterial", 1);
-		shader.uniform("baseColor", glm::vec3(1.f));
-		texture_.use(0);
-	}
-	const Texture2D& getTexture()const {return texture_;}
-	inline Sprite& getSprite(Voxel id)const {
-		glm::vec2 size = glm::vec2(texture_.getSize());
-		glm::vec2 norm(get(id, Side::top));
-		glm::vec2 pos(
-			glm::vec2(norm.x, 1.f - norm.y - uvSize_) * size
-		);
-		FloatRect rect(pos, glm::vec2((float)sizeVoxel_));
-		icon.setTextureRect(rect);
-		return icon;
-	}
-private:
-
-	inline const glm::vec2& get(twobyte id, int side)const { return uv[blocks[id].idSide[side]];}
-	inline glm::vec2 getUV(int id) {
-		float u = (id % voxelInSide) * uvSize_;
-		float v = 1.f - ((1.f + id / voxelInSide) * uvSize_);
-		return glm::vec2(u, v);
-	}
-
-	std::vector<glm::vec2> uv;
-	std::vector<Block> blocks;
-
-	float uvSize_;
-	size_t voxelInSide;
-	size_t sizeVoxel_;
-	Texture2D texture_;
 	mutable Sprite icon;
 };
 
@@ -350,6 +288,7 @@ public:
 	static inline bool isRender(Voxel id)					noexcept { return (get(id).drawGroup != TexturePack::draw_non); }
 	static inline bool isSelectable(Voxel id)				noexcept { return (get(id).drawGroup != TexturePack::draw_non); }
 	static inline bool isOpaque(Voxel id)					noexcept { return (get(id).drawGroup == TexturePack::draw_opaque);}
+	static inline bool isTransparent(Voxel id)				noexcept { return (get(id).drawGroup != TexturePack::draw_opaque); }
 	static inline bool isAlpha(Voxel id)					noexcept { return (get(id).drawGroup == TexturePack::draw_alpha); }
 	//Physics parr
 	static inline bool isGas(Voxel id)						noexcept { return get(id).physGroup == TexturePack::ph_gas; }

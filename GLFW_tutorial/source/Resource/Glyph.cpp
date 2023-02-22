@@ -6,9 +6,9 @@ void Glyph::load(const FT_Face& face) {
     bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
     advantage = face->glyph->advance.x >> 6;
 
-    glTexture::bind2D(*texture_);
-
-    glTexImage2D(GL_TEXTURE_2D, 
+    sTexture::bind2D(*texture_);
+    sTexture::dataImage2D( {face->glyph->bitmap.width, face->glyph->bitmap.rows} , { GL_RED,GL_RED }, face->glyph->bitmap.buffer);
+   /* glTexImage2D(GL_TEXTURE_2D, 
         0, 
         GL_RED,
         face->glyph->bitmap.width,
@@ -16,7 +16,7 @@ void Glyph::load(const FT_Face& face) {
         0, 
         GL_RED, 
         GL_UNSIGNED_BYTE,
-        face->glyph->bitmap.buffer);
+        face->glyph->bitmap.buffer);*/
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

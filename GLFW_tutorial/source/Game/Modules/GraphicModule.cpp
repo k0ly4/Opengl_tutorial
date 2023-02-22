@@ -32,20 +32,20 @@ void GraphicPipeline::render(RenderWindow& window, GlobalScene& sc, EventModule&
     }
     ////////////////---------------------------------
   
-        Render::bind(frame);
-        Render::setClearColor(sc.sc3d.world.weather.colorSky());
+        sRender::Framebuffer::bind(frame);
+        sRender::Clear::setColor(sc.sc3d.world.weather.colorSky());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         window.setDefaultHintShader(glShader::any_light_texture);
         sc.sc3d.inForward(window);
 
         //UI----------------------
-        Render::bind(ui);
-        Render::setClearColor(clearUI);
+        sRender::Framebuffer::bind(ui);
+        sRender::Clear::setColor(clearUI);
         glClear(GL_COLOR_BUFFER_BIT);
         sc.ui.inRender(ui);
 
         //Постобработка - гамма коррекция----------------------
-        Render::unbind();
+        sRender::Framebuffer::unbind();
         Blend::Enable(true);
         Blend::Func(Blend::SrcAlpha, Blend::OneMinusSrcAlpha);
         Depth::Enable(false);

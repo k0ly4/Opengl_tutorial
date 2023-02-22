@@ -24,7 +24,9 @@ public:
         graphic.initialize(window);
         event.initialize(scene);
         physics.init(scene);
-        Render::Line::Width(5.f);
+        sRender::Line::Width(5.f);
+  
+      //  MasterGeneration::getBiomMap().mapToPNG("screenshots\\biom_map.png");
     }
 
     void launch() {
@@ -60,13 +62,13 @@ private:
         window.create(sSetup::render_size, sSetup::title);
         window.setView(scene.sc3d.camera);
 
-        ImageLoader::flipVerticallyOnLoad(false);
+        ImageLoader::setFlipOnLoad(false);
         auto resource = ImageLoader::getSTBI("asset\\image\\favor.jpg", 4);
         window.setIcon(resource->getImage());
 
         window.setFrameInterval(1);
         window.setLimitSizeable(true, glm::ivec2(GLFW_DONT_CARE), glm::ivec2(GLFW_DONT_CARE));
-        Render::setClearColor(Color::ColorU(150, 199, 196));
+        sRender::Clear::setColor(Color::ColorU(150, 199, 196));
 
     }
 

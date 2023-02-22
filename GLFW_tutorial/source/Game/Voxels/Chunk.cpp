@@ -14,11 +14,11 @@ void gChunk::setVoxelLocal(Voxel voxel, const glm::uvec3& coord) {
 	voxs[index] = voxel;
 	//Определям что потребуется перестроить
 	if (VoxPack::isAlpha(voxel) && ((VoxPack::isAlpha(dest) || VoxPack::isRender(dest) == 0))) {
-		flag.modifyAlpha();
+		flag.modAlphMesh();
 		closes.modifyAlpha(coord.x, coord.z);
 	}
 	else {
-		flag.modify();
+		flag.modMesh();
 		closes.modify(coord.x, coord.z);
 	}	
 	//Физические флаги
@@ -45,6 +45,7 @@ void gChunk::setVoxelLocal(Voxel voxel, const glm::uvec3& coord) {
 }
 
 void ChunkGraphic::buildMesh() {
+	if ((flag.status < StateChunk::s_mesh)) return;
 	cBlock = 1;
 	while (dBlock)std::this_thread::yield();
 	sChunkMesh::buildOpaqueMesh(*this);
@@ -54,7 +55,8 @@ void ChunkGraphic::buildMesh() {
 void  ChunkGraphic::buildSortMesh(glm::ivec3 pos) {
 	
 	pos = pos- glm::ivec3(bg_vox);
-	if (((posView_  == pos) && (flag.modifiedAlpha == 0)) || flag.isModified()) return;
+	if(flag.status < StateChunk::s_alph_mesh) return;
+	if ((posView_ == pos)  &&(flag.status > StateChunk::s_alph_mesh))return;
 	//sync
 	cBlock = 1;
 	while (dBlock)std::this_thread::yield();
@@ -65,7 +67,7 @@ void  ChunkGraphic::buildSortMesh(glm::ivec3 pos) {
 }
 
 void ChunkGraphic::drawOpaqueMesh(const Shader& shader) {
-	if ((flag.modified == 0) && mesh_.needUpBuffer)
+	if ((flag.status > StateChunk::s_mesh) && mesh_.needUpBuffer)
 	{
 		dBlock = 1;
 		while (cBlock)std::this_thread::yield();
@@ -81,7 +83,7 @@ void ChunkGraphic::drawOpaqueMesh(const Shader& shader) {
 }
 
 void ChunkGraphic::drawSortMesh(const Shader& shader) {
-	if ((flag.modified == 0) && (flag.modifiedAlpha == 0) && mesh_sort.needUpBuffer)
+	if ((flag.status == StateChunk::s_ready) && mesh_sort.needUpBuffer)
 	{
 		dBlock = 1;
 		while (cBlock)std::this_thread::yield();

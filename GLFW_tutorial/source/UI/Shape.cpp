@@ -33,7 +33,7 @@ void CircleShape::draw(const View* view, const Shader& shader) {
         view->use(shader);
         shader.uniform("color", color);
         shader.uniform("model", transform.matrix()); 
-        mesh.drawArrays(Render::TRIANGLES_FAN);
+        mesh.drawArrays(sRender::TRIANGLES_FAN);
         /*if (color_outline.a > 0.f) {
             shader.uniform("color", color_outline);
 

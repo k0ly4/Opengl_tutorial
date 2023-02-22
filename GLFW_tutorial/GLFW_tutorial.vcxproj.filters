@@ -228,7 +228,7 @@
     <ClCompile Include="source\Game\Loader\SaveManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="source\Game\Voxels\MasterGeneration.cpp">
+    <ClCompile Include="source\Game\Voxels\Generation\MasterGeneration.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="source\Game\Voxels\SuperRegion.cpp">
@@ -292,6 +292,18 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="source\System\ScriptIntegrator.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\System\Thread.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Graphic\TextureMap.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\stb_image_write.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Game\Voxels\Generation\BiomMap.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -476,7 +488,7 @@
     <ClInclude Include="source\Game\Loader\SaveManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="source\Game\Voxels\MasterGeneration.h">
+    <ClInclude Include="source\Game\Voxels\Generation\MasterGeneration.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="source\Game\Voxels\SuperRegion.h">
@@ -555,6 +567,30 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="source\System\ScriptIntegrator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\System\Thread.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Graphic\TextureMap.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\System\Entities.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\stb_image_write.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\System\Random.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Math\Entities.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Math\Noise.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Game\Voxels\Generation\BiomMap.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

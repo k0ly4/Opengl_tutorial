@@ -4,6 +4,8 @@
 #include "Resource/buffer.h"
 #include "Graphic/Render.h"
 #include "Graphic/TextureEntity.h"
+#include "Graphic/Texture.h"
+#include "Graphic/Drawable.h"
 /// <summary>
 /// NonCopyable
 /// </summary>
@@ -18,14 +20,10 @@ class NonCopyable {
 /// <summary>
 /// FrameBuffer
 /// </summary>
-class FrameBuffer :public iFrame,public Sizeable {
-    
-public:
-    FrameBuffer() {
-        glGenFramebuffers(1, &id_);
-        glGenRenderbuffers(1, &rendereBuffer_);
-    }
+class FrameBuffer :public iFramebuffer, public Sizeable {
 
+public:
+    FrameBuffer() {}
     Texture2DLite getTexture(size_t index = 0) { return { textures_[index], size_ }; }
     /// <summary>
     /// create
@@ -37,25 +35,21 @@ public:
     bool create(const glm::ivec2& render_size, const std::vector<TextureData>& textures) {
         return create(render_size, textures.size(), textures.data());
     }
-    bool create(const glm::ivec2& render_size,const TextureData& texture_format) {
+    bool create(const glm::ivec2& render_size, const TextureData& texture_format) {
         return create(render_size, 1, &texture_format);
     }
 
     bool setSize(const glm::ivec2& render_size);
     const glm::ivec2& size()const { return size_; }
 
-    void implementDepth(unsigned int write_fbo);
-    inline void implementDepth(FrameBuffer& write_fbo) { implementDepth(write_fbo.id_);}
-
-    ~FrameBuffer() {
-        glDeleteRenderbuffers(1, &rendereBuffer_);
-        glDeleteFramebuffers(1, &id_);
-    }
+    
+    inline void implementDepth(unsigned int write_fbo)     { sRender::Framebuffer::blit(id_.get(), size_, write_fbo, size_, sRender::DEPTH_BIT); }
+    inline void implementDepth(FrameBuffer& write_fbo) { implementDepth(write_fbo.id());}
 
 protected:
 
-    unsigned int rendereBuffer_;
-    std::vector<TexPtr> textures_;
+    RenderbufferId RBO;
+    std::vector<TextureId> textures_;
     std::vector<TextureData> texturesFormat_;
     
     FrameBuffer(const FrameBuffer&) = delete;
@@ -65,13 +59,9 @@ protected:
 /// <summary>
 /// RenderColor
 /// </summary>
-class RenderColor :public iFrame {
+class RenderColor :public iFramebuffer {
  
 public:
-
-    RenderColor() {
-        Render::gen(*this);
-    }
 
     bool create(const glm::ivec2& render_size, size_t sizeTextures, const TextureData* setupTextures);
     bool create(int width, int height, size_t sizeTextures, const TextureData* setupTexture) {
@@ -82,11 +72,10 @@ public:
     }
     Texture2DLite getTexture(size_t index = 0) { return { textures_[index],size_ }; }
     const glm::ivec2& size()const { return size_; }
-    ~RenderColor() { Render::free(*this); }
 
 private:
     glm::uvec2 size_;
-    std::vector<TexPtr> textures_;
+    std::vector<TextureId> textures_;
 
     RenderColor(const RenderColor&) = delete;
     RenderColor& operator=(const RenderColor&) = delete;
@@ -95,10 +84,9 @@ private:
 /// <summary>
 /// RenderTexture
 /// </summary>
-class RenderTexture:public iFrame,public RenderTarget,public NonCopyable {
+class RenderTexture:public iFramebuffer,public RenderTarget,public NonCopyable {
 
 public:
-    RenderTexture(){    Render::gen(*this);    }
     inline bool bind(std::shared_ptr<Texture2D> texture) {
         texture_ = texture;
         return bind();
@@ -112,24 +100,23 @@ public:
     );
     bool create(int width, int height, const TextureFormatData& dFormat) { return create(glm::ivec2(width, height), dFormat);}
    
-    inline std::shared_ptr<Texture2D>& texture()            {  return texture_;}
-    inline const std::shared_ptr<Texture2D>& texture()const { return texture_; }
-    inline const glm::ivec2& size()const {          return texture_->getSize(); }
-    virtual ~RenderTexture() {                      Render::free(*this); }
+    inline std::shared_ptr<Texture2D>& texture()            {   return texture_;}
+    inline const std::shared_ptr<Texture2D>& texture()const {   return texture_; }
+    inline const glm::ivec2& size()const {                      return texture_->resource->size_; }
 
 private:
 
     inline bool bind() {
-        Render::bind(*this, 0);
+        sRender::Framebuffer::bind(*this, 0);
         texture_->bindToFramebuffer(0);
-        if (Render::checkFramebufferStatus("RenderTexture::Non complete\n"))return 0;
-        Render::unbind();
+        if (sRender::Framebuffer::checkStatus("RenderTexture::Non complete\n"))return 0;
+        sRender::Framebuffer::unbind();
         return 1;
     }
     inline void createTexture(const glm::ivec2& size,const TextureFormatData& format, const tFilter& filter, const tWrap2D& wrap) {
         texture_ = std::make_shared<Texture2D>(size, format);
-        texture_->filter(filter);
-        texture_->wrap(wrap);
+        texture_->resource->setFilter(filter);
+        texture_->resource->setWrap(wrap);
     }
 
     std::shared_ptr<Texture2D> texture_ = 0;

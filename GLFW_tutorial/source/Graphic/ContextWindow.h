@@ -40,9 +40,7 @@ private:
 	friend class Cursor;
 	friend class Mouse;
 	friend class Keyboard;
-	friend class Render;
-	
-	
+	friend class sRender;
 };
 
 #endif

@@ -21,12 +21,12 @@ public:
 		region_(region) 
 	{ 
 		shaderHint = glShader::voxel; 
-		chunks_.setSize(size_);
+		chunks_.setSize({ size_ ,size_ });
 	}
 	
 	inline void create(size_t size, const glm::ivec3& posView) { 
 		size_ = size;
-		chunks_.setSize(size_);
+		chunks_.setSize({ size_ ,size_});
 		viewPos_ = posView;
 		viewCh_ = glm::uvec2(viewPos_.x / CHUNK_W, viewPos_.z / CHUNK_D);
 		extractFromRegion();
@@ -34,7 +34,13 @@ public:
 	//определяет сторону сектора в центре которого наблюдатель
 	void setSize(size_t size);
 	void upView(const Camera& camera);
-	inline Chunk* getByVoxel(size_t x, size_t y, size_t z) {	return get(toLocal(x, y, z)); }
+
+	//Проверяет допустимость локальных кординат
+	inline bool isLocal(const glm::uvec3& local) { return (local.x < size_ && local.z < size_ && local.y == 0); }
+	inline glm::uvec3 toLocalChunkFromVoxel(size_t x, size_t y, size_t z)const noexcept {
+		return glm::uvec3(x / CHUNK_W - begCh_.x, y / CHUNK_H, z / CHUNK_D - begCh_.y);
+	}
+	inline Chunk* getByVoxel(size_t x, size_t y, size_t z) {	return get(toLocalChunkFromVoxel(x, y, z)); }
 	inline Chunk* getByVoxel(const glm::uvec3& coord) {			return getByVoxel(coord.x,coord.y,coord.z); }
 	/// <summary>
 	/// 
@@ -97,22 +103,24 @@ public:
 	inline ChunkPtrs& chunks() {					return chunks_;}
 	WeatherHandle* weather;
 	FrustumG frustum;
+
+
 private:
+
+	friend class ChunkMeshQueue;
+
+
 	inline void upFlagDraw() {
 		for (size_t i = 0; i < chunks_.size(); i++) {
-			chunks_[i]->flag.isDraw = frustum.box(AABox(chunks_[i]->voxelPos(), CHUNK_VEC));
+			chunks_[i]->flag.isDraw = frustum.box(AABox(chunks_[i]->posVx(), CHUNK_VEC));
 		}
 	}
 	void upChunks_sort();
-	friend class ChunkMeshQueue;
-	inline Chunk* get(const glm::uvec3& local) { return isIn(local) ? chunks_(local.x,local.z) : 0; }
+	inline Chunk* get(const glm::uvec3& local) { return isLocal(local) ? chunks_(local.x,local.z) : 0; }
 	void extractFromRegion();
-	//Проверяет допустимость локальных кординат
-	inline bool isIn(const glm::uvec3& local) { return (local.x < size_ && local.z < size_ && local.y == 0);}
+	
 
-	inline glm::uvec3 toLocal(size_t x,size_t y,size_t z) {
-		return glm::uvec3(x / CHUNK_W- begCh_.x, y / CHUNK_H, z / CHUNK_D - begCh_.y);
-	}
+	
 	//chunks
 	ChunkPtrs chunks_;
 	SortableChunks ch_sort;

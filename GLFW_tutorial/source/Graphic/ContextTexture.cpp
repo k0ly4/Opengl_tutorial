@@ -1,18 +1,28 @@
 #include "ContextTexture.h"
 #include "TextureEntity.h"
 
-inline void glTexture::bind2D(const TexPtr& texture) {		bind2D(texture.id()); }
-void glTexture::bind2D(const iTexture& texture) {	bind2D(texture.getId()); }
-inline void glTexture::bind2D(const TexPtr& texture, size_t text_unit) {
-	active(text_unit);
-	bind2D(texture.id());
+inline void sTexture::bind2D(const TextureId& texture) {		bind2D(texture.get()); }
+void sTexture::bind2D(const iTexture& texture) {				bind2D(texture.getId()); }
+void sTexture::bind2D(const TextureId& texture, size_t text_unit) {
+																active(text_unit);
+																bind2D(texture.get());
 }
 
-inline void glTexture::bind2DArray(const TexPtr& texture) {		bind2DArray(texture.id()); }
-void glTexture::bind2DArray(const iTexture& texture) {	bind2DArray(texture.getId()); }
+inline void sTexture::bind2DArray(const TextureId& texture) {		bind2DArray(texture.get()); }
+void sTexture::bind2DArray(const iTexture& texture) {				bind2DArray(texture.getId()); }
 
-inline void  glTexture::bindCubeMap(const TexPtr& texture) {	bindCubeMap(texture.id());}
-void  glTexture::bindCubeMap(const iTexture& texture) {bindCubeMap(texture.getId());}
-int glTexture::total_count= 0;
-unsigned int glTexture::last = 0;
-GLenum glTexture::active_unit = 0;
+inline void  sTexture::bindCubeMap(const TextureId& texture) {		bindCubeMap(texture.get());}
+void  sTexture::bindCubeMap(const iTexture& texture) {				bindCubeMap(texture.getId());}
+
+
+
+void sTexture::parameter(GLenum target, const tWrap2D& wrap) {
+	wrap.setup(target);
+}
+void sTexture::parameter(GLenum target, const tFilter& filter) {
+	filter.setup(target);
+}
+
+int sTexture::total_count= 0;
+unsigned int sTexture::last = 0;
+GLenum sTexture::active_unit = 0;

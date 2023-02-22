@@ -32,10 +32,12 @@ public:
     void setTexture(const Texture2D& texture);
     void setTextureRect(const FloatRect& cut_rect);
     const FloatRect& getTextureRect() const {return textureRect_; }
+    const Texture2D* getTexture()const { return texture; }
     void draw(const View* view,const Shader& shader);
 
     void setColor(const Color& color) { color_ = color; }
     const Color& getColor()const { return color_; }
+   
    
     Transform2D transform;
 

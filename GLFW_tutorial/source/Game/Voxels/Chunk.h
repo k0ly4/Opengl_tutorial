@@ -5,6 +5,7 @@
 #include "Game/Light/LightMap.h"
 #include "Scene/Convex.h"
 #include <set>
+#include <atomic>
 ///LightFace---------------------------------------------
 //#define LightFace Vec4Array[4]
 ///Voxels---------------------------------------------
@@ -23,29 +24,25 @@ struct StateChunk {
 
 public:
 
-	inline bool isInitLight()		const		noexcept {		return is_init_light; }
-	inline bool isGenerated()		const		noexcept {		return generated; }
-	inline bool isModified()		const		noexcept {		return modified; }
-	inline bool isModifiedAlpha()	const		noexcept {		return modifiedAlpha; }
-	/// modified = 1; 
-	inline void modify()noexcept { modified = 1; }
-	/*modify();
-	generated = 1;
-	is_init_light = 0;*/
-	inline void generate()noexcept {
-		is_init_light = 0;
-		generated = 1;
-	}
-	//generated = 0
-	inline void offInit()noexcept { generated = 0;}
-	/*modify();
-	is_init_light = 1;*/
-	inline void initLight()noexcept {
-		modify();
-		is_init_light = 1;
-	}
-	/// modifiedAlpha = 1; 
-	inline void modifyAlpha() { modifiedAlpha=1; }
+	enum Status:byte
+	{
+		s_generation, s_lighting_phase_adding, s_lighting_phase_solving, s_mesh, s_alph_mesh, s_ready
+	};
+	byte status;
+	
+	StateChunk() { clear(); }
+	inline void clear()			noexcept {			status = s_generation; }
+
+	inline bool isGenerated()	noexcept {			return status > s_generation;							}
+
+	inline void toLightLevel()	noexcept {			status = s_lighting_phase_adding;						}
+	inline void toMeshLevel()	noexcept {			if (status >= s_lighting_phase_solving)	status = s_mesh;}
+
+	inline void modMesh()		noexcept {			if(status  > s_mesh)		status = s_mesh;			}
+	inline void modAlphMesh()	noexcept {			if(status  >= s_mesh)		status = s_alph_mesh;		}
+
+	inline void toReady()		noexcept {			if (status == s_alph_mesh)	status = s_ready;			}
+
 	bool isDraw = 1;
 private:
 
@@ -53,12 +50,6 @@ private:
 	friend class gChunk;
 	friend class ChunkGraphic;
 	friend class Chunk;
-
-	bool modifiedAlpha = 0;
-	bool is_init_light = 0;
-	bool generated = 0;
-	bool modified = 1;
-
 };
 
 ///gChunk---------------------------------------------
@@ -67,6 +58,11 @@ private:
 /// </summary>
 class gChunk{
 public:
+
+
+
+
+
 	///Closes---------------------------------------------
 	class Closes {
 
@@ -76,14 +72,14 @@ public:
 
 		inline static void link(gChunk& lch, Side2D::eSide2D lside, gChunk& rch, Side2D::eSide2D rside) 
 		{
-			lch.closes.chunks[lside] = &rch; lch.flag.modify();
-			rch.closes.chunks[rside] = &lch; rch.flag.modify();
+			lch.closes.chunks[lside] = &rch; lch.flag.modMesh();
+			rch.closes.chunks[rside] = &lch; rch.flag.modMesh();
 		}
 
 		inline void clear() { for (size_t i = 0; i < Side2D::NuN; i++) chunks[i] = nullptr;}
 
-		inline void modify(size_t index)		{ if (chunks[index]) chunks[index]->flag.modify(); }
-		inline void modifyAlpha(size_t index)	{ if (chunks[index]) chunks[index]->flag.modifyAlpha(); }
+		inline void modify(size_t index)		{ if (chunks[index]) chunks[index]->flag.modMesh(); }
+		inline void modifyAlpha(size_t index)	{ if (chunks[index]) chunks[index]->flag.modAlphMesh(); }
 
 		inline void modify() { for (size_t i = 0; i < Side2D::NuN; i++) modify(i);}
 		inline gChunk*& operator [](size_t i) noexcept { return chunks[i]; }
@@ -99,10 +95,10 @@ public:
 			if (top)modify(Side2D::top);
 			else if (bottom) modify(Side2D::bottom);
 
-			if (		top &&	right) modify(Side2D::right_top);
-			else if (	top &&	left)modify(Side2D::left_top);
+			if (		top &&	right)	modify(Side2D::right_top);
+			else if (	top &&	left)	modify(Side2D::left_top);
 			else if (	bottom && right)modify(Side2D::right_bottom);
-			else if (	bottom && left)modify(Side2D::left_bottom);
+			else if (	bottom && left)	modify(Side2D::left_bottom);
 		}
 
 		inline void modifyAlpha(size_t x, size_t y) {
@@ -133,29 +129,30 @@ public:
 		gChunk* chunks[Side2D::NuN];
 	};
 
+
+
+
 	///gChunk---------------------------------------------
 	gChunk(): bg_vox(0){}
 
 	inline void init(size_t x,size_t z) {
 		bg_ch = glm::uvec3(x, 0, z);
 		bg_vox = bg_ch * CHUNK_VEC;
-		flag.generated = 0;
+		flag.clear();
 	}
-	//Local
-	inline bool isUnVisible(size_t x, size_t y, size_t z)const { return !(!voxs.is(x, y, z) || VoxPack::isRender(voxs(x, y, z)));}
+	
 	//Global
 	inline const Voxel* getGlobal(const glm::uvec3& coord) const{	return voxs.get(coord - bg_vox);}
-	inline Voxel* getGlobal(const glm::uvec3& coord) {				return voxs.get(coord - bg_vox);}
+	inline		 Voxel* getGlobal(const glm::uvec3& coord)		{	return voxs.get(coord - bg_vox);}
 
-	inline const glm::uvec3& voxelPos()	const { return bg_vox; }
-	inline const glm::uvec3& posVox()	const { return bg_vox; }
-	inline const glm::uvec3& chunkPos()	const { return bg_ch; }
+	inline const glm::uvec3& posVx()	const { return bg_vox; }
+	inline const glm::uvec3& posCh()	const { return bg_ch; }
 	/// <summary>
 	/// »змен€ет заданный в глобальных кординатах coord воксель, устанавлива€ себе и 6 ближайшим чанкам modified в true
 	/// </summary>
 	void setVoxelLocal(Voxel vx, const glm::uvec3& coord);
 	bool setVoxel(Voxel vx, glm::uvec3 coord) {
-		coord = coord - bg_vox;
+		coord = toLocalVx(coord);
 		if (voxs.is(coord)) {
 			setVoxelLocal(vx, coord);
 			return 1;
@@ -163,25 +160,37 @@ public:
 		return 0;
 	}
 
-	inline byte getLight(const glm::uvec3& local, int channel_)		const{	return voxs.is(local) ? lightMap.get(local, channel_) : 0;}
-	inline byte getLight(size_t x,size_t y,size_t z, int channel_)	const { return getLight(glm::uvec3(x, y, z), channel_);}
-	inline byte getLightGlobal(const glm::uvec3& coord, int channel_)const {return lightMap.get(coord - bg_vox,channel_);}
+	inline byte getLight(const glm::uvec3& local, int channel_)const noexcept	{	return voxs.is(local) ? lightMap.get(local, channel_) : 0;}
+	inline byte getLight(size_t x,size_t y,size_t z, int channel_)const noexcept { return getLight(glm::uvec3(x, y, z), channel_);}
 
-	inline void setLightGlobal(const LightUint8& light, int channel_) {
-		flag.modify();
+	inline byte getLightGlobal(const glm::uvec3& coord, int channel_)const noexcept  {return lightMap.get(coord - bg_vox,channel_);}
+	
+	inline void setLight(const LightUint8& light, int channel_)noexcept {
+		flag.modMesh();
+		lightMap.set(light.pos, channel_, light.light);
+	}
+	inline void setLightGlobal(const LightUint8& light, int channel_)noexcept {
+		flag.modMesh();
 		lightMap.set(light.pos - bg_vox, channel_, light.light);
 	}
+
 	inline void swapPhysBuffer(std::set<size_t>& ph_vox)	noexcept{	phys_vox.swap(ph_vox); }
 	inline void toPhysBuffer(const glm::uvec3& pos)			noexcept {	toPhysBuffer(voxs.ind(pos)); }
 	inline void toPhysBuffer(size_t index)					noexcept {	phys_vox.insert(index); }
+
 	Voxels& voxels()				{ return voxs;}
 	const Voxels& voxels()const		{ return voxs;}
 	
+	inline glm::uvec3 toLocalVx(const glm::uvec3& coord_vx )const noexcept  { return  (coord_vx - bg_vox); }
+
 	Closes closes;
 	LightMap lightMap;
 	StateChunk flag;
-	//physics voxel
+
 	
+
+
+
 
 protected:
 
@@ -192,6 +201,8 @@ protected:
 	glm::ivec3 posView_;
 	std::vector<SortableVoxel> alpha_vox;
 
+	//Local
+	inline bool isUnVisible(size_t x, size_t y, size_t z)const { return !(!voxs.is(x, y, z) || VoxPack::isRender(voxs(x, y, z))); }
 
 	inline void upAlphaVoxBuffer() {
 		alpha_vox.clear();
@@ -220,6 +231,9 @@ protected:
 /// </summary>
 class ChunkGraphic :public gChunk {
 public:
+
+
+
 	///MeshChunk---------------------------------------------
 	ChunkGraphic() :
 		gChunk(),
@@ -238,9 +252,12 @@ public:
 	ShellGeometry mesh_;
 	ShellGeometry mesh_sort;
 
+
+
+
 protected:
 	//sync
-	bool dBlock = 0, cBlock = 0;
+	std::atomic<bool> dBlock = 0, cBlock = 0;
 
 	glm::ivec3 posView_;
 

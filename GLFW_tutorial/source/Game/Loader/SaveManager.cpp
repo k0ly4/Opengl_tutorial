@@ -57,12 +57,12 @@ void WriterRLE::process(const Voxels& data) {
 bool ReaderRLE::readChunk(Chunk& chunk, size_t begin, size_t end) {
 	ChunkRLE buffer;
 	if (readChunk(buffer, begin, end) == 0) {
-		chunk.flag.offInit();
+		chunk.flag.clear();
 		return 0;
 	}
 	if (RLE::uncompress(chunk.voxels(), buffer.v_) == 0)LOG("begin =%d,end=%d\n", begin, end);
 	//Set flags
-	chunk.flag.generate();
+	chunk.flag.toLightLevel();
 	return 1;
 }
 

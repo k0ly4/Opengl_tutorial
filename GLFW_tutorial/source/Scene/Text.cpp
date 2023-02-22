@@ -28,7 +28,7 @@ void Text::draw(const View* view, const Shader& shader) {
     style.uniform("style", shader);
     outline.uniform("outline", shader);
     map_->getTexture().use(0);
-    mesh.drawArrayInstanced(Render::TRIANGLES_STRIP, charBuffer.size());
+    mesh.drawArrayInstanced(sRender::TRIANGLES_STRIP, charBuffer.size());
 }
 
 glm::vec4 Text::getGlyphRect(const Glyph& glyph)const {

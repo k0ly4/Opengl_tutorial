@@ -13,6 +13,8 @@ public:
 	fSupReg() :beg_ch(0) { reg.setNull(); }
 	void fillSector(ChunkPtrs& sec, size_t size, const glm::uvec2& center);
 	inline void save() { for (size_t i = 0; i < reg.size(); i++) if (reg[i]) reg[i]->save(); }
+	const glm::uvec2& posReg()const noexcept { return beg_reg; };
+	const glm::uvec2& posCh()const noexcept { return beg_ch; };
 protected:
 
 	void setCloses(int new_region);
@@ -64,6 +66,14 @@ public:
 		return (voxel && VoxPack::isSolid(*voxel));
 	}
 
+	//Получить заданный канал цвета по глобальным кординатам вокселя
+	inline unsigned char getChannelLight(const glm::uvec3& coord, int channel)noexcept {
+		Chunk* chunk = getByVoxel(coord);
+		return chunk ? chunk->lightMap.get(glm::uvec3(coord.x % CHUNK_W, coord.y, coord.z % CHUNK_D), channel) : 0;
+	}
+
+	//Получить заданный канал цвета по глобальным кординатам вокселя
+	inline unsigned char getChannelLight(size_t x,size_t y,size_t z, int channel)noexcept  { return getChannelLight({ x,y,z }, channel);}
 private:
 
 	inline glm::uvec2 chToLocalReg(size_t x, size_t z) { return { (x - beg_ch.x)/REGION_SIZE,(z - beg_ch.y)/REGION_SIZE }; }

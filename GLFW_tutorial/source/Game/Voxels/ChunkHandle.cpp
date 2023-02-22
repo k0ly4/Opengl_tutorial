@@ -6,16 +6,15 @@
 /// </summary>
 void ChunkSectorRender::setSize(size_t size) {
 	size_ = size;
-	chunks_.setSize(size_);
+	chunks_.setSize({ size_ ,size_ });
 	extractFromRegion();
 }
 
 void ChunkSectorRender::extractFromRegion() {
-	cProcess::queue.sync();
 	begCh_ = viewCh_ - size_ / 2;
 	region_->fillSector(chunks_, size_, begCh_);
 	upChunks_sort();
-	cProcess::queue.addToQueue(this);
+	cProcess::queue.addMessgae(begCh_, ch_sort);
 }
 
 void ChunkSectorRender::upView(const Camera& camera) {
@@ -45,7 +44,7 @@ void ChunkSectorRender::upChunks_sort() {
 	SortableChunks ch(chunks_.size());
 	for (size_t i = 0; i < ch.size(); i++) {
 		ch[i].ch = chunks_[i];
-		ch[i].d = length(viewCh_, ch[i].ch->chunkPos());
+		ch[i].d = length(viewCh_, ch[i].ch->posCh());
 	}
 	std::sort(ch.begin(), ch.end(), [](const SortChunk& l, const SortChunk& r) {return r.d > l.d;});
 	ch_sort=ch;

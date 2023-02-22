@@ -14,28 +14,37 @@ public:
 
 	void launch() {
 		life = 1;
-		process = new std::thread(&ProcessQueue::update, this);
+		//process = new std::thread(&ProcessQueue::update, this);
+		main.launch(this,	&ProcessQueue::update);
 	}
 
 	inline void kill() {
 		life = 0;
-		process->join();
-		delete process;
-		process = 0;
+		main.kill();
 	}
 
 	~ProcessQueue() {
-		if (process)kill();
+		kill();
 	}
 private:
 
 	void update() {
 		while (life) {
-			cProcess::queue.stepSolveChunkMesh();
+			cProcess::queue.threadGeneral();
 		}
 	}
 
-	std::thread* process = 0;
+	void upd1() {
+		while (life) {
+			cProcess::queue.threadMesher();
+		}
+	}
+	void upd2() {
+		while (life) {
+			cProcess::queue.threadLighter();;
+		}
+	}
+	Thread main;
 	bool life;
 
 };

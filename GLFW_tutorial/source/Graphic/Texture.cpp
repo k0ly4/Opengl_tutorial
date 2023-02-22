@@ -1,18 +1,18 @@
 #include "Texture.h"
-
+#include "Graphic/ContextRender.h"
     /// <summary>
     /// TextureCubeMap
     /// </summary>
     /// 
     bool TextureCubeMap::loadFromDirectory(const std::string& directory, bool flipVertically, bool gammaMod) {
 
-        ImageLoader::flipVerticallyOnLoad(flipVertically);
+        ImageLoader::setFlipOnLoad(flipVertically);
 
         std::string path[6] = {
            "right.jpg","left.jpg","top.jpg","bottom.jpg","front.jpg","back.jpg"
         };
         bool size_init = 0;
-        glTexture::bindCubeMap(id_);
+        sTexture::bindCubeMap(id_);
         for (int i = 0; i < 6; i++) {
             auto resource = ImageLoader::getSTBI(directory + path[i]);
             if (resource == 0)  return 0;
@@ -37,22 +37,24 @@
             );
         }
 
-        glTexture::bindCubeMap(0);
+        sTexture::bindCubeMap(0);
         return 1;
     }
 
     void TextureCubeMap::create(const glm::ivec2& size, const TextureFormatData& format) {
         detach();
-        glTexture::bindCubeMap(id_);
+        sTexture::bindCubeMap(id_);
         size_ = size;
-        for (unsigned int i = 0; i < 6; ++i){
-            format.dataImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, size_, NULL);
+        for (size_t i = 0; i < 6; ++i){
+            sTexture::dataImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, size_, format.internalFormat,format.format, nullptr);
         }
-        glTexture::bindCubeMap(0);
+        sTexture::bindCubeMap(0);
     }
 
-   
-    
+    void TextureCubeMap::bindToFramebuffer() { sRender::Framebuffer::bindTexture2D(GL_DEPTH_ATTACHMENT, id_); }
+    void Texture2D::bindToFramebuffer(size_t unit) {
+        sRender::Framebuffer::bindTexture2D(GL_COLOR_ATTACHMENT0 + unit, resource->id_);
+    }
     /// <summary>
     /// ArrayTexture2D
     /// </summary>
@@ -62,5 +64,5 @@
         detach();
         size_ = size;
         count_ = count;
-        format.dataImage3D(GL_TEXTURE_2D_ARRAY, size_, count, data);
+        sTexture::dataImage3D(GL_TEXTURE_2D_ARRAY, size_, count, format.internalFormat, format.format, data);
     }

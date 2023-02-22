@@ -10,23 +10,16 @@ public:
 		glm::ivec3 pos;
 		Voxel vox;
 	};
-	LightHandle(ChunkSectorRender* chunks_) :
-		chunks(chunks_)
+	LightHandle(SupReg* chunks_) :
+		region(chunks_)
 	{
-		solverR.init(chunks, 0);
-		solverG.init(chunks, 1);
-		solverB.init(chunks, 2);
-		solverS.init(chunks, 3);
+		solverR.init(region,0);
+		solverG.init(region,1);
+		solverB.init(region,2);
+		solverS.init(region,3);
 
 	}
 
-	inline void initChunks() {
-		ChunkPtrs& chunks_vec = chunks->chunks();
-		for (size_t i = 0; i < chunks_vec.size(); i++)chunkInit(*chunks_vec[i]);
-		solveRGBS();
-	}
-
-	void init();
 	void chunkInit(Chunk& chunk);
 	void addToQueue(const glm::ivec3& pos, Voxel voxel) { queue.push({ pos,voxel });}
 
@@ -36,8 +29,10 @@ private:
 		while (queue.size()) {
 			Mods cur(queue.front());
 			queue.pop();
-			//если прозрачный 
-			if (		VoxPack::isOpaque(cur.vox)==0)		remove(cur.pos);
+			if (VoxPack::isTransparent(cur.vox))
+			{
+				if (VoxPack::isTransparent(*region->getVoxel(cur.pos))) remove(cur.pos);
+			}
 			else	add(cur.pos, cur.vox);
 		}
 	}
@@ -47,9 +42,9 @@ private:
 	void remove(const glm::ivec3& pos);
 
 	inline void handleEvent(int id, Chunk* value) {
-		if (id == _obs_event::initChunkLight) chunkInit(*value);
-		else if (id == _obs_event::solveLight) solveRGBS();
-		else if(id==_obs_event::solveQueueLight)solveQueue();
+		if (id ==			_obs_event::initChunkLight) chunkInit(*value);
+		else if (id ==		_obs_event::solveLight) solveRGBS();
+		else if(id==		_obs_event::solveQueueLight)solveQueue();
 	}
 
 	inline void removeRGB(const glm::ivec3& pos) {
@@ -103,11 +98,13 @@ private:
 		solverS.solve();
 	}
 	std::queue<Mods> queue;
-	ChunkSectorRender* chunks;
-	LightSolver  solverR;
-	LightSolver  solverG;
-	LightSolver  solverB;
-	LightSolver  solverS;
+	SupReg* region;
+	//ChunkSectorRender* chunks;
+
+	LightSolver solverR;
+	LightSolver solverG;
+	LightSolver solverB;
+	LightSolver solverS;
 
 };
 

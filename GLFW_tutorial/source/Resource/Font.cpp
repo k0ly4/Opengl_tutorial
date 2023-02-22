@@ -81,8 +81,8 @@ MapGlyph Font::createFontMap(size_t size_char) {
     };
 
     renderTexture_.create(size_texture, { GL_RED, GL_RED }, { GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR });//GL_LINEAR
-    Render::setClearColor(0.f, 0.f, 0.f, 0.f);
-    Render::bind(renderTexture_);
+    sRender::Clear::setColor(0.f, 0.f, 0.f, 0.f);
+    sRender::Framebuffer::bind(renderTexture_);
     Depth::Mask(false);
     CullFace::Enable(false);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -91,7 +91,7 @@ MapGlyph Font::createFontMap(size_t size_char) {
     shader.use();
     shader.uniform("projection", glm::ortho(0.f, (float)size_texture.x, (float)size_texture.y, 0.f));
     render(size_texture, alphabet, max_size,  sym_x);    
-    Render::unbind();
+    sRender::Framebuffer::unbind();
     Depth::Mask(true);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);

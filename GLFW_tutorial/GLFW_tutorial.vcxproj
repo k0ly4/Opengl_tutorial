@@ -216,6 +216,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lib\stb_image_write.cpp" />
+    <ClCompile Include="source\Game\Voxels\Generation\BiomMap.cpp" />
     <ClCompile Include="source\System\ScriptIntegrator.cpp" />
     <ClCompile Include="source\Game\Entities\Initiator.cpp" />
     <ClCompile Include="source\Game\Entities\GeneralGameEntity.cpp" />
@@ -231,7 +233,7 @@
     <ClCompile Include="source\Input\InputHandler.cpp" />
     <ClCompile Include="source\Physics\PhysicsSolver.cpp" />
     <ClCompile Include="source\Physics\Hitbox.cpp" />
-    <ClCompile Include="source\Game\Voxels\MasterGeneration.cpp" />
+    <ClCompile Include="source\Game\Voxels\Generation\MasterGeneration.cpp" />
     <ClCompile Include="source\Game\Loader\SaveManager.cpp" />
     <ClCompile Include="source\Game\Light\LightSystem.cpp" />
     <ClCompile Include="source\Game\Light\LightSolver.cpp" />
@@ -295,8 +297,16 @@
     <ClCompile Include="source\Physics\sPhysics.cpp" />
     <ClCompile Include="source\UI\UiScene.cpp" />
     <ClCompile Include="source\Game\Entities\WeatherHandle.cpp" />
+    <ClCompile Include="source\System\Thread.cpp" />
+    <ClCompile Include="source\Graphic\TextureMap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lib\stb_image_write.h" />
+    <ClInclude Include="source\Game\Voxels\Generation\BiomMap.h" />
+    <ClInclude Include="source\Math\Entities.h" />
+    <ClInclude Include="source\Math\Noise.h" />
+    <ClInclude Include="source\System\Entities.h" />
+    <ClInclude Include="source\System\Random.h" />
     <ClInclude Include="source\System\ScriptIntegrator.h" />
     <ClInclude Include="source\Game\Entities\Initiator.h" />
     <ClInclude Include="source\System\LuaContext.h" />
@@ -318,7 +328,7 @@
     <ClInclude Include="source\Input\InputHandler.h" />
     <ClInclude Include="source\Physics\PhysicsSolver.h" />
     <ClInclude Include="source\Physics\Hitbox.h" />
-    <ClInclude Include="source\Game\Voxels\MasterGeneration.h" />
+    <ClInclude Include="source\Game\Voxels\Generation\MasterGeneration.h" />
     <ClInclude Include="source\Game\Loader\SaveManager.h" />
     <ClInclude Include="source\Game\Entities\Observer.h" />
     <ClInclude Include="source\Game\Light\LightSystem.h" />
@@ -384,6 +394,8 @@
     <ClInclude Include="source\Physics\sPhysics.h" />
     <ClInclude Include="source\UI\UiScene.h" />
     <ClInclude Include="source\Game\Entities\WeatherHandle.h" />
+    <ClInclude Include="source\System\Thread.h" />
+    <ClInclude Include="source\Graphic\TextureMap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

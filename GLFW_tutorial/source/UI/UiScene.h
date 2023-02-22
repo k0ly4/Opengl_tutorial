@@ -6,6 +6,7 @@
 #include "Game/Interface/GameUi.h"
 #include "Graphic/RenderWindow.h"
 #include "Shape.h"
+#include "Graphic/TextureMap.h"
 class Scene3D;
 class EventModule;
 class GraphicPipeline;
@@ -27,6 +28,7 @@ public:
 	GameUi gameUi;
 	View2D view2D;
 	Scene3D* main;
+	
 private:
 	EventModule* mEvent;
 

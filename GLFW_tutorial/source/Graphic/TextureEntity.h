@@ -39,7 +39,6 @@ public:
         min = min;
         max = mag;
     }
-
     inline void setup(GLenum target)const {
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, min);
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, max);        
@@ -58,7 +57,8 @@ public:
    };
    
 };
-
+inline bool operator ==(const tFilter& l, const tFilter& r) { return (l.vec == r.vec); }
+inline bool operator !=(const tFilter& l, const tFilter& r) { return (l.vec != r.vec); }
 /// <summary>
 /// TextureWrap
 /// </summary>
@@ -76,7 +76,7 @@ public:
         glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, &borderColor[0]);
     }
 
-    virtual void setup(GLenum target) = 0;
+    virtual void setup(GLenum target)const = 0;
 };
 
 /// <summary>
@@ -98,7 +98,7 @@ public:
         Wrap_R = R;
     }
 
-    void setup(GLenum target) {
+    void setup(GLenum target)const {
         glTexParameteri(target, GL_TEXTURE_WRAP_S, Wrap_S);
         glTexParameteri(target, GL_TEXTURE_WRAP_T, Wrap_T);
         glTexParameteri(target, GL_TEXTURE_WRAP_R, Wrap_R);
@@ -143,14 +143,9 @@ public:
         t = T_;
     }
 
-    void setup(GLenum target) {
+    inline void setup(GLenum target)const {
         glTexParameteri(target, GL_TEXTURE_WRAP_S, s);
         glTexParameteri(target, GL_TEXTURE_WRAP_T, t);
-    }
-
-    void setup(GLenum target, GLint S_, GLint T_) {
-        set(S_, T_);
-        setup(target);
     }
     union 
     {
@@ -162,7 +157,8 @@ public:
     };
    
 };
-
+inline bool operator ==(const tWrap2D& l, const tWrap2D& r) { return (l.vec == r.vec); }
+inline bool operator !=(const tWrap2D& l, const tWrap2D& r) { return (l.vec != r.vec); }
 /// <summary>
 /// Sizeable
 /// </summary>
@@ -170,112 +166,48 @@ public:
 class Sizeable {
 public:
 
-	Sizeable() :size_(0) {}
-	Sizeable(const glm::ivec2& size) :size_(size) {}
+    Sizeable() :size_(0) {}
+    Sizeable(const glm::ivec2& size) :size_(size) {}
 
-	const glm::ivec2& getSize()const {
-		return size_;
-	}
+    const glm::ivec2& getSize()const {
+        return size_;
+    }
 
 protected:
 
-	glm::ivec2 size_;
+    glm::ivec2 size_;
 
 };
 
 /// <summary>
-/// TextureID
+/// textureId
 /// </summary>
-class TextureID {
-public:
-    unsigned int id;
-    TextureID() {           glTexture::gen(id); }
-    virtual ~TextureID() {  glTexture::free(id); }
-};
-
+class TextureId {
 /// <summary>
-/// TextureShell
+/// ID
 /// </summary>
-class TexPtr {
+    struct ID {
+        unsigned int id;
+        ID() {          sTexture::gen(id); }
+        virtual ~ID() { sTexture::free(id); }
+    };
 
 public:
 
-    TexPtr() :texture(std::make_shared<TextureID>())
-    {}
-
-    inline bool make() {
-        if (texture.unique() == 0) {
-            texture = std::make_shared<TextureID>();
+    TextureId():id_(std::make_shared<ID>()){}
+    inline bool remake()noexcept {
+        if (id_.unique() == 0) {
+            id_ = std::make_shared<ID>();
             return 1;
         }
         return 0;
     }
-
-    inline unsigned int id() const { return texture->id;}
-
+    inline unsigned int get()const noexcept { return id_->id; }
 private:
-    std::shared_ptr<TextureID> texture;
+
+    std::shared_ptr<ID> id_ =0;
 };
-
-/// <summary>
-/// TextureDataFormat
-/// </summary>
-class TextureFormatData
-{
-public:
-
-    TextureFormatData(GLint internalformat_, GLint format_) :
-        internalFormat(internalformat_),
-        format(format_)
-    {}
-
-    inline void dataImage2D(GLenum target, const glm::ivec2& size, const void* data)const {
-        glTexImage2D(
-            target,
-            0,
-            internalFormat,
-            size.x,
-            size.y,
-            0,
-            format,
-            getType(internalFormat),
-            data);
-    }
-    inline void dataImage2D(const glm::ivec2& size, const void* data)const {
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            internalFormat,
-            size.x,
-            size.y,
-            0,
-            format,
-            getType(internalFormat),
-            data);
-    }
-    inline void dataImage3D(GLenum target, const glm::ivec2& size, GLsizei depth, const void* data)const {
-        glTexImage3D(
-            target,
-            0,
-            internalFormat,
-            size.x,
-            size.y,
-            depth,
-            0,
-            format,
-            getType(internalFormat),
-            data);
-    }
-    static GLenum getType(GLenum internal_format) {
-        return internal_format == GL_RGBA16F || internal_format == GL_DEPTH_COMPONENT || internal_format == GL_DEPTH_COMPONENT32F ?
-            GL_FLOAT : GL_UNSIGNED_BYTE;
-    }
-    GLint internalFormat, format;
-private:
-    
-};
-
-/// <summary>
+// <summary>
 /// TextureDataFormat
 /// </summary>
 struct TextureData
@@ -285,28 +217,28 @@ struct TextureData
         filter_(filter)
     {}
 
-    TextureData(GLenum internal_format,GLenum format,GLenum filter):
-        format_(internal_format,format),
+    TextureData(GLenum internal_format, GLenum format, GLenum filter) :
+        format_(internal_format, format),
         filter_(filter)
     {}
 
-    TextureData(GLenum internal_format, GLenum format, GLenum filter_max, GLenum filter_min ) :
+    TextureData(GLenum internal_format, GLenum format, GLenum filter_max, GLenum filter_min) :
         format_(internal_format, format),
-        filter_(filter_max,filter_min)
+        filter_(filter_max, filter_min)
     {}
-    void setParameteriTexture2D()const  {
+    void setParameteriTexture2D()const {
         filter_.setup(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
-    inline void setDataTexture2D(const glm::ivec2& size,const void * data)const {
-        format_.dataImage2D(size, data);
+    inline void setDataTexture2D(const glm::ivec2& size, const void* data)const {
+        sTexture::dataImage2D(size, format_, data);
     }
 
-    inline const TextureFormatData& getFormat()const {  return format_; }
+    inline const TextureFormatData& getFormat()const { return format_; }
 
-    inline const tFilter& getFilter()const {            return filter_;}
+    inline const tFilter& getFilter()const { return filter_; }
 private:
 
     TextureFormatData   format_;
@@ -321,13 +253,13 @@ class iTexture {
 
 public:
 
-    iTexture(const TexPtr& id) :id_(id) {}
+    iTexture(const TextureId& id) :id_(id) {}
     iTexture() {}
-    const TexPtr& getId()const {    return id_; }
-    virtual inline bool detach() {  return id_.make();}
+    const TextureId& getId()const {    return id_; }
+    virtual inline void remakeId() {     id_.remake();}
 
 protected:
-    TexPtr id_;
+    TextureId id_;
 };
 
 #endif

@@ -1,5 +1,5 @@
 #include "ContextRender.h"
-
+#include "Graphic/ContextWindow.h"
 /// Blend------------------------------------------------------------
 /// <summary>
 /// GlRender
@@ -95,21 +95,14 @@ Stencil::ActionPass Stencil::action_;
  /// GlRender
  /// </summary>
 
- void Render::setClearColor(const Color& color) {
-	if (cur_color_clear != color) {
-		cur_color_clear = color;
+ void sRender::Clear::setColor(const Color& color) {
+	if (color_ != color) {
+		color_ = color;
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 }
 
-void Render::PolygonMode(GLenum mode) {
-	if (polygonMode != mode) {
-		polygonMode = mode;
-		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
-	}
-}
-
-void Render::unbind() {
+void sRender::Framebuffer::unbind() {
 	if (last_fbo != 0) {
 		last_fbo = 0;
 		glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
@@ -117,7 +110,7 @@ void Render::unbind() {
 	}
 }
 
-void Render::bind(const iFrame& fbo,bool renderMode) {
+void sRender::Framebuffer::bind(const iFramebuffer& fbo, bool renderMode) {
 	if (last_fbo != fbo.id()) {
 		last_fbo = fbo.id();
 		glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
@@ -130,14 +123,14 @@ bool CullFace::enable = 0;
 GLenum  CullFace::mode = CullFace::Back;
 GLenum CullFace::frontFace = CullFace::ccw;
 
-GLfloat			Render::Line::width = 0.f;
-bool			Render::Line::smooth = 0;
+GLfloat			sRender::Line::width = 0.f;
+bool			sRender::Line::smooth = 0;
 
-GLfloat			Render::Point::size = 0.f;
-bool			Render::Point::smooth = 0;
+GLfloat			sRender::Point::size = 0.f;
+bool			sRender::Point::smooth = 0;
 
-IntRect			Render::Viewport::cur;
+IntRect			sRender::Viewport::cur;
 
-unsigned int	Render::last_fbo = 0;
-Color			Render::cur_color_clear(0.f);
-GLenum			Render::polygonMode = GL_FILL;
+unsigned int	sRender::Framebuffer::last_fbo = 0;
+Color			sRender::Clear::color_(0.f);
+GLenum			sRender::Draw::polygonMode = GL_FILL;

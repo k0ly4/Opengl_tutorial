@@ -2,6 +2,9 @@
 #define IMAGE_LOADER_H
 
 #include"stb_image.h"
+#include "stb_image_write.h"
+
+
 #include "Graphic/ContextTexture.h"
 #include "System/Exception.h"
 #include "Graphic/TextureEntity.h"
@@ -12,20 +15,22 @@
 class STBI_Data {
 
 	struct Data {
-		unsigned char* data;
-		Data(unsigned char* data_) :data(data_) {}
+		byte* data;
+		Data(byte* data_) :data(data_) {}
 		~Data() { stbi_image_free(data); }
 	};
 
 public:
+
 	STBI_Data(unsigned char* data):data_(std::make_shared<Data>(data)) {}
 	STBI_Data():data_(0) {}
 
-	void set(unsigned char* data){ data_ = std::make_shared<Data>(data);}
+	inline void set(byte* data) { data_ = std::make_shared<Data>(data); }
 
-	inline const std::shared_ptr<Data> get()const { return data_;}
+	//inline const std::shared_ptr<Data> get()const { return data_;}
 	inline		unsigned char* data()		const {	return data_->data; }
-	inline bool isEmpty()const { return (data_->data == 0);}
+	inline bool isEmpty()const { return (data_ == 0);}
+
 private:
 	std::shared_ptr<Data> data_;
 };
@@ -45,7 +50,6 @@ public:
 		size_(0),
 		data_(0)
 	{}
-	
 	inline GLenum format()const {
 		if (nrChannels_ == 3)		return  GL_RGB;
 		else if (nrChannels_ == 4)	return  GL_RGBA;
@@ -58,17 +62,13 @@ public:
 		else						return GL_RED;
 	}
 
-	inline GLFWimage getImage()const {
-		//GLFWimage result = ;
-		//result.width = size_.x;
-		//result.height = size_.y;
-		//result.pixels = data_.get()->data;
-		return { size_.x ,size_.y ,data_.get()->data};
-	}
+	inline GLFWimage getImage()const { return { size_.x ,size_.y ,data_.data()};}
+	inline bool isEmpty()const { return data_.isEmpty(); }
 
 	glm::ivec2 size_;
 	int nrChannels_;
 	STBI_Data data_;
+
 private:
 };
 
@@ -78,94 +78,74 @@ private:
 class ResourceTexture2D {
 public:
 
-	ResourceTexture2D(const glm::ivec2& size,unsigned nrChannels,bool gamma, const byte * data):
-		format_(GL_RED, GL_RED),
-		size_(size),
-		sizeMipmaps_(0)
-	{
-		size_ = size;
-		
-		if (nrChannels == 3) {
-			format_.internalFormat = gamma ? GL_SRGB : GL_RGB;
-			format_.format = GL_RGB;
-		}
-		else if (nrChannels == 4) {
-			format_.internalFormat = gamma ? GL_SRGB_ALPHA : GL_RGBA;
-			format_.format = GL_RGBA;
-		}
-		glTexture::bind2D(id_);
-		format_.dataImage2D(size_, data);
-		setupPar();
-	}
+	ResourceTexture2D() {
 	
-	ResourceTexture2D(const STBI_Resource& resource,bool gamma):
-		ResourceTexture2D(resource.size_,resource.nrChannels_,gamma,resource.data_.get()->data)
-	{}
-	/*ResourceTexture2D():
-		size_(0),
-		format_(GL_RED, GL_RED),
-		sizeMipmaps_(0)
+	}
+
+	ResourceTexture2D(const glm::ivec2& size, unsigned nrChannels, bool gamma, const void* data, int sizeMipmaps = 0):
+		size_(size),
+		sizeMips(sizeMipmaps)
 	{
-		glTexture::bind2D(id_);
-		setupPar();
-	}*/
-	ResourceTexture2D(const glm::ivec2& size, const TextureFormatData& format, const void* data, int sizeMipmaps) :
+		format_.setByChannel(nrChannels, gamma);
+		create(data);
+	}
+	ResourceTexture2D(const glm::ivec2& size, const TextureFormatData& format, const void* data, int sizeMipmaps = 0):
 		size_(size),
 		format_(format),
-		sizeMipmaps_(sizeMipmaps)
+		sizeMips(sizeMipmaps)
 	{
-		glTexture::bind2D(id_);
-		format.dataImage2D(size_, data);
-		setupPar();
-		if (sizeMipmaps_ != 0) {
-			if (sizeMipmaps_ != -1) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, sizeMipmaps_);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		
+		create(data);
 	}
-
-	TexPtr id_;
+	ResourceTexture2D(const STBI_Resource& resource,bool gamma):
+		ResourceTexture2D(resource.size_,resource.nrChannels_, gamma, resource.data_.data())
+	{}
+	
 	glm::ivec2 size_;
-	TextureFormatData format_;
+	
+	inline void setFilter(const tFilter& filter) {
+		if (filter_ == filter)return;
+		filter_ = filter;
+		sTexture::bind2D(id_);
+		sTexture::parameter(GL_TEXTURE_2D, filter);
+	}
 
-	inline void filter(GLint filter_max, GLint filter_min) {
-		if (filter_.max == filter_max && filter_.min == filter_min)return;
-		glTexture::bind2D(id_);
-		filter_.setup(GL_TEXTURE_2D, filter_max, filter_min);
+	inline void setWrap(const tWrap2D& wrap) {
+		if (wrap_ == wrap) return;
+		wrap_ = wrap;
+		sTexture::bind2D(id_);
+		sTexture::parameter(GL_TEXTURE_2D, wrap_);
 	}
-	inline void wrap(GLint S, GLint T) {
-		if (wrap_.vec == glm::ivec2(S, T)) return;
-		glTexture::bind2D(id_);
-		wrap_.setup(GL_TEXTURE_2D, S, T);
+
+	inline void genMipmaps(int sizeMipmaps) {
+		if (sizeMipmaps == sizeMips) return;
+		sizeMips = sizeMipmaps;
+		sTexture::bind2D(id_);
+		if (sizeMips != 0) sTexture::genMipmaps(GL_TEXTURE_2D, sizeMips);
 	}
+
 	inline const tFilter& getFilter()	const { return filter_; }
 	inline const tWrap2D& getWrap()		const { return wrap_; }
-	inline int sizeMipmaps()			const { return sizeMipmaps_; }
+	inline int	sizeMipmaps()			const { return sizeMips; }
+	TextureId id_;
 
-	inline void setMipmaps(int sizeMipmaps) {
-		if (sizeMipmaps == sizeMipmaps_) return;
-		glTexture::bind2D(id_);
-		sizeMipmaps_ = sizeMipmaps;
-		if (sizeMipmaps_ != 0) {
-			if (sizeMipmaps_ != -1) glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, sizeMipmaps_);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-	}
+	inline void use(size_t text_unit)const noexcept {sTexture::bind2D(id_, GL_TEXTURE0 + text_unit);}
 
-	inline void use(size_t text_unit)const {
-		glTexture::active(GL_TEXTURE0 + text_unit);
-		glTexture::bind2D(id_);
-	}
 private:
 
-	inline void setupPar() {
-		wrap_.setup(GL_TEXTURE_2D);
-		filter_.setup(GL_TEXTURE_2D);
+	inline void create(const void* data) {
+
+		sTexture::bind2D(id_);
+		sTexture::dataImage2D(size_, format_, data);
+		sTexture::parameter(GL_TEXTURE_2D, wrap_);
+		sTexture::parameter(GL_TEXTURE_2D, filter_);
+		if (sizeMips != 0) sTexture::genMipmaps(GL_TEXTURE_2D, sizeMips);
 	}
 
+	TextureFormatData format_;
 	tFilter filter_;
 	tWrap2D wrap_;
-	int sizeMipmaps_;
+	int sizeMips;
+	
 };
 
 /// <summary>
@@ -174,37 +154,41 @@ private:
 class ImageLoader {
 
 public:
-	static const void flipVerticallyOnLoad(bool enable) { stbi_set_flip_vertically_on_load(enable);}
-	static std::shared_ptr <ResourceTexture2D> getTex2D(const std::string& path, bool gamma = 1, int nrChannels_need = 0) {
-		auto resource = rTextures_.find(path);
-		if (resource == rTextures_.end()) {
-			auto res = loadTexture(path, gamma, nrChannels_need);
-			if(res) rTextures_[path] = res;
-			return res;
-		}
-		return resource->second;
+
+	static const void setFlipOnLoad(bool enable) { stbi_set_flip_vertically_on_load(enable); }
+
+	static std::shared_ptr <ResourceTexture2D> getTex2D(const std::string& path, bool hint_gamma = 1, int hint_nrChannels_need = 0) {
+		return getTexture2D(path, hint_gamma, hint_nrChannels_need);
 	}
-	//Без синхронизации со списком подходит для кратковременных текстур
-	static std::shared_ptr <ResourceTexture2D> forwardLoadTex2D(const std::string& path, bool gamma = 1, int nrChannels_need = 0) {
-		return loadTexture(path, gamma, nrChannels_need);;
+	static std::shared_ptr <ResourceTexture2D> getTexture2D(const std::string& path, bool hint_gamma = 1, int hint_nrChannels_need = 0) {
+		auto resource = resTextures.find(path);
+		if (resource != resTextures.end()) return resource->second;
+		std::shared_ptr<ResourceTexture2D> res = loadTexture2D(path, hint_gamma, hint_nrChannels_need);
+		if (res) resTextures.insert({ path,res });
+		return res;
 	}
 	static const std::shared_ptr<STBI_Resource> getSTBI(const std::string& path, int nrChannels_need = 0) {
-		auto resource = rSTBI.find(path);
-		if (resource == rSTBI.end()) {
-			auto res = loadSTBI(path, nrChannels_need);
-			if (res) rSTBI[path] = res;
-			return res;
-		}
-		return resource->second;
+		auto resource = resSTBI.find(path);
+		if (resource != resSTBI.end()) return resource->second;
+		std::shared_ptr<STBI_Resource> res = loadSTBI(path, nrChannels_need);
+		if (res) resSTBI.insert({ path,res });
+		return res;
 	}
-	
+	//Без синхронизации со списком подходит для кратковременных текстур
+	static std::shared_ptr <ResourceTexture2D>	loadTexture2D(const std::string& path, bool gamma =1, int nrChannels_need =0);
+	//Без синхронизации со списком подходит для кратковременных картинок
+	static std::shared_ptr<STBI_Resource>		loadSTBI(const std::string& path, int nrChannels_need = 0 );
+	inline static int savePNG(const char* path, const glm::ivec2& size,int nrChannels_,const void* data) {
+		return stbi_write_png(path, size.x, size.y, nrChannels_, data, size.x * nrChannels_);
+	}
+	inline static int savePNG(const std::string& path,const STBI_Resource& image) {
+		return savePNG(path.c_str(), image.size_, image.nrChannels_, image.data_.data());
+	}
+	static int savePNG(const std::string& path, const ResourceTexture2D& image);
 private:
 
-	static std::shared_ptr <ResourceTexture2D>	loadTexture(const std::string& path,bool gamma, int nrChannels_need);
-	static std::shared_ptr<STBI_Resource>		loadSTBI(const std::string& path, int nrChannels_need = 0);
-
-	static std::map<std::string, std::shared_ptr<ResourceTexture2D>> rTextures_;
-	static std::map<std::string, std::shared_ptr<STBI_Resource>> rSTBI;
+	static std::map<std::string, std::shared_ptr<ResourceTexture2D>> resTextures;
+	static std::map<std::string, std::shared_ptr<STBI_Resource>> resSTBI;
 
 	ImageLoader() {}
 	~ImageLoader() {}

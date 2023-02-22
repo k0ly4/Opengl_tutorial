@@ -91,5 +91,5 @@ void Cursor3D::draw(RenderTarget& target){
 	shader.use();
 	shader.uniform("model", glm::translate(glm::mat4(1.f), glm::vec3(pos)));
 	target.getView()->use(shader);
-	mesh.draw(Render::LINES);
+	mesh.draw(sRender::LINES);
 }

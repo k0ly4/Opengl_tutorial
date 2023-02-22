@@ -4,7 +4,8 @@
 
 #include "Math/Math.h"
 #include "Game/Lib/GLFW.h"
-#include "Graphic/ContextWindow.h"
+#include "Graphic/TextureEntity.h"
+#include "Graphic/RenderEntity.h"
 
 /// CullFace------------------------------------------------------------
 /// <summary>
@@ -240,42 +241,100 @@ private:
 /// <summary>
 /// Render
 /// </summary>
-class Render {
+class sRender {
 
 public:
 
 	enum Primitive :GLenum
 	{
-		POINTS = 0, LINES, LINE_LOOP, LINE_STRIP, TRIANGLES, TRIANGLES_STRIP, TRIANGLES_FAN, QUADS, SIZE
+		POINTS = 0, LINES, LINE_LOOP, LINE_STRIP, TRIANGLES, TRIANGLES_STRIP, TRIANGLES_FAN, QUADS, PRIMITIVE_SIZE
 	};
-	enum ClearBit :GLbitfield
+	enum BufferBit :GLbitfield
 	{
 		COLOR_BIT = GL_COLOR_BUFFER_BIT,
 		DEPTH_BIT = GL_DEPTH_BUFFER_BIT,
 	};
-	//if not complete return 1
-	inline static bool checkFramebufferStatus() {
-		return glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE;
-	}
-	inline static bool checkFramebufferStatus(const char* logInfo) { 
-			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+	/// Framebuffer------------------------------------------------------------
+	class Framebuffer {
+	public:
+
+		static inline void gen(unsigned int& id)		{	glGenFramebuffers(1,	&id); }
+		static inline void destroy(unsigned int id) {		glDeleteFramebuffers(1, &id); }
+		//if not complete return 1
+		inline static bool checkStatus() { return glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE; }
+		inline static bool checkStatus(const char* logInfo) {
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 				LOG(LogError, logInfo);
 				return 1;
 			}
 			return 0;
-	}
-	static void setClearColor(const Color& color);
-	static inline void setClearColor(float color) { setClearColor(Color(color));}
-	static inline void setClearColor(float r, float g, float b, float a) { setClearColor(Color(r, g, b, a));}
-	static inline void clear(GLbitfield bit)noexcept { glClear(bit); }
+		}
+		inline static void bindTexture2D(GLenum attachment,const TextureId& id,GLint level =0 )noexcept  {
+			glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, id.get(), level);
+		}
+
+		inline static void blit(
+			unsigned int readId,const glm::uvec2& r_size,
+			unsigned int writeId, const glm::uvec2& w_size,
+			GLbitfield bit,GLenum filter = GL_NEAREST)
+		{
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, readId);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, writeId);
+			glBlitFramebuffer(0, 0, r_size.x, r_size.y, 0, 0, w_size.x, w_size.y, bit, filter);
+		}
+
+		static void unbind();
+		static void bind(const iFramebuffer& fbo, bool renderMode = 1);
+
+	private:
+		static unsigned int last_fbo;
+	};
+
+	static inline void setDrawBuffers(GLsizei n,const GLenum* arr)noexcept {glDrawBuffers(n, arr); }
+	static inline void setDrawBuffers(const std::vector<GLenum>&arr)noexcept { glDrawBuffers(arr.size(), arr.data()); }
+
+	/// RenderBuffer------------------------------------------------------------
+	class RenderBuffer {
+	public:
+		static inline void gen(unsigned int& id) {		glGenRenderbuffers(1, &id); }
+		static inline void destroy(unsigned int id) {	glDeleteRenderbuffers(1, &id); }
+		//if not complete return 1
+		static void unbind() {
+			
+		}
+		static void bind(const RenderbufferId& rbo) {
+			glBindRenderbuffer(GL_RENDERBUFFER, rbo.get());
+			
+		}
+		static void storage(const glm::ivec2& size_,GLenum internalFormat = GL_DEPTH_COMPONENT){
+			glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, size_.x, size_.y);
+		}
+		static void bindToFramebuffer(const RenderbufferId& rbo,GLenum attachment = GL_DEPTH_ATTACHMENT) {
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, rbo.get());
+		}
+	private:
+		static unsigned int last_RBO;
+	};
+	/// Clear------------------------------------------------------------
+	class Clear {
+	public:
+
+		static inline void	bit(GLbitfield bit_)noexcept { glClear(bit_); }
+		static void			setColor(const Color& color);
+		static inline void	setColor(float color) {							setColor(Color(color)); }
+		static inline void	setColor(float r, float g, float b, float a) {	setColor(Color(r, g, b, a)); }
+
+	private:
+		static Color color_;
+
+	};
+
 	/// Viewport------------------------------------------------------------
 	class  Viewport {
 		
 	public:
 
-		static inline const IntRect& get() {
-			return cur;
-		}
+		static inline const IntRect& get() {return cur;}
 
 		static inline void set(const IntRect& viewport) {
 			if (cur != viewport) {
@@ -299,6 +358,7 @@ public:
 	private:
 		static IntRect cur;
 	};
+
 	/// Point------------------------------------------------------------
 	class Point {
 		
@@ -349,61 +409,30 @@ public:
 		static GLfloat width;
 		static bool smooth;
 	};
-
-	static void PolygonMode(GLenum mode);
+	/// Draw------------------------------------------------------------
+	class Draw {
+		public:
+			static void setPolygonMode(GLenum mode) {
+				if (polygonMode != mode) {
+					polygonMode = mode;
+					glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+				}
+			}
+		private:
+			static GLenum polygonMode;
+	};
+	
 	//Format:
 	//GL_DEPTH_COMPONENT
 	static inline void GetPixels(const IntRect& rect, GLenum format, float* pixel) {
 		glReadPixels(rect.x, rect.y, rect.w, rect.h, format, GL_FLOAT, pixel);
 	}
 
-	static void unbind();
-	static void bind(const iFrame& fbo, bool renderMode = 1);
-
-	static inline void gen(iFrame& fbo) {	glGenFramebuffers(1, &fbo.id_);}
-	static inline void free(iFrame& fbo) { glDeleteFramebuffers(1, &fbo.id_); }
-
 private:
 
-	Render() {}
-	~Render() {}
-	static Color cur_color_clear;
-	static GLenum polygonMode;
+	sRender() {}
+	~sRender() {}
 	
-	static unsigned int last_fbo;
-
 }; 
-
-
-///Graphic---------------------------------------------
-/// <summary>
-///
-/// </summary>
-class Graphic {
-public:
-	Graphic() {
-		VAO.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES, 0);
-	}
-	void setMesh(const std::vector<Vertex>& vertices) {
-		VAO.data_draw.data.count_vertex = vertices.size();
-		VAO.begin();
-		VBO.begin();
-		VBO.data(vertices);
-
-		VAO.attrib(0, 3, SIZE_VERTEX, 0);
-		VAO.attrib(1, 3, SIZE_VERTEX, 3 * sizeof(float));
-		VAO.attrib(2, 2, SIZE_VERTEX, 6 * sizeof(float));
-
-	}
-
-	void draw(const Shader& shader) {
-		shader.uniform(material);
-		VAO.draw();
-	}
-
-	Material material;
-	DrawBuffer VAO;
-	VertexBufferObject VBO;
-};
 
 #endif

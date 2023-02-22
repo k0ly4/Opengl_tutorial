@@ -18,14 +18,32 @@ asset = {
 		{path = "glowstone.png",				color = 255				},	--8
 		{path = "bedrock.png",					color = 255				},	--9
 		{path = "redstone_lamp_on.png",			color = 255				},	--10
-		{path = "log_oak.png",					color = 255				},	--11
-		{path = "log_oak_top.png",				color = 255				},	--12
-		{path = "double_plant_grass_top.png",	color = {0,255,0}		},	--13
-		{path = "beacon.png",					color = 255				},	--14
-		{path = "redstone_block.png",			color = 255				},	--15
-		{path = "leaves_oak.png",				color = {0,255,0}		},	--16
-		{path = "water_still.png",				frame  = 32				},	--17
-		{path = "water_flow.png",				frame  = 32				},	--18
+		{path = "double_plant_grass_top.png",	color = {0,255,0}		},	--11
+		{path = "beacon.png",					color = 255				},	--12
+		{path = "redstone_block.png",			color = 255				},	--13
+		--logs
+		{path = "log_oak.png"											},	--14
+		{path = "log_oak_top.png"										},	--15
+		{path = "log_big_oak.png"										},	--16
+		{path = "log_big_oak_top.png"									},	--17
+		{path = "log_spruce.png"										},	--18
+		{path = "log_spruce_top.png"									},	--19
+		{path = "log_jungle.png"										},	--20
+		{path = "log_jungle_top.png"									},	--21
+		{path = "log_birch.png"											},	--22
+		{path = "log_birch_top.png"										},	--23
+		{path = "log_acacia.png"										},	--24
+		{path = "log_acacia_top.png"									},	--25
+		--leaves
+		{path = "leaves_oak.png",				color = {0,255,0}		},	--26
+		{path = "leaves_big_oak.png",			color = {0,255,0}		},	--27
+		{path = "leaves_spruce.png",			color = {0,255,0}		},	--28
+		{path = "leaves_jungle.png",			color = {0,255,0}		},	--29
+		{path = "leaves_birch.png",				color = {0,255,0}		},	--30
+		{path = "leaves_acacia.png",			color = {0,255,0}		},	--31
+		--liquids
+		{path = "water_still.png",				frame  = 32				},	--32
+		{path = "water_flow.png",				frame  = 32				},	--33
 		
 	},
 	tex_items = 
@@ -131,43 +149,78 @@ pack = {
 			name = "oak",
 			drawGroup = NORM,
 			physGroup = SOLID,
-			side ={11,11,12,12,11,11},
+			side ={14,14,15,15,14,14},
 			emission = NON
 		},
 		{	--11
-			name = "double_plant_grass",
-			drawGroup = SPEC,
-			physGroup = GAS,
-			side = 13,
+			name = "big_oak",
+			drawGroup = NORM,
+			physGroup = SOLID,
+			side ={16,16,17,17,16,16},
 			emission = NON
 		},
 		{	--12
+			name = "spruce",
+			drawGroup = NORM,
+			physGroup = SOLID,
+			side ={18,18,19,19,18,18},
+			emission = NON
+		},
+		{	--13
+			name = "jungle",
+			drawGroup = NORM,
+			physGroup = SOLID,
+			side ={20,20,21,21,20,20},
+			emission = NON
+		},
+		{	--14
+			name = "birch",
+			drawGroup = NORM,
+			physGroup = SOLID,
+			side ={22,22,23,23,22,22},
+			emission = NON
+		},
+		{	--15
+			name = "acacia",
+			drawGroup = NORM,
+			physGroup = SOLID,
+			side ={24,24,25,25,24,24},
+			emission = NON
+		},
+		{	--16
+			name = "double_plant_grass",
+			drawGroup = SPEC,
+			physGroup = GAS,
+			side = 11,
+			emission = NON
+		},
+		{	--17
 			name = "beacon",
 			drawGroup = NORM,
 			physGroup = SOLID,
-			side =14,
+			side =12,
 			emission = {2,2,10}
 		},
-		{	--13
+		{	--18
 			name = "redstone", 
 			drawGroup = NORM,
 			physGroup = SOLID,
-			side = 15,
+			side = 13,
 			emission = {10,0,0}
 		},
-		{	--14
+		{	--19
 			name = "water",
 			drawGroup = ALPHA,
 			physGroup = LIQUID,
-			idle = 17,
-			act = 18,
+			idle = 32,
+			act = 33,
 			icon = 0
 		},
-		{	--15
+		{	--20
 			name = "leaves_oak",
 			drawGroup = SPEC,
 			physGroup = SOLID,
-			side = 16,
+			side = 26,
 			emission = NON
 		}
 	}

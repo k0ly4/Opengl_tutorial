@@ -1,33 +1,102 @@
 #include "ChunkMeshQueue.h"
 #include "ChunkHandle.h"
+#include "System/Clock.h"
 
-void ChunkMeshQueue::step() {
-	SortableChunks& sBuff = target->ch_sort;
 
-	for (size_t i = 0; i < sBuff.size(); i++) {
-		if (sBuff[i].ch->flag.isDraw == 0)continue;
-		if (sBuff[i].ch->flag.isInitLight() == 0) {
-			notify(_obs_event::initChunkLight, sBuff[i].ch);
+void ChunkMeshQueue::calcLight() {
+	for (size_t i = 0; i < sortCh.size(); i++) {
+		if (sortCh[i].ch->flag.isDraw == 0)continue;
+
+		if (sortCh[i].ch->flag.status == StateChunk::s_lighting_phase_adding) {
+			LogClock log;
+			notify(_obs_event::solveQueueLight, 0);
+			notify(_obs_event::initChunkLight, sortCh[i].ch);
 			notify(_obs_event::solveLight, 0);
+			log.logIf_sec(0.9f, "Light");
 			return;
 		}
-		if (sBuff[i].ch->flag.isModified()) {
+		
+	}
+}
+
+void ChunkMeshQueue::calcMesh() {
+	for (size_t i = 0; i < sortCh.size(); i++) {
+
+		if (sortCh[i].ch->flag.isDraw == 0)continue;
+
+		if (sortCh[i].ch->flag.status == StateChunk::s_mesh) {
+			for (int j = 4; j > -1; j--) {
+				if (sortCh[j].ch->flag.status == StateChunk::s_mesh) {
+					sortCh[i].ch->buildMesh();
+					sortCh[j].ch->buildSortMesh(sector->viewPos_);
+					return;
+				}
+			}
+			sortCh[i].ch->buildMesh();
+			sortCh[i].ch->buildSortMesh(sector->viewPos_);
+			return;
+		}
+		sortCh[i].ch->buildSortMesh(sector->viewPos_);
+	}
+}
+
+void ChunkMeshQueue::calcGeneral() {
+	for (size_t i = 0; i < sortCh.size(); i++) {
+		if (sortCh[i].ch->flag.isDraw == 0)continue;
+
+		if (sortCh[i].ch->flag.status == StateChunk::s_lighting_phase_adding) {
+			LogClock log;
+			notify(_obs_event::initChunkLight, sortCh[i].ch);
+			notify(_obs_event::solveLight, 0);
+			log.logIf_sec(0.9f,"Light");
+			return;
+		}
+		if (sortCh[i].ch->flag.status == StateChunk::s_mesh) {
 			
 			for (int j = 4; j >-1; j--) {
-				if (sBuff[j].ch->flag.isModified()) {
+				if (sortCh[j].ch->flag.status == StateChunk::s_mesh) {
 					notify(_obs_event::solveQueueLight, 0);
-					sBuff[j].ch->buildMesh();
-					sBuff[j].ch->buildSortMesh(target->viewPos_);
+					sortCh[j].ch->buildMesh();
+					sortCh[j].ch->buildSortMesh(sector->viewPos_);
 					return;
 				}
 			}
 			
 			notify(_obs_event::solveQueueLight, 0);
-			sBuff[i].ch->buildMesh();
-			sBuff[i].ch->buildSortMesh(target->viewPos_);
+			sortCh[i].ch->buildMesh();
+			sortCh[i].ch->buildSortMesh(sector->viewPos_);
 			return;
 		}
-		sBuff[i].ch->buildSortMesh(target->viewPos_);
+		sortCh[i].ch->buildSortMesh(sector->viewPos_);
+	}
+
+	for (size_t i = 0; i < sortCh.size(); i++) {
+
+		if (sortCh[i].ch->flag.status == StateChunk::s_lighting_phase_adding) {
+			LogClock log;
+			notify(_obs_event::initChunkLight, sortCh[i].ch);
+			notify(_obs_event::solveLight, 0);
+			log.logIf_sec(0.9f, "Light");
+			return;
+		}
+
+		if (sortCh[i].ch->flag.status == StateChunk::s_mesh) {
+			for (int j = 4; j > -1; j--) {
+				if (sortCh[j].ch->flag.status == StateChunk::s_mesh) {
+					notify(_obs_event::solveQueueLight, 0);
+					sortCh[j].ch->buildMesh();
+					sortCh[j].ch->buildSortMesh(sector->viewPos_);
+					return;
+				}
+			}
+
+			notify(_obs_event::solveQueueLight, 0);
+			sortCh[i].ch->buildMesh();
+			sortCh[i].ch->buildSortMesh(sector->viewPos_);
+
+			return;
+		}
+		sortCh[i].ch->buildSortMesh(sector->viewPos_);
 	}
 }
 ChunkMeshQueue cProcess::queue;

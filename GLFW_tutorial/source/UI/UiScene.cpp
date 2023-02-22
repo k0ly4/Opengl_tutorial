@@ -9,10 +9,11 @@ void UiScene::init(RenderWindow& window, GraphicPipeline* graphic, EventModule* 
 	texCowBoy.load("asset\\image\\The fastest camp in the west.png");
 	texError.load("asset\\image\\FUrfZuZXoAEnZBE.jpg");
 
-	texError.wrap(tWrap::ClampToEdge);
+	texError.resource->setWrap(tWrap::ClampToEdge);
 
 	gameUi.init(event, graphic, scene);
 	mEvent = event;
+
 }
 void UiScene::inRender(RenderTarget& target) {
 	target.setView(view2D);
@@ -25,4 +26,6 @@ void UiScene::inRender(RenderTarget& target) {
 		target.draw(dbg);
 	}
 	main->world.weather.draw(target);
+	if(mEvent->f.show_biom_map)
+		target.draw(MasterGeneration::getBiomMap().getSprite(0.f,0.f));
 }

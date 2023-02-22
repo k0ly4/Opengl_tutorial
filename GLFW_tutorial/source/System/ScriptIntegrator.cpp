@@ -1,7 +1,7 @@
 #include "ScriptIntegrator.h"
 #include "Physics/Hitbox.h"
 #include "Game/Entities/GeneralGameEntity.h"
-#include "Game/Voxels/MasterGeneration.h"
+#include "Game/Voxels/Generation/MasterGeneration.h"
 
 void sScriptIntegrator::voxConstants(luke::LuaInterface& script) {
 	using namespace vox;

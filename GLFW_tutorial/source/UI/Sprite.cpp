@@ -3,7 +3,7 @@
 void Sprite::setTexture(const Texture2D& texture_) {
     if (texture == &texture_) return;
     texture = &texture_;
-    setTextureRect(FloatRect(glm::vec2(0.f), texture_.getSize()));
+    setTextureRect(FloatRect(glm::vec2(0.f), texture_.resource->size_));
 }
 
 void Sprite::setTextureRect(const FloatRect& rect) {
@@ -20,13 +20,13 @@ void Sprite::draw(const View* view, const Shader& shader) {
    shader.uniform("model", transform.matrix());
    shader.uniform("color", color_);
 
-   mesh.drawArrays(Render::TRIANGLES_STRIP);
+   mesh.drawArrays(sRender::TRIANGLES_STRIP);
 }
 
 void Sprite::solve() {
     modified = 0;
     //Normalize
-    FloatRect normalize = textureRect_ / texture->getSize();
+    FloatRect normalize = textureRect_ / texture->resource->size_;
     normalize.y = 1.f - normalize.y;
     //Mesh
     normalize.w = normalize.x + normalize.w;

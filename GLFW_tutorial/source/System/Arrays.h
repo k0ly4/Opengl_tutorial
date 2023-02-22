@@ -6,28 +6,37 @@
 template<typename T>
 class vector2d {
 public:
-	inline void setSize(size_t size) {
+	vector2d() {}
+	vector2d(const glm::ivec2& size):
+		size_(size),
+		buffer(size.x*size.y)
+	{}
+
+	inline void setSize(const glm::ivec2& size) {
 		size_ = size;
-		buffer.resize(size_ * size_);
+		buffer.resize(size_.x * size_.y);
 	}
 	inline T& operator ()(size_t x, size_t y) {			return buffer[ind(x, y)]; }
 	inline T& operator ()(const glm::uvec2& coord) {	return buffer[ind(coord)]; }
 	inline T& operator[](size_t index) {				return buffer[index]; }
 	inline size_t size() {								return buffer.size(); }
+	inline glm::ivec2 v_size() {						return size_; }
 	// Проверка корректности адреса
-	inline bool is(size_t x, size_t y)const {			return x < size_&& y < size_; }
-	inline bool is(const glm::uvec2& coord)const {		return coord.x < size_&& coord.y < size_; }
+	inline bool is(size_t x, size_t y)const {			return x < size_.x && y < size_.y; }
+	inline bool is(const glm::uvec2& coord)const {		return coord.x < size_.x && coord.y < size_.y; }
 	inline void setNull() { for (size_t i = 0; i < buffer.size(); i++) buffer[i] = 0; }
 	// Если адрес неверный то возвращает 0
-	inline  T* get(const glm::uvec2& coord) noexcept {				return is(coord) ? &(buffer[ind(coord)]) : 0; }
-	inline const T* get(const glm::uvec2& coord) const noexcept {	return is(coord) ? &(buffer[ind(coord)]) : 0; }
+	inline const T& get(size_t x,size_t y, const T& def)const	noexcept {  return is(x,y) ? (buffer[ind(x, y)]) : def; }
+	inline  T* get(const glm::uvec2& coord)						noexcept {	return is(coord) ? &(buffer[ind(coord)]) : 0; }
+	inline const T* get(const glm::uvec2& coord) const			noexcept {	return is(coord) ? &(buffer[ind(coord)]) : 0; }
 	//Индекс
-	inline size_t ind(size_t x, size_t y)		const noexcept { return (y * size_ + x); }
-	inline size_t ind(const glm::uvec2& coord)	const noexcept { return (coord.y * size_ + coord.x); }
+	inline size_t ind(size_t x, size_t y)		const noexcept { return (y * size_.x + x); }
+	inline size_t ind(const glm::uvec2& coord)	const noexcept { return (coord.y * size_.x + coord.x); }
+	inline auto data()const noexcept							{ return buffer.data(); }
+
 private:
 
-	
-	size_t size_;
+	glm::ivec2 size_;
 	std::vector<T> buffer;
 };
 

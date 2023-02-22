@@ -10,69 +10,6 @@ inline float getNoise(const glm::vec3& global) {
 	return glm::perlin(glm::vec3(global) * 0.0125f);
 }
 
-size_t  DefaultGenerator::calcHeight(const glm::vec2& real) {
-	
-	float height = 0.f;
-	height += noise.getNormalize(real * 0.1f);
-	height += noise.getNormalize(real * 0.5f);
-	height += noise.getNormalize(real * 0.7f);
-	height += noise.getNormalize(real);
-	height *= noise.getNormalize(real		*2.f);
-	height = height * 12.f + 32.f;
-	return height;
-	//const float s = 0.2f;
-	/*float height = fnlGetNoise3D(noise, real_x * 0.0125f * s * 32, real_z * 0.0125f * s * 32, 0.0f);
-	height += fnlGetNoise3D(noise, real_x * 0.025f * s * 32, real_z * 0.025f * s * 32, 0.0f) * 0.5f;
-	height += fnlGetNoise3D(noise, real_x * 0.05f * s * 32, real_z * 0.05f * s * 32, 0.0f) * 0.25f;
-	height += fnlGetNoise3D(noise, real_x * 0.1f * s * 32, real_z * 0.1f * s * 32, 0.0f) * 0.225f;
-	height += fnlGetNoise3D(noise, real_x * 0.2f * s * 32, real_z * 0.2f * s * 32, 0.0f) * 0.125f;
-	height += fnlGetNoise3D(noise, real_x * 0.4f * s * 32, real_z * 0.4f * s * 32, 0.0f) * 0.125f * 0.5F;
-	height = height * 0.5f + 0.5f;
-	height *= height;
-	height *= (140.0f) * 0.12f / s;
-	height += (42) * 0.12f / s;*/
-	//return height;
-}
-
-void DefaultGenerator::generate(Chunk& chunk) {
-
-	size_t heights[CHUNK_D*CHUNK_W];
-
-	for (size_t z = 0; z < CHUNK_D; z++) {
-		for (size_t x = 0; x < CHUNK_W; x++) {
-			glm::vec2 real = glm::vec2(x+chunk.voxelPos().x,z + chunk.voxelPos().z) ;
-			heights[z * CHUNK_W + x] = calcHeight(real);
-		}
-	}
-
-	for (size_t z = 0; z < CHUNK_D; z++) {
-		for (size_t x = 0; x < CHUNK_W; x++) {
-			size_t height = heights[z * CHUNK_W + x];
-
-			for (size_t y = 0; y < CHUNK_H; y++) {
-
-				glm::uvec3 real = glm::uvec3(x, y, z) + chunk.voxelPos();
-				
-				short id = vox::air;
-				if (real.y == height) {
-					id = vox::turf;
-				}
-				else if (real.y < height) {
-					if (real.y < height - 6) {
-						id = vox::stone;
-					}
-					else {
-						id = vox::earth;
-					}
-						
-				}
-				chunk.voxels()(x, y, z) = Voxel(id);
-			}
-		}
-	}
-	chunk.flag.generate();
-}
-
 void CustomGenerator::initScript() {
 	LUA_TRY
 		luke::LuaRef generator =	script.get("generator_config");
@@ -136,7 +73,7 @@ void CustomGenerator::generate(Chunk& chunk) {
 
 			size_t index = toInt(x, z, CHUNK_D);
 
-			glm::vec2 real = glm::vec2(x + chunk.voxelPos().x, z + chunk.voxelPos().z);
+			glm::vec2 real = glm::vec2(x + chunk.posVx().x, z + chunk.posVx().z);
 			//height
 			m_heights.map[index] = calcHeight(real);
 			//biom
@@ -153,12 +90,12 @@ void CustomGenerator::generate(Chunk& chunk) {
 		for (size_t x = 0; x < CHUNK_W; x++) {
 
 			size_t height = m_heights.map(x,z);
-			glm::uvec3 global = glm::uvec3(x + chunk.voxelPos().x,0, z + chunk.voxelPos().z);
+			glm::uvec3 global = glm::uvec3(x + chunk.posVx().x,0, z + chunk.posVx().z);
 
 			for (size_t y = 0; y < CHUNK_H; y++) {
 
 				glm::uvec3 local(x, y, z);
-				global.y = y + chunk.voxelPos().y;
+				global.y = y + chunk.posVx().y;
 				Voxel id = vox::air;
 				id = blockBiom(global, height, bioms[m_biom.map(x, z)]);
 				voxels(local) = Voxel(id);
@@ -168,6 +105,6 @@ void CustomGenerator::generate(Chunk& chunk) {
 		}
 	}
 
-	chunk.flag.generate();
+	chunk.flag.toLightLevel();
 }
 std::vector< CustomGenerator::Par>CustomGenerator::pars;

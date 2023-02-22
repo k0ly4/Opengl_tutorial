@@ -42,9 +42,9 @@ public:
 
 	inline void draw(RenderTarget* render) {
 		init();
-		mesh.draw(*render, Render::LINES,glShader::color_layout);
+		mesh.draw(*render, sRender::LINES,glShader::color_layout);
 		initNorm();
-		mesh_norm.draw(*render, Render::LINES, glShader::color_layout);
+		mesh_norm.draw(*render, sRender::LINES, glShader::color_layout);
 	}
 private:
 	Color c = Color::WHITE;

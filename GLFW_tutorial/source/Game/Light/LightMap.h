@@ -68,7 +68,7 @@ class LightMap
 struct LightUint8 {
 
 	glm::uvec3 pos;
-	unsigned char light;
+	byte light;
 	
 	LightUint8() {}
 	LightUint8(size_t x_, size_t y_, size_t z_, byte light_) :
@@ -79,6 +79,8 @@ struct LightUint8 {
 		pos(pos_),
 		light(light_)
 	{}
+	inline bool operator >(const LightUint8& l)const { return light > l.light; }
+	inline bool operator <(const LightUint8& l)const { return light < l.light; }
 };
 
 

@@ -19,6 +19,7 @@ public:
         bool showDebugInfo = 1;
         float fps = 0.f;
         bool show_atlas = 0;
+        bool show_biom_map = 1;
     }f;
 
     void initialize(GlobalScene& scene);

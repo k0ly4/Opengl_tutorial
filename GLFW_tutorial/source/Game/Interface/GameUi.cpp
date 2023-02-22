@@ -52,7 +52,7 @@ void GameUi::drawDebugInfo(RenderTarget& target) {
 	}
 	else info += L"voxel.NuN\n";
 	//ContextTexture
-	info += L"Textures:" + std::to_wstring(glTexture::total_count) + L"\n";
+	info += L"Textures:" + std::to_wstring(sTexture::total_count) + L"\n";
 	//Buffer
 	info += L"Buffers:"+std::to_wstring(GlBuffer::getPull().size_stack_buffer())+
 		L", VAO:"+std::to_wstring(GlBuffer::getPull().size_stack_vertexArray()) + L"\n";

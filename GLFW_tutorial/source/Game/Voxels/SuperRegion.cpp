@@ -1,11 +1,12 @@
 #include "SuperRegion.h"
+#include "System/Clock.h"
 //Проверка выхода сектора из региона
 inline bool isOut(const glm::uvec2& p_ch, const glm::uvec2& c_ch,size_t size_ch) noexcept {
 	return (p_ch.x > c_ch.x || p_ch.y > c_ch.y || p_ch.x+ SUPREG_VOL_CH < c_ch.x+ size_ch || p_ch.y + SUPREG_VOL_CH < c_ch.y + size_ch);
 }
 
 void fSupReg::fillSector(ChunkPtrs& sec, size_t sec_size, const glm::uvec2& sec_beg_ch) {
-
+	LogClock lClock;
 	if (isOut(beg_ch, sec_beg_ch, sec_size)) {
 		//Установка нового центра
 		glm::uvec2 center_rg((sec_beg_ch + glm::uvec2(sec_size / 2)) / REGION_VEC);
@@ -18,9 +19,11 @@ void fSupReg::fillSector(ChunkPtrs& sec, size_t sec_size, const glm::uvec2& sec_
 			glm::uvec2 loc_rg = (pos - beg_ch) / REGION_VEC;
 			size_t ind = toInt(loc_rg,SUPREG_SIZE);
 			if (reg[ind] == 0) initRegion(ind, loc_rg * REGION_VEC + beg_ch);
-			sec[toInt(pos - sec_beg_ch, sec_size)] = &reg[ind]->getChunkGlobal(pos);
+			sec(pos-sec_beg_ch) = &reg[ind]->getChunkGlobal(pos);
+			//sec[toInt(pos - sec_beg_ch, sec_size)] = &reg[ind]->getChunkGlobal(pos);
 		}
 	}
+	lClock.log_sec("fillSector");
 }
 
 

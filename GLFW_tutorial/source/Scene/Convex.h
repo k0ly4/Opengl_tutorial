@@ -1,8 +1,10 @@
 #ifndef CONVEX_H
 #define CONVEX_H
+
 #include "Resource/ShaderArguments.h"
 #include "Graphic/Geometry.h"
 #include "Resource/Shader.h"
+#include "Graphic/Drawable.h"
 template<typename T>
 class MeshShell {
 
@@ -34,7 +36,7 @@ public:
         modified = 1;
         mesh.clear();
     }
-    inline void draw(const RenderTarget& target,size_t primitive = Render::LINES, glShader::Object shaderHint = glShader::color_layout) {
+    inline void draw(const RenderTarget& target,size_t primitive = sRender::LINES, glShader::Object shaderHint = glShader::color_layout) {
         const Shader& shader = glShader::get(shaderHint);
         shader.use();
         target.getView()->use(shader);
@@ -129,7 +131,7 @@ public:
     TypeConvex()
     {
         vertices_.reserve(10);
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES, 0);
+        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, sRender::TRIANGLES, 0);
         VBO_.setMode(GBO::DYNAMIC);
         VBO_.begin();
         VAO_.begin();
@@ -138,7 +140,7 @@ public:
 
     TypeConvex(size_t amount_vertex) {
         vertices_.resize(amount_vertex);
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES, amount_vertex);
+        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, sRender::TRIANGLES, amount_vertex);
         VBO_.setMode(GBO::DYNAMIC);
         VBO_.begin();
         VAO_.begin();
@@ -216,7 +218,7 @@ public:
  
     {
         vertices_.reserve(10);
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES_STRIP, 0);
+        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, sRender::TRIANGLES_STRIP, 0);
         VBO_.setMode(GBO::DYNAMIC);
         VBO_.begin();
         VAO_.begin();
@@ -226,7 +228,7 @@ public:
 
     ConvexUV(size_t amount_vertex) {
         vertices_.resize(amount_vertex);
-        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, Render::TRIANGLES_STRIP, amount_vertex);
+        VAO_.data_draw = DataDraw(DataDraw::DrawArrays, sRender::TRIANGLES_STRIP, amount_vertex);
         VBO_.setMode(GBO::DYNAMIC);
         VBO_.begin();
         VAO_.begin();
